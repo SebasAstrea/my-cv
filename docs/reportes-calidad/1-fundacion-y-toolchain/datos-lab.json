@@ -74,338 +74,170 @@
       "n": 3,
       "instrumentada": true,
       "metricasSinMedir": [],
-      "lcpMedianaMs": 432,
+      "lcpMedianaMs": 468,
       "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 14,
+      "ttfbMedianaMs": 1.1,
+      "fcpMedianaMs": 468,
+      "longTasks": 3,
+      "bytesTransferidos": 44804,
+      "desviacionLcpPct": 3
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "slow-4g",
+      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 1.1,
+      "fcpMedianaMs": 484,
+      "longTasks": 0,
+      "bytesTransferidos": 32751,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "3g-fast",
+      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 772,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 16,
+      "ttfbMedianaMs": 1.1,
+      "fcpMedianaMs": 772,
+      "longTasks": 3,
+      "bytesTransferidos": 44804,
+      "desviacionLcpPct": 1
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "3g-fast",
+      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 780,
+      "longTasks": 0,
+      "bytesTransferidos": 32751,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "4g",
+      "redLabel": "4g (9 Mbps / 85 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 300,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 25,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 300,
+      "longTasks": 3,
+      "bytesTransferidos": 44804,
+      "desviacionLcpPct": 4
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "4g",
+      "redLabel": "4g (9 Mbps / 85 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 288,
+      "longTasks": 0,
+      "bytesTransferidos": 32751,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "wifi",
+      "redLabel": "wifi (100 Mbps / 10 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 148,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 1,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 148,
+      "longTasks": 2,
+      "bytesTransferidos": 44804,
+      "desviacionLcpPct": 5
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "wifi",
+      "redLabel": "wifi (100 Mbps / 10 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
       "hayNavegacion": true,
       "clsMediana": 0,
       "tbtMedianaMs": 0,
       "ttfbMedianaMs": 1,
-      "fcpMedianaMs": 432,
-      "longTasks": 3,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": 2
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "slow-4g",
-      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 428,
+      "fcpMedianaMs": 144,
       "longTasks": 0,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "3g-fast",
-      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 740,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 740,
-      "longTasks": 0,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": 2
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "3g-fast",
-      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 732,
-      "longTasks": 0,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "4g",
-      "redLabel": "4g (9 Mbps / 85 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 264,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 264,
-      "longTasks": 1,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": 6
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "4g",
-      "redLabel": "4g (9 Mbps / 85 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 264,
-      "longTasks": 0,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "wifi",
-      "redLabel": "wifi (100 Mbps / 10 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 108,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 108,
-      "longTasks": 1,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": 7
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "wifi",
-      "redLabel": "wifi (100 Mbps / 10 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 112,
-      "longTasks": 0,
-      "bytesTransferidos": 19029,
+      "bytesTransferidos": 32751,
       "desviacionLcpPct": null
     },
     {
       "dispositivo": "moto-g-power",
       "red": "native",
       "redLabel": "native (sin throttling)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 84,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 84,
-      "longTasks": 0,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": 14
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "native",
-      "redLabel": "native (sin throttling)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 84,
-      "longTasks": 0,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "slow-4g",
-      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 432,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 7,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 432,
-      "longTasks": 3,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": 1
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "slow-4g",
-      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 440,
-      "longTasks": 0,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "3g-fast",
-      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 740,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 5,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 740,
-      "longTasks": 3,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": 2
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "3g-fast",
-      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.8,
-      "fcpMedianaMs": 736,
-      "longTasks": 0,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "4g",
-      "redLabel": "4g (9 Mbps / 85 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 268,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 6,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 268,
-      "longTasks": 3,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": 0
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "4g",
-      "redLabel": "4g (9 Mbps / 85 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 256,
-      "longTasks": 0,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "wifi",
-      "redLabel": "wifi (100 Mbps / 10 ms)",
       "cache": "cold",
       "n": 3,
       "instrumentada": true,
@@ -414,12 +246,180 @@
       "lcpObservadoEnTodos": true,
       "hayNavegacion": true,
       "clsMediana": 0,
-      "tbtMedianaMs": 2,
-      "ttfbMedianaMs": 1,
+      "tbtMedianaMs": 13,
+      "ttfbMedianaMs": 0.9,
       "fcpMedianaMs": 112,
       "longTasks": 3,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": 14
+      "bytesTransferidos": 44804,
+      "desviacionLcpPct": 11
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "native",
+      "redLabel": "native (sin throttling)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 1,
+      "fcpMedianaMs": 132,
+      "longTasks": 0,
+      "bytesTransferidos": 32751,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "slow-4g",
+      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 476,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0.0001,
+      "tbtMedianaMs": 19,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 476,
+      "longTasks": 3,
+      "bytesTransferidos": 44804,
+      "desviacionLcpPct": 3
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "slow-4g",
+      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 492,
+      "longTasks": 0,
+      "bytesTransferidos": 32751,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "3g-fast",
+      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 780,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0.0001,
+      "tbtMedianaMs": 20,
+      "ttfbMedianaMs": 1,
+      "fcpMedianaMs": 780,
+      "longTasks": 3,
+      "bytesTransferidos": 44804,
+      "desviacionLcpPct": 1
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "3g-fast",
+      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 1,
+      "fcpMedianaMs": 788,
+      "longTasks": 0,
+      "bytesTransferidos": 32751,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "4g",
+      "redLabel": "4g (9 Mbps / 85 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 284,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0.0001,
+      "tbtMedianaMs": 18,
+      "ttfbMedianaMs": 1,
+      "fcpMedianaMs": 284,
+      "longTasks": 3,
+      "bytesTransferidos": 44804,
+      "desviacionLcpPct": 4
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "4g",
+      "redLabel": "4g (9 Mbps / 85 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 1,
+      "fcpMedianaMs": 280,
+      "longTasks": 0,
+      "bytesTransferidos": 32751,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "wifi",
+      "redLabel": "wifi (100 Mbps / 10 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 128,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0.0001,
+      "tbtMedianaMs": 19,
+      "ttfbMedianaMs": 1,
+      "fcpMedianaMs": 128,
+      "longTasks": 3,
+      "bytesTransferidos": 759495,
+      "desviacionLcpPct": 13
     },
     {
       "dispositivo": "desktop-1440",
@@ -439,9 +439,9 @@
       "clsMediana": 0,
       "tbtMedianaMs": 0,
       "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 112,
+      "fcpMedianaMs": 136,
       "longTasks": 0,
-      "bytesTransferidos": 19029,
+      "bytesTransferidos": 32751,
       "desviacionLcpPct": null
     },
     {
@@ -452,16 +452,16 @@
       "n": 3,
       "instrumentada": true,
       "metricasSinMedir": [],
-      "lcpMedianaMs": 88,
+      "lcpMedianaMs": 152,
       "lcpObservadoEnTodos": true,
       "hayNavegacion": true,
       "clsMediana": 0,
-      "tbtMedianaMs": 4,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 88,
+      "tbtMedianaMs": 5,
+      "ttfbMedianaMs": 1,
+      "fcpMedianaMs": 152,
       "longTasks": 3,
-      "bytesTransferidos": 19029,
-      "desviacionLcpPct": 5
+      "bytesTransferidos": 759495,
+      "desviacionLcpPct": 3
     },
     {
       "dispositivo": "desktop-1440",
@@ -481,9 +481,9 @@
       "clsMediana": 0,
       "tbtMedianaMs": 0,
       "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 84,
+      "fcpMedianaMs": 128,
       "longTasks": 0,
-      "bytesTransferidos": 19029,
+      "bytesTransferidos": 32751,
       "desviacionLcpPct": null
     }
   ],
@@ -491,49 +491,49 @@
     "escenas": [
       {
         "id": "identidad",
-        "nodos": 11,
-        "caracteresApoyo": 163,
-        "textos": 11
+        "nodos": 10,
+        "caracteresApoyo": 197,
+        "textos": 9
       },
       {
         "id": "perfil",
-        "nodos": 5,
-        "caracteresApoyo": 248,
+        "nodos": 6,
+        "caracteresApoyo": 47,
         "textos": 5
       },
       {
         "id": "experiencia",
-        "nodos": 14,
-        "caracteresApoyo": 757,
-        "textos": 14
+        "nodos": 57,
+        "caracteresApoyo": 42,
+        "textos": 5
       },
       {
         "id": "proyectos",
-        "nodos": 12,
-        "caracteresApoyo": 534,
-        "textos": 12
+        "nodos": 34,
+        "caracteresApoyo": 44,
+        "textos": 5
       },
       {
         "id": "stack",
-        "nodos": 27,
-        "caracteresApoyo": 602,
-        "textos": 27
+        "nodos": 35,
+        "caracteresApoyo": 60,
+        "textos": 5
       },
       {
         "id": "formacion",
-        "nodos": 5,
+        "nodos": 19,
         "caracteresApoyo": 41,
         "textos": 5
       },
       {
         "id": "contacto",
-        "nodos": 6,
+        "nodos": 8,
         "caracteresApoyo": 39,
         "textos": 5
       }
     ],
-    "videosEnDom": 0,
-    "totalNodosEscena": 11,
+    "videosEnDom": 1,
+    "totalNodosEscena": 13,
     "capturas": [
       {
         "id": "identidad",
@@ -567,12 +567,45 @@
   },
   "contraste": [
     {
-      "contexto": "span.rail__num",
+      "contexto": "button.theme-toggle",
       "fontSizePx": 12.8,
       "fontWeight": "400",
       "color": "oklch(0.52 0.012 260)",
+      "fondo": "rgb(242, 240, 236)",
+      "ratio": 4.85,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "span.rail__duration",
+      "fontSizePx": 10.24,
+      "fontWeight": "600",
+      "color": "oklch(0.52 0.012 260)",
       "fondo": "rgb(251, 250, 247)",
       "ratio": 5.28,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "button.action",
+      "fontSizePx": 12.8,
+      "fontWeight": "400",
+      "color": "oklch(0.985 0.004 90)",
+      "fondo": "rgb(163, 77, 0)",
+      "ratio": 5.56,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "span.metric",
+      "fontSizePx": 12.8,
+      "fontWeight": "400",
+      "color": "oklch(0.48 0.12 220)",
+      "fondo": "rgb(251, 250, 247)",
+      "ratio": 5.78,
       "minimo": 4.5,
       "cumple": true,
       "motivo": "cumple AA"
@@ -589,6 +622,17 @@
       "motivo": "cumple AA"
     },
     {
+      "contexto": "span.rail__num",
+      "fontSizePx": 12.8,
+      "fontWeight": "600",
+      "color": "oklab(0.284962 -0.00208378 -0.0118177)",
+      "fondo": "rgb(251, 250, 247)",
+      "ratio": 13.78,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
       "contexto": "a.skip-link",
       "fontSizePx": 17,
       "fontWeight": "400",
@@ -600,9 +644,9 @@
       "motivo": "cumple AA"
     },
     {
-      "contexto": "h2",
-      "fontSizePx": 48.83,
-      "fontWeight": "600",
+      "contexto": "h1",
+      "fontSizePx": 68.48,
+      "fontWeight": "500",
       "color": "oklch(0.18 0.012 260)",
       "fondo": "rgb(251, 250, 247)",
       "ratio": 18,
@@ -611,7 +655,7 @@
       "motivo": "cumple AA"
     },
     {
-      "contexto": "h3",
+      "contexto": "h3.entry__title",
       "fontSizePx": 22,
       "fontWeight": "600",
       "color": "oklch(0.18 0.012 260)",
@@ -627,43 +671,236 @@
       "estado": "inicio",
       "violaciones": [],
       "seriousCritical": 0,
-      "passes": 23,
-      "inaplicables": 40,
+      "passes": 24,
+      "inaplicables": 39,
       "scrollHorizontalExcesoPx": 0,
       "reducedMotion": {
         "vivas": 0,
         "declaradasSobreNeutro": 0,
         "ejemplos": []
       },
-      "targetsMenoresDe24px": []
+      "targetsMenoresDe24px": [
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 269,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 246,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 303,
+          "h": 23
+        },
+        {
+          "sel": "a",
+          "w": 93,
+          "h": 23
+        }
+      ]
     },
     {
       "estado": "medio-de-escena",
       "violaciones": [],
       "seriousCritical": 0,
-      "passes": 23,
-      "inaplicables": 40,
+      "passes": 24,
+      "inaplicables": 39,
       "scrollHorizontalExcesoPx": 0,
       "reducedMotion": {
         "vivas": 0,
         "declaradasSobreNeutro": 0,
         "ejemplos": []
       },
-      "targetsMenoresDe24px": []
+      "targetsMenoresDe24px": [
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 269,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 246,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 303,
+          "h": 23
+        },
+        {
+          "sel": "a",
+          "w": 93,
+          "h": 23
+        }
+      ]
     },
     {
       "estado": "reflow-320",
       "violaciones": [],
       "seriousCritical": 0,
-      "passes": 23,
-      "inaplicables": 40,
+      "passes": 24,
+      "inaplicables": 39,
       "scrollHorizontalExcesoPx": 0,
       "reducedMotion": {
         "vivas": 0,
         "declaradasSobreNeutro": 0,
         "ejemplos": []
       },
-      "targetsMenoresDe24px": []
+      "targetsMenoresDe24px": [
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 56,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 269,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 246,
+          "h": 18
+        },
+        {
+          "sel": "a",
+          "w": 87,
+          "h": 22
+        }
+      ]
     },
     {
       "estado": "drawer-chat-abierto",
