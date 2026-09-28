@@ -20,7 +20,7 @@ import { STACK_LEVELS } from '../data/schema.ts'
 import { SCENES } from '../data/storyboard.ts'
 import { formatDuration, formatRange, totalExperienceMonths, yearsFrom } from '../lib/cv/validate.ts'
 import { buildPersonJsonLd } from '../lib/cv/exporters.ts'
-import { siteUrl } from '../lib/env.ts'
+import { siteUrl, contactEmail } from '../lib/env.ts'
 
 const { cv, isFixture } = getCv()
 const now = new Date()
@@ -35,6 +35,10 @@ const jsonLd = buildPersonJsonLd(cv, { url: new URL('/', siteUrl()).toString(), 
 const levelsUsed = [...new Set(cv.stack.flatMap((group) => group.items.map((item) => item.level)))]
 
 const formationCount = cv.education.length + cv.certifications.length + cv.publications.length
+
+// `RF-27`: solo si hay un email de contacto configurado (`PUBLIC_CONTACT_EMAIL`). Nunca sale
+// en el HTML: el boton lo monta al pulsar (ver `src/scripts/nav.ts` y `docs/adr/0005`).
+const email = contactEmail()
 
 const labels: Readonly<Record<string, string>> = {
   identidad: 'Identidad',
@@ -273,8 +277,11 @@ const scene = (id: string) => {
 
     {/* 06 — Contacto. Sin datos privados: `toPublicCv` los elimino en build (`SEG-31`). */}
     <Scene meta={scene('contacto')} title="Contacto" support="Escríbeme.">
+      <button type="button" class="action" data-print>
+        Descargar PDF
+      </button>
       <details class="detail">
-        <summary class="detail__summary">Enlaces</summary>
+        <summary class="detail__summary">Más contacto</summary>
         <ul class="links">
           {cv.contact.github !== undefined && (
             <li>
@@ -286,6 +293,17 @@ const scene = (id: string) => {
               <a href={cv.contact.linkedin}>LinkedIn</a>
             </li>
           )}
+          <li>
+            <a href="/cv.txt">Texto plano</a>
+          </li>
+          {email !== undefined && (
+            <li>
+              <button type="button" class="link-button" data-contact-email aria-expanded="false">
+                Ver email
+              </button>
+              <span class="mono" data-contact-email-output hidden />
+            </li>
+          )}
         </ul>
       </details>
     </Scene>
@@ -293,5 +311,5 @@ const scene = (id: string) => {
     {isFixture && <FixtureBanner />}
   </Fragment>
 
-  <p slot="footer" class="mono">Actualizado: {cv.lastReviewed}</p>
+  <p slot="footer" class="mono">Actualizado: {cv.lastReviewed} · {siteUrl()}</p>
 </Base>

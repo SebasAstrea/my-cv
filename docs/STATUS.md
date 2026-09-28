@@ -18,22 +18,22 @@
 
 | | |
 |---|---|
-| **Sprint activo** | **4 — Divulgación progresiva y presupuesto** (en curso) |
-| **Último sprint aceptado** | **3 — Navegación, teclado y tema** (`ACCEPTED`, commit `35beb5a`) |
+| **Sprint activo** | **5 — Sistema de vídeo** (bloqueado: faltan los clips, `ABR-05`) |
+| **Último sprint aceptado** | **4 — Divulgación progresiva y presupuesto** (`ACCEPTED`) |
 | **Gate** | `pnpm gate` — 12 pasos, exit 0 |
 | **Bloqueo** | Ninguno conocido |
 | **Deuda registrada** | 11 ítems (`TD-01`..`TD-11` en `BACKLOG.md`) |
 | **Riesgos abiertos** | 8 aceptados (`RK-01`..`RK-08` en `TRACEABILITY.md` §12) |
 | **Medición de calidad** | Sprint 1 medido y publicado en `docs/reportes-calidad/1-fundacion-y-toolchain/REPORTE.md`. T4/T5, sin datos de campo. 4 de 7 escenas incumplen el presupuesto §4.3 (`TD-11`) y hay 1 crítica de seguridad abierta (`TD-06`) |
 
-**Siguiente acción concreta:** el núcleo del Sprint 4 (presupuesto de saturación y divulgación
-progresiva) está implementado y su gate `pnpm gate:saturation` pasa en las 7 escenas. Faltan dos
-piezas con decisión pendiente: el **revelado de email** (`RF-26/27`, choca con la regla 6 de
-`AGENTS.md` y exige ADR) y la **descarga en PDF** (`RF-11`, requiere elegir generación).
+**Siguiente acción concreta:** el Sprint 4 está cerrado (saturación, divulgación progresiva,
+`RF-13`, email `RF-27` y PDF `RF-11`). El Sprint 5 (**vídeo**) está **bloqueado por material
+externo**: `ABR-05` dice que los 7 clips los produce el propietario. Sin clips no hay nada que
+integrar; se puede avanzar en el resto (rendimiento, seguridad) mientras tanto.
 
 ```bash
 pnpm gate:saturation   # RUI-30..37: <= 6 nodos y <= 280 caracteres visibles por escena
-pnpm gate:keyboard     # navegación, teclado y deep-link del detalle (RF-13)
+pnpm gate:keyboard     # navegación, teclado, RF-13 y revelado de email (RF-27)
 ```
 
 ---
@@ -48,8 +48,8 @@ pnpm gate:keyboard     # navegación, teclado y deep-link del detalle (RF-13)
 | 1 | Fundación y toolchain | `DONE` | `pnpm gate` | `RNF-80`, `RNF-87`, `RF-20`, `RND-03`, `RUI-01..24`, `RUI-70..74` |
 | 2 | Fuente de verdad y render SSR | `DONE` | Parseo ATS + `RF-25` | `DEC-03`, `RF-01`, `RF-23`, `RF-25`, `RNF-33`, `RNF-100` |
 | 3 | Navegación, teclado y tema | `DONE` | `gate:keyboard` — teclado 100 % | `RF-02..06`, `RF-09`, `RUI-81` |
-| 4 | Divulgación progresiva y presupuesto | `WIP` | `gate:saturation` — `RUI-52` | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` |
-| 5 | Sistema de vídeo | `TODO` | 1 `<video>` DOM + `RF-41` | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` |
+| 4 | Divulgación progresiva y presupuesto | `DONE` | `gate:saturation` — `RUI-52` | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` |
+| 5 | Sistema de vídeo | `WIP` | 1 `<video>` DOM + `RF-41` | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` |
 | 6 | Chat G1–G4 (guardrails) | `TODO` | 100 % cobertura guardrails | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-25` |
 | 7 | Chat G5–G6 + eval set | `TODO` | `CHA-30` ≤ 1 % | `DEC-01.b/f`, `RF-50..58`, `RNF-68/69`, `CHA-30..39` |
 | 8 | Rendimiento | `TODO` | Todos los budgets §4.2 | `RNF-01..23`, `RNF-85`, `MEDICION.md` §4.5 |
@@ -58,17 +58,21 @@ pnpm gate:keyboard     # navegación, teclado y deep-link del detalle (RF-13)
 | 11 | PWA, i18n, portabilidad | `TODO` | Matriz de navegadores | `RNF-30..35`, `RF-12` |
 | 12 | Hardening y release v1 | `TODO` | Smoke post-deploy + SLO | `RNF-50..58`, `SEG-43/44`, `RND-01..08`, `G6` |
 
-### 2.1 Sprint 4 — desglose de trabajo
+### 2.1 Sprint 5 — desglose de trabajo
 
-- [x] Presupuesto de saturación: ≤ 6 nodos y ≤ 280 caracteres visibles por escena (`RUI-30`)
-- [x] Divulgación progresiva con `<details>` nativo (legible sin JS, accesible) (`RUI-31`)
-- [x] `RF-13`: detalle por proyecto colapsado con URL compartible (`#proyecto-<slug>`)
-- [x] Gate `RUI-52` (`pnpm gate:saturation`) + CI
-- [ ] Revelado de email (`RF-26/27`) — **decisión pendiente**: choca con la regla 6 de `AGENTS.md`
-      («la PII no se ofusca, se elimina»); requiere ADR antes de implementarlo
-- [ ] Descarga en PDF (`RF-11`) — decidir generación (build con Playwright vs `window.print()`)
+**Bloqueo:** `ABR-05` — los 7 clips los produce el propietario. Sin material no hay vídeo que
+integrar; la infraestructura puede prepararse, pero el gate no cierra sin clips.
 
-**Cierre del Sprint 3:** navegación, teclado, deep-link y tema, con `gate:keyboard` al 100 %.
+- [ ] Storyboard → manifest de vídeo (resoluciones, bitrate, GOP) desde `storyboard.ts`
+- [ ] Un solo `<video>` en el DOM con pool y destrucción al salir (`DEC-02.b`, `RUI-96`)
+- [ ] `IntersectionObserver`: `play` con ratio ≥ 0.6, `pause` con < 0.2 (`RF-41`)
+- [ ] Posters LCP ≤ 70 KB AVIF (`RNF-11`) y clip silencioso en bucle (`RF-42`)
+- [ ] Controles manuales accesibles: pausar/reiniciar/poster (`RF-45`)
+- [ ] `RF-10`: modo vídeo `on/off/auto` persistente; `off` = solo poster
+- [ ] Gate: 1 `<video>` en DOM + `RF-41` (Playwright)
+
+**Cierre del Sprint 4:** presupuesto de saturación (`RUI-30..37`), divulgación progresiva,
+`RF-13` (detalle de proyecto con URL), email `RF-27` (`ADR-0006`) y PDF por impresión (`RF-11`).
 
 ---
 

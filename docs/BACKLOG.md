@@ -58,8 +58,8 @@ llega con el teclado del Sprint 3), `RF-26/27` (email), `RF-40..45` (vídeo).
 |---|---|---|---|---|
 | 2 | Fuente de verdad y render SSR | `DEC-03`, `RF-01`, `RF-23`, `RF-25`, `RNF-33`, `RNF-100` | Parseo ATS + `RF-25` | `DONE` |
 | 3 | Navegación, teclado y tema | `RF-02..06`, `RF-09`, `RUI-81` | `gate:keyboard` — teclado 100 % | `DONE` |
-| 4 | Divulgación progresiva y presupuesto | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` | `gate:saturation` — `RUI-52` | `WIP` |
-| 5 | Sistema de vídeo | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` | 1 `<video>` DOM + `RF-41` | `TODO` |
+| 4 | Divulgación progresiva y presupuesto | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` | `gate:saturation` — `RUI-52` | `DONE` |
+| 5 | Sistema de vídeo | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` | 1 `<video>` DOM + `RF-41` | `WIP` |
 | 6 | Chat G1–G4 (guardrails) | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-25` | 100 % cobertura guardrails | `TODO` |
 | 7 | Chat G5–G6 + eval set | `DEC-01.b/f`, `RF-50..58`, `RNF-68/69`, `CHA-30..39` | `CHA-30` ≤ 1 % | `TODO` |
 | 8 | Rendimiento | `RNF-01..23`, `RNF-85`, `MEDICION.md` §4.5 | Todos los budgets §4.2 | `TODO` |

@@ -191,6 +191,29 @@ try {
     }
   }
 
+  // 9. `RF-27`: si hay canal de email configurado, el boton lo revela sin estar en el HTML.
+  const emailButtons = await page.locator('[data-contact-email]').count()
+  if (emailButtons > 0) {
+    await page.goto(origin, { waitUntil: 'load' })
+    await page.locator('#escena-06 .detail__summary').first().click()
+    await page.locator('[data-contact-email]').click()
+    const revealed = await page.evaluate(() => {
+      const output = document.querySelector('[data-contact-email-output]')
+      const link = output?.querySelector('a')
+      return {
+        hidden: output?.hasAttribute('hidden') ?? true,
+        href: link?.getAttribute('href') ?? '',
+      }
+    })
+    if (!revealed.hidden && revealed.href.startsWith('mailto:')) {
+      ok('revelado de email (RF-27)')
+    } else {
+      fail('RF-27', JSON.stringify(revealed))
+    }
+  } else {
+    ok('sin PUBLIC_CONTACT_EMAIL: boton de email no renderizado', 'RF-27 opcional')
+  }
+
   await context.close()
 } finally {
   await browser.close()

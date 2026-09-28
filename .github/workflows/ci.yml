@@ -119,6 +119,8 @@ jobs:
 
       - name: Build (fixture)
         run: pnpm build
+        env:
+          PUBLIC_CONTACT_EMAIL: contacto@example.invalid
 
       - name: Gate de teclado
         run: pnpm gate:keyboard

@@ -174,6 +174,59 @@ if (themeToggle !== null) {
 }
 
 /* ------------------------------------------------------------------ *
+ * `RF-27`: revelado del email bajo interaccion. La direccion vive en el bundle del cliente
+ * (`PUBLIC_CONTACT_EMAIL`), nunca en el HTML; el boton la monta y activa el `mailto:` al pulsar.
+ * Decision y limites en `docs/adr/0005`.
+ * ------------------------------------------------------------------ */
+
+const contactButton = document.querySelector<HTMLButtonElement>('[data-contact-email]')
+
+if (contactButton !== null) {
+  contactButton.addEventListener('click', () => {
+    const email = import.meta.env.PUBLIC_CONTACT_EMAIL
+    const output = document.querySelector<HTMLElement>('[data-contact-email-output]')
+    if (typeof email !== 'string' || email === '' || output === null) return
+    const link = document.createElement('a')
+    link.href = `mailto:${email}`
+    link.textContent = email
+    output.replaceChildren(link)
+    output.hidden = false
+    contactButton.setAttribute('aria-expanded', 'true')
+    contactButton.hidden = true
+  })
+}
+
+/* ------------------------------------------------------------------ *
+ * `RF-11`: descarga en PDF. Antes de imprimir abre todos los `<details>` para que el PDF
+ * lleve el contenido completo; los devuelve a su estado al terminar.
+ * ------------------------------------------------------------------ */
+
+const printButton = document.querySelector('[data-print]')
+if (printButton !== null) {
+  printButton.addEventListener('click', () => {
+    window.print()
+  })
+}
+
+window.addEventListener('beforeprint', () => {
+  for (const details of document.querySelectorAll<HTMLDetailsElement>('details')) {
+    if (!details.open) {
+      details.dataset.printOpened = 'true'
+      details.open = true
+    }
+  }
+})
+
+window.addEventListener('afterprint', () => {
+  for (const details of document.querySelectorAll<HTMLDetailsElement>(
+    'details[data-print-opened="true"]',
+  )) {
+    details.open = false
+    delete details.dataset.printOpened
+  }
+})
+
+/* ------------------------------------------------------------------ *
  * `RF-13`: cada detalle de proyecto tiene URL compartible (`#proyecto-<slug>`).
  * ------------------------------------------------------------------ */
 

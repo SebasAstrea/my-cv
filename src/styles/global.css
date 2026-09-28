@@ -417,6 +417,57 @@ body {
   content: '−';
 }
 
+/* Accion primaria de escena — `RUI-36`: una sola por viewport. */
+.action {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+  margin-block-start: var(--space-5);
+  padding: var(--space-2) var(--space-4);
+  background: var(--accent);
+  color: var(--surface-0);
+  border: 0;
+  border-radius: var(--radius-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+/* Boton con aspecto de enlace (p. ej. "Ver email", `RF-27`). */
+.link-button {
+  padding: 0;
+  color: var(--text-mid);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------------ *
+ * Impresion — `RF-11`: el PDF incluye todo el detalle, la URL y la fecha.
+ * ------------------------------------------------------------------ */
+@media print {
+  .rail,
+  .theme-toggle,
+  .skip-link,
+  .fixture-banner {
+    display: none;
+  }
+
+  .scene {
+    min-block-size: auto;
+    padding-block: var(--space-5);
+    break-inside: avoid;
+  }
+
+  .detail__summary {
+    display: none;
+  }
+
+  .detail {
+    border-block-start: 1px solid var(--line);
+  }
+}
+
 /* ------------------------------------------------------------------ *
  * Toggle de tema — `RF-09`
  * ------------------------------------------------------------------ */

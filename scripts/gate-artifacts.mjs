@@ -123,7 +123,16 @@ const collectPublic = (value) => {
 collectPublic(publicDoc)
 
 const ambiguous = secrets.filter((s) => publicValues.has(s.value))
-const uniq = secrets.filter((s) => !publicValues.has(s.value))
+
+// `RF-27` / `ADR-0006`: el email de contacto puede entregarse al cliente como canal publico
+// designado (`PUBLIC_CONTACT_EMAIL`), para el revelado bajo interaccion. Se excluye del escaneo
+// de fugas, pero es la UNICA excepcion y solo si el valor coincide con el declarado publico.
+const publicContactEmail = (process.env.PUBLIC_CONTACT_EMAIL ?? '').trim()
+const isDesignatedPublic = (value) => publicContactEmail !== '' && value === publicContactEmail
+const uniq = secrets.filter((s) => !publicValues.has(s.value) && !isDesignatedPublic(s.value))
+if (secrets.some((s) => isDesignatedPublic(s.value))) {
+  console.log('  · contact.email tratado como canal publico designado (RF-27, ADR-0006)')
+}
 
 const artefacts = walk(DIST).filter((f) => /\.(?:html|json|js|css|xml|txt|webmanifest)$/.test(f))
 const leaks = []

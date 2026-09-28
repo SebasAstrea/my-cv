@@ -66,3 +66,15 @@ export function isCi(): boolean {
 export function siteUrl(): string {
   return read('PUBLIC_SITE_URL') ?? 'http://localhost:4321'
 }
+
+/**
+ * Email de contacto para el revelado bajo interaccion (`RF-27`).
+ *
+ * Es `PUBLIC_` porque Vite lo inyecta en el bundle del cliente; el `contact.email` del CV
+ * sigue siendo `private` y se elimina en build (`SEG-31`). Solo se usa si esta declarado.
+ * Decision, limites y excepcion de `SEG-32` en `docs/adr/0005`.
+ */
+export function contactEmail(): string | undefined {
+  const value = read('PUBLIC_CONTACT_EMAIL')
+  return value !== undefined && value.trim() !== '' ? value.trim() : undefined
+}
