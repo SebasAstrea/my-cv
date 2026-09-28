@@ -1,0 +1,81 @@
+{
+  "target": "https://sebasastrea-cv.vercel.app",
+  "fetchedAt": "2026-09-28T22:38:04.653Z",
+  "scope": "Comprobaciones no destructivas de superficie publica (cabeceras, TLS, exposicion de rutas, PII y CSP). Sin ataques activos.",
+  "tls": {
+    "tls13": [
+      "Protocol version: TLSv1.3",
+      "Ciphersuite: TLS_AES_128_GCM_SHA256"
+    ],
+    "tls12": [
+      "Protocol version: TLSv1.2",
+      "Ciphersuite: ECDHE-RSA-AES128-GCM-SHA256"
+    ]
+  },
+  "httpRedirect": {
+    "content-type": "text/plain",
+    "location": "https://sebasastrea-cv.vercel.app/",
+    "refresh": "0;url=https://sebasastrea-cv.vercel.app/",
+    "server": "Vercel"
+  },
+  "headersHome": {
+    "accept-ranges": "bytes",
+    "access-control-allow-origin": "*",
+    "age": "40",
+    "cache-control": "public, max-age=0, must-revalidate",
+    "content-disposition": "inline",
+    "content-security-policy": "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'sha256-4cQkETd2tZ1c7OgH/Xo0JGbBoXTtqoWrmpIXxnd+PJs='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; upgrade-insecure-requests",
+    "content-type": "text/html; charset=utf-8",
+    "cross-origin-opener-policy": "same-origin",
+    "date": "Mon, 28 Sep 2026 22:38:01 GMT",
+    "etag": "\"61761eb7762d1439377b1ea231261855\"",
+    "last-modified": "Mon, 28 Sep 2026 22:37:21 GMT",
+    "permissions-policy": "geolocation=(), camera=(), microphone=(), interest-cohort=()",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "server": "Vercel",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-vercel-cache": "HIT",
+    "x-vercel-id": "iad1::f8xw2-1790635081415-1c1e22af5d03",
+    "content-length": "16289"
+  },
+  "headersCvTxt": {
+    "accept-ranges": "bytes",
+    "access-control-allow-origin": "*",
+    "age": "22",
+    "cache-control": "public, max-age=0, must-revalidate",
+    "content-disposition": "inline; filename=\"cv.txt\"",
+    "content-security-policy": "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'sha256-4cQkETd2tZ1c7OgH/Xo0JGbBoXTtqoWrmpIXxnd+PJs='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; upgrade-insecure-requests",
+    "content-type": "text/plain; charset=utf-8",
+    "cross-origin-opener-policy": "same-origin",
+    "date": "Mon, 28 Sep 2026 22:38:01 GMT",
+    "etag": "\"d4f0465ee4e9374de13d43b4675404b5\"",
+    "last-modified": "Mon, 28 Sep 2026 22:37:39 GMT",
+    "permissions-policy": "geolocation=(), camera=(), microphone=(), interest-cohort=()",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "server": "Vercel",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-vercel-cache": "HIT",
+    "x-vercel-id": "iad1::cjjhr-1790635081721-0eba7b3014f0",
+    "content-length": "4089"
+  },
+  "sensitivePaths": {
+    "/src/data/cv.real.ts": 404,
+    "/cv.real.ts": 404,
+    "/package.json": 404,
+    "/.git/config": 404,
+    "/.env": 404,
+    "/pnpm-lock.yaml": 404,
+    "/docs/STATUS.md": 404,
+    "/scripts/check-cv.mjs": 404
+  },
+  "pii": {
+    "emailInHtml": false,
+    "emailInCvJson": false,
+    "emailInCvTxt": false
+  },
+  "sourceMaps": 0
+}
