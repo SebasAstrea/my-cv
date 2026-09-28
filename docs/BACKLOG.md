@@ -81,6 +81,7 @@ saboteó a sabiendas, con fecha de caducidad, para que no se pierda.
 | `TD-02` | `package.json` declara `packageManager: pnpm@10.4.1`; el entorno local tiene otra versión. | El lockfile fija la resolución de dependencias, que es lo que importa para reproducibilidad. Se alinea en el Sprint 2 con `corepack`. | Sprint 2 | — |
 | `TD-03` | `scripts/*.mjs` se lintan sin reglas type-aware. | Son CLI de Node; sus errores de tipo los caza `tsc --noEmit` igualmente. Las reglas type-aware solo producían ruido sobre `JSON.parse`. |—when se escriba lógica de dominio en un gate | `RNF-80` (parcial) |
 | `TD-04` | `.astro` queda fuera de ESLint. | `astro check` lo valida con el compilador real; el parser de TS solo vería el frontmatter y daría una imagen falsa del fichero. | Cuando haya plugin oficial de Astro para ESLint | — |
+| `TD-05` | `docs/` queda fuera de Prettier. | `SPEC.md` y `MEDICION.md` están escritos a mano con prosa a ~100 columnas y tablas anchas; Prettier realinearía las tablas enteras y el diff sería ilegible sin mejorar nada. | Cuando exista un formateador que no reescriba tablas existentes | — |
 
 ## Gates registrados en CI
 

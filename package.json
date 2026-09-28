@@ -12,6 +12,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "status": "node scripts/status.mjs",
     "typecheck": "astro check && tsc --noEmit",
     "lint": "eslint . --max-warnings 0 && stylelint \"src/**/*.css\"",
     "lint:fix": "eslint . --fix",
@@ -22,7 +23,7 @@
     "gate:placeholders": "node scripts/gate-placeholders.mjs",
     "gate:budgets": "node scripts/gate-budgets.mjs",
     "gate:artifacts": "node --experimental-strip-types scripts/gate-artifacts.mjs",
-    "gate": "pnpm format:check && pnpm typecheck && pnpm lint && pnpm check:cv && pnpm gate:tokens && pnpm build && pnpm gate:placeholders && pnpm gate:budgets && pnpm gate:artifacts",
+    "gate": "pnpm status && pnpm format:check && pnpm typecheck && pnpm lint && pnpm check:cv && pnpm gate:tokens && pnpm build && pnpm gate:placeholders && pnpm gate:budgets && pnpm gate:artifacts",
     "verify": "pnpm gate"
   },
   "dependencies": {
