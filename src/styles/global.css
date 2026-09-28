@@ -443,13 +443,65 @@ body {
 }
 
 /* ------------------------------------------------------------------ *
+ * Stage de video — `DEC-02`, `RF-40..45`
+ *
+ * Un solo `<video>` fijo detras del contenido; decorativo (`aria-hidden` en el markup).
+ * ------------------------------------------------------------------ */
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-video);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.stage__video,
+.stage__poster {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  opacity: var(--video-opacity);
+}
+
+.stage__poster[hidden] {
+  display: none;
+}
+
+.video-controls {
+  position: fixed;
+  inset-block-end: var(--space-4);
+  inset-inline-end: var(--space-4);
+  z-index: var(--z-drawer);
+  display: flex;
+  gap: var(--space-2);
+}
+
+.video-controls__btn {
+  min-block-size: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-1);
+  color: var(--text-lo);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+.video-controls__btn:hover {
+  color: var(--text-hi);
+  border-color: var(--line-strong);
+}
+
+/* ------------------------------------------------------------------ *
  * Impresion — `RF-11`: el PDF incluye todo el detalle, la URL y la fecha.
  * ------------------------------------------------------------------ */
 @media print {
   .rail,
   .theme-toggle,
   .skip-link,
-  .fixture-banner {
+  .fixture-banner,
+  .stage,
+  .video-controls {
     display: none;
   }
 

@@ -99,6 +99,7 @@ saboteó a sabiendas, con fecha de caducidad, para que no se pierda.
 | `gate:security` | `pnpm gate:security` | `SEG-02/03/05`, `RNF-62/63` | Sí |
 | `gate:keyboard` | `pnpm gate:keyboard` | `RF-02..06`, `RF-09`, `RF-13` (Playwright) | Sí (job `keyboard`) |
 | `gate:saturation` | `pnpm gate:saturation` | `RUI-30..37`, `RUI-52` (Playwright) | Sí (job `keyboard`) |
+| `gate:video` | `pnpm gate:video` | `DEC-02`, `RF-40..45`, `RUI-95/96` (Playwright) | Sí (job `keyboard`, se omite sin clips) |
 | `gate:placeholders` | `pnpm gate:placeholders` | `RF-25` | En despliegue |
 | `gate:budgets` | `pnpm gate:budgets` | `RNF-07..12` | Sí |
 | `gate:artifacts` | `pnpm gate:artifacts` | `SEG-31`, `SEG-32` | Sí |

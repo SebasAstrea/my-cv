@@ -108,6 +108,7 @@ export default tseslint.config(
       'scripts/graficas.mjs',
       'scripts/gate-keyboard.mjs',
       'scripts/gate-saturation.mjs',
+      'scripts/gate-video.mjs',
     ],
     languageOptions: {
       globals: { ...globals.node, ...globals.browser },

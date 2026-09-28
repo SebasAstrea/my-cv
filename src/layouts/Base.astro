@@ -70,6 +70,21 @@ const canonical = new URL(Astro.url.pathname, siteUrl()).toString()
     {/* `RF-06` / WCAG 2.4.1: primer elemento enfocable de la pagina. */}
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
+    {/* `DEC-02.b`: UN solo `<video>` en todo el DOM, detras del contenido y decorativo
+        (`aria-hidden`). El clip de la escena activa lo recicla `src/scripts/video.ts`. */}
+    <div class="stage" data-stage aria-hidden="true">
+      <img class="stage__poster" data-stage-poster alt="" decoding="async" />
+      <video
+        class="stage__video"
+        data-stage-video
+        muted
+        loop
+        playsinline
+        preload="none"
+        tabindex="-1"
+      ></video>
+    </div>
+
     <header>
       <slot name="header" />
       <ThemeToggle />
@@ -83,12 +98,26 @@ const canonical = new URL(Astro.url.pathname, siteUrl()).toString()
       <slot name="footer" />
     </footer>
 
+    {/* `RF-45`: controles manuales de video, alcanzables por teclado. */}
+    <div class="video-controls" role="group" aria-label="Controles de vídeo">
+      <button type="button" class="video-controls__btn" data-video-toggle aria-pressed="false">
+        Vídeo: auto
+      </button>
+      <button type="button" class="video-controls__btn" data-video-pause>Pausar</button>
+      <button type="button" class="video-controls__btn" data-video-restart>Reiniciar</button>
+    </div>
+
     {/*
       `RF-02..05`, `RF-09`: navegacion, estado del rail, deep-link y tema. Modulo diferido:
       no bloquea la ruta critica (`RNF-08`) y sin el el CV se lee entero (`RF-07`).
     */}
     <script>
       import '../scripts/nav.ts'
+    </script>
+
+    {/* `DEC-02`, `RF-10`, `RF-40..45`, `RUI-95/96`, `RNF-55`: sistema de video por escenas. */}
+    <script>
+      import '../scripts/video.ts'
     </script>
   </body>
 </html>

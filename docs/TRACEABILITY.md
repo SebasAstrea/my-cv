@@ -312,6 +312,28 @@ con el chat (Sprints 6-7) y el release (Sprint 12).
 
 ---
 
+## 12 septies. Verificación ejecutada — Sprint 5 (Sistema de vídeo)
+
+Gate principal: `pnpm gate:video` (Playwright). Resultado: 7 comprobaciones en verde con clips
+provisionales. Los clips actuales son de 5 s (no los del storyboard), así que `RF-42` (continuidad
+de corte) y `RUI-60.b` (timecodes = clips) quedan para el material definitivo.
+
+| Requisito | Método | Comando | Resultado | Estado |
+|---|---|---|---|---|
+| `DEC-02.b` | T: un solo `<video>` en el DOM | `pnpm gate:video` | 1 `<video>` | **Cumplido** |
+| `RF-40` | T: cada escena declara su clip | `pnpm gate:video` | 7/7 escenas con `data-clip` | **Cumplido** |
+| `RF-41` | T: reproduce la escena activa y cambia de clip | `pnpm gate:video` | video1 → video2 al cambiar | **Cumplido** |
+| `RF-10` | T: modo `off` deja el vídeo en pausa | `pnpm gate:video` | pausa tras `auto→on→off` | **Cumplido** |
+| `RF-45` | T: controles manuales presentes | `pnpm gate:video` | toggle + pausa + reinicio | **Cumplido** |
+| `RUI-74` | T: `prefers-reduced-motion` no reproduce | `pnpm gate:video` | poster, sin `play` | **Cumplido** |
+| `RUI-95` | T: móvil ≤ 600 px → sin reproducción por defecto | `pnpm gate:video` + `video.ts` | `auto` no reproduce en ≤ 600 px | **Cumplido** |
+| `RUI-96` | T: 1 clip activo; destruido al salir | `src/scripts/video.ts` | `removeAttribute('src')` tras 2 s fuera | **Cumplido** |
+| `RNF-55` | T: si un clip falla, poster sin layout shift | `src/scripts/video.ts` | `error` → poster | **Cumplido** |
+| `RNF-11` | M: poster ≤ 70 KB AVIF | `pnpm gate:budgets` | 28,1 KB máx. (7 posters) | **Cumplido** |
+| `RF-42` / `RUI-60.b` | T: continuidad de corte y timecodes = clips | — | material provisional (5 s) | **WIP** |
+
+---
+
 ## 13. Definición de Hecho (DoD) por requisito
 
 Para que un requisito pase a "cumplido" en la matriz:

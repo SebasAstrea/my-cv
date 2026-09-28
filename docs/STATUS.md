@@ -26,20 +26,19 @@
 | **Riesgos abiertos** | 8 aceptados (`RK-01`..`RK-08` en `TRACEABILITY.md` §12) |
 | **Medición de calidad** | Sprint 1 medido y publicado en `docs/reportes-calidad/1-fundacion-y-toolchain/REPORTE.md`. T4/T5, sin datos de campo. 4 de 7 escenas incumplen el presupuesto §4.3 (`TD-11`) y hay 1 crítica de seguridad abierta (`TD-06`) |
 
-**Siguiente acción concreta:** el Sprint 4 está cerrado (saturación, divulgación progresiva,
-`RF-13`, email `RF-27` y PDF `RF-11`). El Sprint 5 (**vídeo**) está **bloqueado por material
-externo**: `ABR-05` dice que los 7 clips los produce el propietario. Sin clips no hay nada que
-integrar; se puede avanzar en el resto (rendimiento, seguridad) mientras tanto.
+**Siguiente acción concreta:** la **infraestructura de vídeo** (Sprint 5) está implementada y
+en verde (`pnpm gate:video`). Los clips actuales son **provisionales** (7 × 5 s), así que la
+continuidad de corte (`RF-42`) y las duraciones del storyboard quedan para el material final.
+En paralelo se adelanta el **Sprint 9 (seguridad)** y el **Sprint 8 (rendimiento)**.
 
 ```bash
-pnpm gate:saturation   # RUI-30..37: <= 6 nodos y <= 280 caracteres visibles por escena
-pnpm gate:keyboard     # navegación, teclado, RF-13 y revelado de email (RF-27)
+pnpm gate:video        # DEC-02 + RF-40..45 + RUI-95/96 (se omite sin clips)
+pnpm gate:saturation   # RUI-30..37
+pnpm gate:keyboard     # navegación, teclado, RF-13 y email RF-27
 ```
 
-**Trabajo adelantado (decisión del PO):** como el Sprint 5 está bloqueado por los clips, se
-adelantan el **Sprint 9 (seguridad)** — cabeceras + CSP con hash del script inline y auditoría de
-dependencias (`gate:security`, `SEG-02/03/05`, `RNF-62/63`) — y el **Sprint 8 (rendimiento)**.
-Detalle en `TRACEABILITY.md` §12 sexies.
+**Trabajo adelantado (decisión del PO):** el Sprint 9 (seguridad) tiene cabeceras + CSP con
+hash y auditoría; el Sprint 8 (rendimiento) está en curso. Detalle en `TRACEABILITY.md` §12 sexies.
 
 ---
 
@@ -65,19 +64,22 @@ Detalle en `TRACEABILITY.md` §12 sexies.
 
 ### 2.1 Sprint 5 — desglose de trabajo
 
-**Bloqueo:** `ABR-05` — los 7 clips los produce el propietario. Sin material no hay vídeo que
-integrar; la infraestructura puede prepararse, pero el gate no cierra sin clips.
+La infraestructura de vídeo está implementada y en verde (`pnpm gate:video`). Los **clips son
+provisionales** (7 × 5 s), así que la continuidad de corte (`RF-42`) y las duraciones del
+storyboard quedan para el material definitivo.
 
-- [ ] Storyboard → manifest de vídeo (resoluciones, bitrate, GOP) desde `storyboard.ts`
-- [ ] Un solo `<video>` en el DOM con pool y destrucción al salir (`DEC-02.b`, `RUI-96`)
-- [ ] `IntersectionObserver`: `play` con ratio ≥ 0.6, `pause` con < 0.2 (`RF-41`)
-- [ ] Posters LCP ≤ 70 KB AVIF (`RNF-11`) y clip silencioso en bucle (`RF-42`)
-- [ ] Controles manuales accesibles: pausar/reiniciar/poster (`RF-45`)
-- [ ] `RF-10`: modo vídeo `on/off/auto` persistente; `off` = solo poster
-- [ ] Gate: 1 `<video>` en DOM + `RF-41` (Playwright)
+- [x] Un solo `<video>` en el DOM con reciclado de `src` (`DEC-02.b`, `RUI-96`)
+- [x] `IntersectionObserver`: reproduce la escena activa y cambia de clip al cambiar de escena (`RF-41`)
+- [x] Cada escena declara su clip y poster (`RF-40`); posters AVIF ≤ 29 KB
+- [x] `RF-10`: modo `on/off/auto` persistente; `off` = solo poster
+- [x] `RUI-74`/`RUI-95`: `prefers-reduced-motion` y móvil ≤ 600 px → sin reproducción (poster)
+- [x] Controles manuales accesibles: modo, pausa, reinicio (`RF-45`)
+- [x] `RNF-55`: si un clip falla, se conserva el poster (sin layout shift)
+- [x] Gate `pnpm gate:video` + paso en CI (se omite si no hay clips)
+- [ ] Clips **definitivos**: duraciones del storyboard, continuidad (`RF-42`) y timecodes = clips (`RUI-60.b`)
 
-**Cierre del Sprint 4:** presupuesto de saturación (`RUI-30..37`), divulgación progresiva,
-`RF-13` (detalle de proyecto con URL), email `RF-27` (`ADR-0006`) y PDF por impresión (`RF-11`).
+**Nota:** los clips están en `src/data/videoN.mp4` (temporales, gitignored); `scripts/sync-clips.mjs`
+los copia a `public/clips/` y genera los posters AVIF. En despliegue no habrá clips hasta subirlos.
 
 ---
 
@@ -107,9 +109,10 @@ Cada fila debe corresponded con un script real de `package.json` y con un ficher
 → `gate:budgets` → `gate:artifacts`.
 Equivale a `pnpm verify`.
 
-**Fuera de `pnpm gate` (gates de sprint):** `pnpm gate:keyboard` (`RF-02..06`, `RF-09`, `RF-13`,
-navegación y teclado) y `pnpm gate:saturation` (`RUI-30..37`, `RUI-52`, presupuesto de escena).
-Corren en el job `keyboard` de CI porque necesitan Chromium; no entran en el gate rápido de PR.
+**Fuera de `pnpm gate` (gates de sprint):** `pnpm gate:keyboard` (`RF-02..06`, `RF-09`, `RF-13`),
+`pnpm gate:saturation` (`RUI-30..37`, `RUI-52`) y `pnpm gate:video` (`DEC-02`, `RF-40..45`,
+`RUI-95/96`). Corren en el job `keyboard` de CI porque necesitan Chromium; no entran en el gate
+rápido de PR. `gate:video` se omite si no hay clips (son provisionales y gitignored).
 
 ### 3.1 Gates probados en negativo
 

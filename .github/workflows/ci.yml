@@ -131,3 +131,6 @@ jobs:
 
       - name: Gate de saturacion
         run: pnpm gate:saturation
+
+      - name: Gate de video (se omite si no hay clips)
+        run: pnpm gate:video

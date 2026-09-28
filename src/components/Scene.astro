@@ -10,6 +10,7 @@
  */
 
 import type { SceneMeta } from '../data/storyboard.ts'
+import { clipUrl, posterUrl } from '../data/clips.ts'
 
 interface Props {
   meta: SceneMeta
@@ -29,6 +30,10 @@ interface Props {
 const { meta, title, support, class: className, level = 2 } = Astro.props
 const headingId = `${meta.anchor}-titulo`
 const Heading = level === 1 ? 'h1' : 'h2'
+
+// `RF-40`: cada escena declara su clip y su poster; el `<video>` unico los recicla (`DEC-02.b`).
+const clip = clipUrl(meta.index)
+const poster = posterUrl(meta.index)
 ---
 
 <section
@@ -36,6 +41,9 @@ const Heading = level === 1 ? 'h1' : 'h2'
   class:list={['scene', className]}
   data-split={meta.split}
   data-scene={meta.id}
+  data-scene-index={meta.index}
+  data-clip={clip}
+  data-poster={poster}
   aria-labelledby={headingId}
 >
   <div class="scene-split">
