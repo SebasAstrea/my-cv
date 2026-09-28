@@ -46,6 +46,10 @@ const canonical = new URL(Astro.url.pathname, siteUrl()).toString()
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
 
+    {/* `RUI-17`: preload de las 2 fuentes criticas (display + ui); maximo 2. */}
+    <link rel="preload" href="/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin />
+
     {/*
       `RF-09`: la preferencia se aplica antes de la primera pintura. Bloqueante a proposito:
       si se difiere, hay flash. El valor por defecto es `prefers-color-scheme`.

@@ -1,0 +1,32 @@
+/**
+ * Fuentes self-hosted — `RUI-11/12/13`, `RUI-17`, `RNF-10`.
+ *
+ * Tres familias, tres ficheros woff2 (~72 KB en total, tope 90 KB), subset `latin` + signos.
+ * `font-display: swap` para no bloquear el texto; los dos criticos se precargan en `Base.astro`
+ * (`<= 2 preloads`). Fraunces se instancio a `opsz=14` (no usamos el eje optico) conservando el
+ * eje `wght`; `path` es relativo a la raiz y los sirve `public/fonts/`.
+ */
+
+@font-face {
+  font-family: Fraunces;
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/fraunces.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: Archivo;
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/fonts/archivo.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/plex-mono.woff2') format('woff2');
+}

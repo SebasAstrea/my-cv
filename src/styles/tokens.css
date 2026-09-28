@@ -57,9 +57,8 @@
 
   /* `RUI-11/12/13`: display, ui, mono. Maximo 3 familias.
    * `RUI-14` prohibe Inter, Roboto, Poppins, Montserrat y Space Grotesk como display.
-   * `RUI-17` (self-hosted, <= 3 woff2, <= 90 KB) se cierra en el Sprint 3: hasta entonces
-   * estos stacks caen a las familias del sistema y el sitio se ve distinto al diseno final.
-   * Es una deviation consciente, no un olvido; esta anotada en BACKLOG.md del Sprint 3. */
+   * `RUI-17` (self-hosted, <= 3 woff2, <= 90 KB): cumplido en el Sprint 8 — ficheros en
+   * `public/fonts/`, `@font-face` en `src/styles/fonts.css` (subset latin; Fraunces sin `opsz`). */
   --font-display: 'Fraunces', 'Instrument Serif', ui-serif, georgia, serif;
   --font-ui: 'Archivo', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', menlo, monospace;

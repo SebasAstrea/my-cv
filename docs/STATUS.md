@@ -38,7 +38,8 @@ pnpm gate:keyboard     # navegación, teclado, RF-13 y email RF-27
 ```
 
 **Trabajo adelantado (decisión del PO):** el Sprint 9 (seguridad) tiene cabeceras + CSP con
-hash y auditoría; el Sprint 8 (rendimiento) está en curso. Detalle en `TRACEABILITY.md` §12 sexies.
+hash y auditoría; el Sprint 8 (rendimiento) ya trae **fuentes self-hosted** (3 woff2, 71,9 KB,
+`RNF-10`/`RUI-17`) y la medición de lab dentro de presupuesto. Detalle en `TRACEABILITY.md` §12 sexies.
 
 ---
 

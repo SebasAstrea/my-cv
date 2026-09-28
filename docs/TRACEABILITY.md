@@ -304,6 +304,8 @@ adelanta el trabajo que **no depende del vídeo** en los Sprints 8 y 9.
 | `RNF-63` / `SEG-01` | T: HSTS `max-age` + `includeSubDomains` + `preload` | `pnpm gate:security` | presente en ambas configs | **Cumplido** |
 | `RNF-72` | T: `_headers` versionado y coherente con `vercel.json` | `pnpm gate:security` | las dos CSP coinciden | **Parcial** (sondeo HTTP del preview: Sprint 12) |
 | `SEG-21` / `RNF-61` | T: auditoría de dependencias de producción | `pnpm audit --audit-level=high` | 0 vulnerabilidades | **Cumplido** |
+| `RUI-17` / `RNF-10` | T/M: 3 woff2 self-hosted, ≤ 90 KB, ≤ 2 preloads | `pnpm gate:budgets` | **71,9 KB**, 3 ficheros, 2 preloads | **Cumplido** |
+| `RNF-03` | T: CLS de lab sin regresión por `font-display: swap` | `pnpm medir:lab` | 0,0001 (obj. 0,02) | **Cumplido** |
 
 **Pendiente de seguridad (depende del chat o del release):** `SEG-22` (SBOM CycloneDX en cada
 release), `SEG-25`/`SEG-33..35`/`RNF-67/68/69` (chat: prompt server-only, rate limit, Turnstile,
