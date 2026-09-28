@@ -13,6 +13,9 @@ dist/
 src/data/cv.real.ts
 cv.real.json
 
+# medios de trabajo locales (no versionar; los clips finales van a `public/` en el Sprint 5)
+/src/data/*.mp4
+
 # env
 .env
 .env.*
