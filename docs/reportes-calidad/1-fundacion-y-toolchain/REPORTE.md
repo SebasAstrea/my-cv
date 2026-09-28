@@ -80,7 +80,19 @@ Dispersión del LCP entre los 3 runs: 0–14 %. El 14 % de `wifi` afecta al valo
 problema: en redes sin latencia añadida, ±15 ms dominan la señal. Por eso la mediana de 3 y no la
 media.
 
-### 2.2 Dos advertencias sobre cómo se midió
+### 2.2 El informe se reproduce, pero los datos no son idénticos byte a byte
+
+Ejecutar `pnpm medir` dos veces produce JSON distintos, y está previsto. Al repetir la
+medición, el LCP de `native` pasó de 84 ms a 96 ms, el TTFB de 0,9 ms a 1,0 ms y el conteo de
+long tasks de 3 a 2. **Ningún veredicto cambió.**
+
+Es la razón de que §4.2 exija mediana de 3 en lugar de un único run, y la razón por la que este
+informe publica la dispersión observada junto a la mediana. Lo que **no** es reproducible es el
+byte, y conviene saberlo: si alguien reejecuta la medición y sus números difieren un 10 % de los
+de aquí, no ha encontrado un error, ha encontrado la variabilidad de un laboratorio. Los
+veredictos, esos, son estables.
+
+### 2.3 Dos advertencias sobre cómo se midió
 
 **El LCP de aquí no es el Core Web Vitals de campo.** `MEDICION.md` §4.1 lo dice y §9 lo prohíbe
 como prueba: estos son números de laboratorio sobre `localhost`, sin RTT real de servidor, sin
