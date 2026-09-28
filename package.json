@@ -22,6 +22,7 @@
     "test": "node --test \"tests/**/*.test.ts\"",
     "gate:tokens": "node --experimental-strip-types scripts/gate-tokens.mjs",
     "gate:ats": "node scripts/gate-ats.mjs",
+    "gate:keyboard": "node scripts/gate-keyboard.mjs",
     "gate:placeholders": "node scripts/gate-placeholders.mjs",
     "gate:budgets": "node scripts/gate-budgets.mjs",
     "gate:artifacts": "node --experimental-strip-types scripts/gate-artifacts.mjs",

@@ -1,0 +1,14 @@
+---
+/**
+ * Toggle de tema — `RF-09`.
+ *
+ * El control es un boton real con `aria-pressed`. Sin JS no conmuta (no hay forma sin
+ * servidor), pero el tema del sistema y la preferencia guardada ya se aplican ANTES de la
+ * primera pintura desde el script inline de `Base.astro`, asi que no hay flash. Con JS,
+ * `src/scripts/nav.ts` le pone la etiqueta y el estado reales.
+ */
+---
+
+<button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">
+  Tema
+</button>

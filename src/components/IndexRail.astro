@@ -29,7 +29,7 @@ const { labels, class: className } = Astro.props
     {
       SCENES.map((meta) => (
         <li>
-          <a class="rail__item" href={`#${meta.anchor}`} data-scene-link={meta.id} aria-current="false">
+          <a class="rail__item" href={`#${meta.anchor}`} data-scene-link={meta.anchor} aria-current="false">
             <span class="rail__num" aria-hidden="true">
               {meta.counter}
             </span>

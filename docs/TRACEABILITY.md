@@ -247,6 +247,28 @@ entorno local trae pnpm 12.x y no trae `corepack`; el CI fija 10.4.1 vía `pnpm/
 
 ---
 
+## 12 quater. Verificación ejecutada — Sprint 3 (Navegación, teclado y tema)
+
+Gate principal: `pnpm gate:keyboard` (Playwright, job `keyboard` de CI). Resultado: **100 % de
+los flujos**, 10 comprobaciones en verde.
+
+| Requisito | Método | Comando | Resultado | Estado |
+|---|---|---|---|---|
+| `RF-02` | T: el rail marca la escena activa sin depender solo del color | `pnpm gate:keyboard` | `aria-current="true"` + peso + regla (`RUI-34`) | **Cumplido** |
+| `RF-03` | T: clic en el rail navega y enfoca el heading | `pnpm gate:keyboard` | foco en `escena-04-titulo` tras el clic | **Cumplido** |
+| `RF-04` | T: la URL refleja la escena; sin entradas de historial por scroll | `pnpm gate:keyboard` | `replaceState` + hash por escena | **Cumplido** |
+| `RF-05` | T: `↑/↓`, `PageUp/PageDown`, `Home/End` mueven el foco entre escenas | `pnpm gate:keyboard` | 6 flujos de teclado verificados | **Cumplido** |
+| `RF-06` | T: skip-link al primer `Tab` | `pnpm gate:keyboard` | primer `Tab` enfoca `.skip-link` | **Cumplido** |
+| `RF-07` | T: sin JS el contenido y las 7 escenas se leen | `pnpm gate:keyboard` | 1 `h1`, 7 escenas, 7 enlaces de rail sin JS | **Cumplido** |
+| `RF-09` | T: toggle de tema persistente sin flash | `pnpm gate:keyboard` | conmuta y persiste tras recargar | **Cumplido** |
+| `RUI-81` | T: landmarks y un solo `h1` | `pnpm gate:keyboard` + `gate:ats` | `header/nav/main/footer`, 1 `h1` | **Cumplido** |
+
+**Lo que NO cubre el Sprint 3:** el presupuesto de diseño por escena (`RUI-30..37`) y el
+revelado de email (`RF-27`) son del Sprint 4. `RUI-83` (objetivo táctil) se cumple en el rail y
+el toggle vía `--target-min`, pendiente de la medición por píxel de `MEDICION.md` §4.4.
+
+---
+
 ## 13. Definición de Hecho (DoD) por requisito
 
 Para que un requisito pase a "cumplido" en la matriz:

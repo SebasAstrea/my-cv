@@ -18,22 +18,21 @@
 
 | | |
 |---|---|
-| **Sprint activo** | **2 — Fuente de verdad y render SSR** (en curso) |
-| **Último sprint aceptado** | **1 — Fundación y toolchain** (`ACCEPTED`, commit `b7f1cb8`) |
+| **Sprint activo** | **3 — Navegación, teclado y tema** (en curso) |
+| **Último sprint aceptado** | **2 — Fuente de verdad y render SSR** (`ACCEPTED`, commit `6578807`) |
 | **Gate** | `pnpm gate` — 12 pasos, exit 0 |
 | **Bloqueo** | Ninguno conocido |
 | **Deuda registrada** | 11 ítems (`TD-01`..`TD-11` en `BACKLOG.md`) |
 | **Riesgos abiertos** | 8 aceptados (`RK-01`..`RK-08` en `TRACEABILITY.md` §12) |
 | **Medición de calidad** | Sprint 1 medido y publicado en `docs/reportes-calidad/1-fundacion-y-toolchain/REPORTE.md`. T4/T5, sin datos de campo. 4 de 7 escenas incumplen el presupuesto §4.3 (`TD-11`) y hay 1 crítica de seguridad abierta (`TD-06`) |
 
-**Siguiente acción concreta:** el contenido real ya se renderiza en las 7 escenas, el JSON-LD
-`Person` + `Occupation` y los 4 exportadores (`/cv.json`, `/cv.jsonld`, `/cv.md`, `/cv.txt`)
-salen en `dist/`. Falta **preparar y ejecutar el despliegue** (Cloudflare Pages o Vercel) sin
-exponer `cv.real.ts`, que es PII (`SEG-30`), y cerrar el resto de `§2.1`.
+**Siguiente acción concreta:** el Sprint 3 (navegación, teclado y tema) está implementado y su
+gate `pnpm gate:keyboard` pasa al 100 %. Falta cerrar la revisión del sprint y **desplegar**
+(Cloudflare Pages o Vercel) sin exponer `cv.real.ts`, que es PII (`SEG-30`).
 
 ```bash
-CV_DATA_SOURCE=real PUBLIC_SITE_URL=https://tu-dominio pnpm build   # genera dist/ + exportadores
-CV_DATA_SOURCE=real pnpm check:cv                                   # el CV real valida
+pnpm gate:keyboard    # navegación solo-teclado, 100 % de los flujos (RF-02..06, RF-09)
+CV_DATA_SOURCE=real PUBLIC_SITE_URL=https://tu-dominio pnpm build   # build de despliegue
 ```
 
 ---
@@ -46,8 +45,8 @@ CV_DATA_SOURCE=real pnpm check:cv                                   # el CV real
 |---|---|---|---|---|
 | 0 | Especificar | `DONE` | Revisión de los 240 requisitos | — |
 | 1 | Fundación y toolchain | `DONE` | `pnpm gate` | `RNF-80`, `RNF-87`, `RF-20`, `RND-03`, `RUI-01..24`, `RUI-70..74` |
-| 2 | Fuente de verdad y render SSR | `WIP` | Parseo ATS + `RF-25` | `DEC-03`, `RF-01`, `RF-23`, `RF-25`, `RNF-33`, `RNF-100` |
-| 3 | Navegación, teclado y tema | `TODO` | Teclado 100 % flujos | `RF-02..06`, `RF-09`, `RUI-81` |
+| 2 | Fuente de verdad y render SSR | `DONE` | Parseo ATS + `RF-25` | `DEC-03`, `RF-01`, `RF-23`, `RF-25`, `RNF-33`, `RNF-100` |
+| 3 | Navegación, teclado y tema | `WIP` | `gate:keyboard` — teclado 100 % | `RF-02..06`, `RF-09`, `RUI-81` |
 | 4 | Divulgación progresiva y presupuesto | `TODO` | `RUI-52` Playwright | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` |
 | 5 | Sistema de vídeo | `TODO` | 1 `<video>` DOM + `RF-41` | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` |
 | 6 | Chat G1–G4 (guardrails) | `TODO` | 100 % cobertura guardrails | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-25` |
@@ -58,17 +57,19 @@ CV_DATA_SOURCE=real pnpm check:cv                                   # el CV real
 | 11 | PWA, i18n, portabilidad | `TODO` | Matriz de navegadores | `RNF-30..35`, `RF-12` |
 | 12 | Hardening y release v1 | `TODO` | Smoke post-deploy + SLO | `RNF-50..58`, `SEG-43/44`, `RND-01..08`, `G6` |
 
-### 2.1 Sprint 2 — desglose de trabajo
+### 2.1 Sprint 3 — desglose de trabajo
 
-- [x] Crear `src/data/cv.real.ts` desde el fixture y rellenarlo con datos reales
-- [x] `CV_DATA_SOURCE=real pnpm check:cv` en verde sin marcadores de fixture
-- [x] Renderizar el contenido real en las 7 escenas (`RF-01` de la escena de contacto aparte)
-- [x] JSON-LD `Person` + `Occupation` completo y válido (`RNF-33`)
-- [x] 4 exportadores del CV (`/cv.json`, `/cv.jsonld`, `/cv.md`, `/cv.txt`; el PDF es `RF-11`, Sprint 4)
-- [x] Test de parseo ATS (`RNF-33`) como gate de CI (`gate:ats`)
-- [x] Cerrar `TD-01` (tests unitarios de presentación en `tests/exporters.test.ts`)
-- [ ] Alinear `packageManager` con `corepack` (`TD-02`)
-- [ ] Preparar y ejecutar el despliegue (Cloudflare Pages o Vercel) sin exponer `cv.real.ts`
+- [x] Rail con estado activo sin depender del color (`RF-02`, `RUI-34`)
+- [x] Clic en el rail navega y enfoca el heading (`RF-03`)
+- [x] URL deep-linkeable con `replaceState`, sin entradas por scroll (`RF-04`)
+- [x] Teclado entre escenas: `↑/↓`, `PageUp/PageDown`, `Home/End` (`RF-05`)
+- [x] Landmarks con un solo `h1` y skip-link (`RF-06`, `RUI-81`)
+- [x] Toggle de tema persistente sin flash (`RF-09`)
+- [x] Gate `pnpm gate:keyboard` (Playwright) + job de CI `keyboard`
+- [ ] Presupuesto de diseño por escena (`RUI-30..37`) — Sprint 4
+
+**Cierre del Sprint 2:** `TD-01` resuelto; `TD-02` (corepack) queda como deuda registrada; el
+despliegue se resuelve con `scripts/write-real-cv.mjs` + `vercel.json` (o prebuilt en Cloudflare).
 
 ---
 
@@ -96,6 +97,10 @@ Cada fila debe corresponded con un script real de `package.json` y con un ficher
 → `check:cv` → `gate:tokens` → `build` → `gate:ats` → `gate:placeholders` → `gate:budgets`
 → `gate:artifacts`.
 Equivale a `pnpm verify`.
+
+**Fuera de `pnpm gate` (gate de sprint):** `pnpm gate:keyboard` — `RF-02..06`, `RF-09`,
+navegación solo-teclado al 100 % (`MEDICION.md` §4.8). Corre en el job `keyboard` de CI porque
+necesita Chromium; no entra en el gate rápido de PR.
 
 ### 3.1 Gates probados en negativo
 

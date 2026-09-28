@@ -358,6 +358,30 @@ body {
 }
 
 /* ------------------------------------------------------------------ *
+ * Toggle de tema — `RF-09`
+ * ------------------------------------------------------------------ */
+.theme-toggle {
+  position: fixed;
+  inset-block-start: var(--space-4);
+  inset-inline-end: var(--space-4);
+  z-index: var(--z-drawer);
+  min-block-size: var(--target-min);
+  min-inline-size: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-1);
+  color: var(--text-lo);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+.theme-toggle:hover {
+  color: var(--text-hi);
+  border-color: var(--line-strong);
+}
+
+/* ------------------------------------------------------------------ *
  * Datos semilla — `ADR-0003`
  *
  * Distintivo de "estos datos no son reales". Solo visible cuando el flag es `fixture`,

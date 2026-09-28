@@ -15,6 +15,7 @@
 
 import '../styles/global.css'
 import { siteUrl } from '../lib/env.ts'
+import ThemeToggle from '../components/ThemeToggle.astro'
 
 interface Props {
   title: string
@@ -71,6 +72,7 @@ const canonical = new URL(Astro.url.pathname, siteUrl()).toString()
 
     <header>
       <slot name="header" />
+      <ThemeToggle />
     </header>
 
     <main id="contenido" tabindex="-1">
@@ -80,5 +82,13 @@ const canonical = new URL(Astro.url.pathname, siteUrl()).toString()
     <footer>
       <slot name="footer" />
     </footer>
+
+    {/*
+      `RF-02..05`, `RF-09`: navegacion, estado del rail, deep-link y tema. Modulo diferido:
+      no bloquea la ruta critica (`RNF-08`) y sin el el CV se lee entero (`RF-07`).
+    */}
+    <script>
+      import '../scripts/nav.ts'
+    </script>
   </body>
 </html>
