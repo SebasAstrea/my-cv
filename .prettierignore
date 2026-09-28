@@ -1,0 +1,10 @@
+dist
+node_modules
+.astro
+coverage
+pnpm-lock.yaml
+
+# Documentos de especificacion: los escribe a mano la gente, con prosa envuelta a ~100
+# columnas y tablas anchas. Prettier realinearia las tablas enteras y el diff seria ilegible
+# sin mejorar nada. El formato de `docs/` se revisa con `git diff`, no con una herramienta.
+docs/

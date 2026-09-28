@@ -1,0 +1,43 @@
+---
+/**
+ * Rail de indice — `RF-02`.
+ *
+ * Persistente en >= 1200px, colapsado a barra superior por debajo. El estado de la escena
+ * actual se marca con TRES vías redundantes (`RUI-34`): el atributo `aria-current`, el peso
+ * tipografico y la regla de acento. En ningun caso depende solo del color, porque en
+ * `forced-colors` el acento lo decide el sistema operativo (`RUI-05`).
+ *
+ * El rail es tambien un indice temporal (`RUI-60.f`): cada item muestra la duracion real de
+ * su etapa, leida del storyboard. El marcado es estatico y se renderiza en servidor; el
+ * estado activo lo actualiza `scripts/nav.ts` en el Sprint 3, pero el sitio funciona
+ * entero sin ese script (`RF-07`).
+ */
+
+import { SCENES } from '../data/storyboard.ts'
+
+interface Props {
+  /** Etiquetas visibles por id de escena, en el orden de `SCENES`. */
+  labels: Readonly<Record<string, string>>
+  class?: string
+}
+
+const { labels, class: className } = Astro.props
+---
+
+<nav class:list={['rail', className]} aria-label="Indice de secciones">
+  <ul>
+    {
+      SCENES.map((meta) => (
+        <li>
+          <a class="rail__item" href={`#${meta.anchor}`} data-scene-link={meta.id} aria-current="false">
+            <span class="rail__num" aria-hidden="true">
+              {meta.counter}
+            </span>
+            <span class="rail__label">{labels[meta.id] ?? meta.id}</span>
+            <span class="rail__duration">{meta.durationLabel}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

@@ -1,0 +1,34 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build
+dist/
+.astro/
+.vercel/
+.output/
+
+# generated — el CV real es datos del propietario, no se versiona (ADR-0003)
+# src/data/cv.real.ts esta en .gitignore a proposito: es PII (SEG-30).
+src/data/cv.real.ts
+cv.real.json
+
+# env
+.env
+.env.*
+!.env.example
+
+# test / coverage
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+.lighthouseci/
+
+# os / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/*
+!.vscode/extensions.json

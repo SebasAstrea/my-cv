@@ -1,0 +1,84 @@
+---
+/**
+ * Layout base — `RF-06`, `RUI-81`, `RNF-33`, `RF-09`.
+ *
+ * Decisiones que no son obvias:
+ *
+ * - El HTML es estatico y completo: sin JS, el CV entero se lee en orden (`RF-07`, `SUP-05`).
+ *   El unico script inline es el que aplica el tema, y hace falta porque `RF-09` exige que la
+ *   eleccion se respete ANTES de la primera pintura: sin un script bloqueante en `<head>`,
+ *   la primera pintura sale con el tema por defecto y luego parpadea.
+ * - Ese script es la unica excepcion a `RNF-62` (`unsafe-inline` solo con hash/nonce). El hash
+ *   sha256 se calcula y se fija en el Sprint 9; queda anotado ahi como tarea, no aqui como
+ *   excusa.
+ */
+
+import '../styles/global.css'
+import { siteUrl } from '../lib/env.ts'
+
+interface Props {
+  title: string
+  description: string
+  /** `RF-09`/`ABR-03`: espanol unico en v1. El atributo `lang` es real, no decorativo. */
+  lang?: 'es'
+  /** Bloquea de tema actual, para que el servidor pueda fijar el color de fondo. */
+  theme?: 'dark' | 'light'
+}
+
+const {
+  title,
+  description,
+  lang = 'es',
+  theme = 'dark',
+} = Astro.props
+
+const canonical = new URL(Astro.url.pathname, siteUrl()).toString()
+---
+
+<!doctype html>
+<html lang={lang} data-theme={theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    {/*
+      `RF-09`: la preferencia se aplica antes de la primera pintura. Bloqueante a proposito:
+      si se difiere, hay flash. El valor por defecto es `prefers-color-scheme`.
+      CSP: hash sha256 pendiente de fijar en el Sprint 9 (`RNF-62`).
+    */}
+    <script is:inline>
+      ;(() => {
+        try {
+          const saved = localStorage.getItem('theme')
+          const prefersLight = matchMedia('(prefers-color-scheme: light)').matches
+          document.documentElement.dataset.theme = saved ?? (prefersLight ? 'light' : 'dark')
+        } catch {
+          document.documentElement.dataset.theme = 'dark'
+        }
+      })()
+    </script>
+
+    <slot name="head" />
+  </head>
+
+  <body>
+    {/* `RF-06` / WCAG 2.4.1: primer elemento enfocable de la pagina. */}
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+    <header>
+      <slot name="header" />
+    </header>
+
+    <main id="contenido" tabindex="-1">
+      <slot />
+    </main>
+
+    <footer>
+      <slot name="footer" />
+    </footer>
+  </body>
+</html>

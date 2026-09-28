@@ -1,0 +1,22 @@
+---
+/**
+ * Distintivo de datos semilla — `ADR-0003`.
+ *
+ * Se renderiza solo cuando `CV_DATA_SOURCE=fixture`. El build de produccion no puede tener
+ * ese flag (`astro.config.mjs` lo rechaza), asi que este componente es la garantia visible
+ * de que los datos que se estan viendo no son los reales.
+ *
+ * Se marca con `role="status"` para que un lector de pantalla lo anuncie: si alguien esta
+ * leyendo el sitio creyendo que es el CV real, hay que decirselo.
+ */
+
+interface Props {
+  class?: string
+}
+
+const { class: className } = Astro.props
+---
+
+<p class:list={['fixture-banner', className]} role="status">
+  Datos de ejemplo — no es el CV real (`ADR-0003`, <code>CV_DATA_SOURCE=fixture</code>)
+</p>

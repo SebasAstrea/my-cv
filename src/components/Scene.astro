@@ -1,0 +1,54 @@
+---
+/**
+ * Cabecera de escena: numeracion editorial, timecode real y heading enfocable.
+ *
+ * `RF-01`  cada escena tiene un `h2` con id estable `#escena-0N`.
+ * `RUI-60.a` la numeracion `00/07 ... 06/07` va en el margen, no en el centro.
+ * `RUI-60.b` los timecodes son reales: salen del storyboard, no son decorativos.
+ * `RUI-82` cada escena es `<section aria-labelledby>` y su heading es enfocable con
+ *           `tabindex="-1"` para que `RF-05` pueda mover el foco a el con el teclado.
+ */
+
+import type { SceneMeta } from '../data/storyboard.ts'
+
+interface Props {
+  meta: SceneMeta
+  /** Nombre visible de la escena. El contenido de la escena va en el slot. */
+  title: string
+  /** Parrafo de apoyo. `RUI-30`: uno por escena, <= 45ch. */
+  support?: string
+  class?: string
+}
+
+const { meta, title, support, class: className } = Astro.props
+const headingId = `${meta.anchor}-titulo`
+---
+
+<section
+  id={meta.anchor}
+  class:list={['scene', className]}
+  data-split={meta.split}
+  data-scene={meta.id}
+  aria-labelledby={headingId}
+>
+  <div class="scene-split">
+    <div class="col-primary">
+      <div class="scene__meta">
+        <span class="scene-number">{meta.counter}</span>
+        <span class="mono" data-testid="timecode">{meta.progress}</span>
+        <span class="mono">{meta.durationLabel}</span>
+      </div>
+
+      <div class="scene__heading">
+        <h2 id={headingId} tabindex="-1">
+          {title}
+        </h2>
+        {support !== undefined && <p class="support">{support}</p>}
+      </div>
+    </div>
+
+    <div class="col-secondary">
+      <slot />
+    </div>
+  </div>
+</section>

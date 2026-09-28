@@ -1,0 +1,160 @@
+---
+/**
+ * Pagina unica — `RF-01`, `RNF-33`, `RF-07`, `SUP-05`.
+ *
+ * Este es el unico documento. Se renderiza entero en build, sin JS, y es lo que lee el ATS
+ * (`RNF-33`) y lo que lee una persona con el scripting deshabilitado (`RF-07`).
+ *
+ * Alcance del Sprint 1: el shell. Las 7 escenas existen, con su semantica, sus metadatos
+ * generados y sus datos derivados; los cuerpos de contenido'entrada (drawer de detalle,
+ * `RUI-31`) llegan en los siguientes sprints. Ver BACKLOG.md.
+ */
+
+import Base from '../layouts/Base.astro'
+import Scene from '../components/Scene.astro'
+import IndexRail from '../components/IndexRail.astro'
+import FixtureBanner from '../components/FixtureBanner.astro'
+import { getCv } from '../data/index.ts'
+import { SCENES } from '../data/storyboard.ts'
+import { formatDuration, formatRange, totalExperienceMonths, yearsFrom } from '../lib/cv/validate.ts'
+import { siteUrl } from '../lib/env.ts'
+
+const { cv, isFixture } = getCv()
+const now = new Date()
+
+// `RND-02`: la unica definicion de "anos de experiencia". La misma que usan el chat y el PDF.
+const years = yearsFrom(totalExperienceMonths(cv, now))
+
+const labels: Readonly<Record<string, string>> = {
+  identidad: 'Identidad',
+  perfil: 'Perfil',
+  experiencia: 'Experiencia',
+  proyectos: 'Proyectos',
+  stack: 'Stack',
+  formacion: 'Formacion',
+  contacto: 'Contacto',
+}
+
+// `RNF-33`: JSON-LD `Person`. La parte `Occupation` la anade el exportador del Sprint 2; aqui
+// esta el nucleo para que el ATS tenga algo que parsear desde el primer dia.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: cv.person.name,
+  jobTitle: cv.person.role,
+  description: cv.summary,
+  url: new URL('/', siteUrl()).toString(),
+  ...(cv.contact.github !== undefined ? { sameAs: [cv.contact.github] } : {}),
+}
+
+const scene = (id: string) => {
+  const found = SCENES.find((s) => s.id === id)
+  if (found === undefined) throw new Error(`Escena desconocida: ${id}`)
+  return found
+}
+---
+
+<Base
+  title={`${cv.person.name} — ${cv.person.role}`}
+  description={cv.summary}
+  theme="dark"
+>
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(jsonLd)}
+  />
+
+  <div class="layout" slot="header">
+    <IndexRail labels={labels} />
+  </div>
+
+  <Fragment slot="default">
+    {/* 00 — Identidad. Un solo h1 en toda la pagina (`RUI-81`). */}
+    <Scene
+      meta={scene('identidad')}
+      title={cv.person.name}
+      support={cv.person.tagline}
+      class="scene--identity"
+    >
+      <dl class="mono">
+        <dt>Rol</dt>
+        <dd>{cv.person.role}</dd>
+        <dt>Anos</dt>
+        <dd>{years}</dd>
+        <dt>Situado en</dt>
+        <dd>{cv.person.location}</dd>
+      </dl>
+    </Scene>
+
+    <Scene meta={scene('perfil')} title="Perfil" support={cv.summary} />
+
+    {/* 02 — Experiencia. `RFU-02` mide si se encuentra rol + empresa mas recientes, asi que
+        el primer item de la lista es deliberadamente el mas reciente. */}
+    <Scene meta={scene('experiencia')} title="Experiencia" support={`${years} anos.`}>
+      <ol>
+        {
+          cv.roles.map((role) => (
+            <li>
+              <strong>{role.title}</strong> — {role.company}
+              <br />
+              <span class="mono">
+                {formatRange(role.start, role.end)} · {formatDuration(role.start, role.end, now)}
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </Scene>
+
+    <Scene meta={scene('proyectos')} title="Proyectos" support={`${cv.projects.length} destacados.`}>
+      <ul>
+        {
+          cv.projects.map((project) => (
+            <li>
+              <strong>{project.name}</strong>
+              <br />
+              <span class="mono">{project.stack.join(' · ')}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </Scene>
+
+    <Scene meta={scene('stack')} title="Stack" support="Niveles con significado declarado.">
+      {
+        cv.stack.map((group) => (
+          <section>
+            <h3>{group.label}</h3>
+            <ul class="mono">
+              {group.items.map((item) => (
+                <li>
+                  {item.name} — {item.level}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </Scene>
+
+    <Scene
+      meta={scene('formacion')}
+      title="Formacion"
+      support={`${cv.education.length + cv.certifications.length + cv.publications.length} entradas.`}
+    />
+
+    {/* 06 — Contacto. Sin datos privados: `toPublicCv` los elimino en build (`SEG-31`).
+        El revelado bajo interaccion (`RF-27`) llega en el Sprint 4. */}
+    <Scene meta={scene('contacto')} title="Contacto" support="Escríbeme.">
+      <ul>
+        {cv.contact.github !== undefined && <li>{cv.contact.github}</li>}
+      </ul>
+    </Scene>
+
+    {isFixture && <FixtureBanner />}
+  </Fragment>
+
+  <p slot="footer" class="mono">Actualizado: {cv.lastReviewed}</p>
+</Base>

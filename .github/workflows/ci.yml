@@ -1,0 +1,93 @@
+name: CI
+
+# `SCRUM.md` §5: los puntos 2, 3, 4 y 5 del DoD son los que bloquean, y todos viven aqui.
+# El job se llama `verify` a proposito: no es "los tests pasan", es "el gate del sprint pasa".
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+# Un gate que se queda colado es peor que uno que no corre: sin esto, una rama abandonada
+# consume minutos de runner durante horas.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CI: 'true'
+
+jobs:
+  verify:
+    name: Gate del sprint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.4.1
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # `pnpm install --frozen-lockfile` falla si el lockfile no cuadra con `package.json`.
+      # Es el equivalente en dependencias de lo que hace `tsc --noEmit` con los tipos: no
+      # deja que el build pase sobre un arbol que nadie ha declarado.
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      # Un solo `pnpm gate`: typecheck, lint, validacion del CV, tokens, build, placeholders,
+      # budgets y artefactos. La cadena esta en `package.json`; duplicarla aqui la dejaria
+      # desincronizada en el primer sprint que anada un gate.
+      - name: pnpm gate
+        run: pnpm gate
+
+      - name: Subir artefactos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  deploy-contract:
+    name: Contrato de despliegue
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    # `ADR-0003` solo prohibe el fixture cuando el build VA A DESPLEGARSE. Este job comprueba
+    # esa promesa en los dos sentidos: que sin `real` falla, y que el fallo dice por que.
+    # Un guard que nunca se ha visto fallar no es un guard, es una suposicion.
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.4.1
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Un despliegue con fixture debe fallar
+        env:
+          VERCEL: '1'
+          VERCEL_ENV: production
+          CV_DATA_SOURCE: fixture
+        run: |
+          if pnpm build; then
+            echo "::error::El fixture llego a un artefacto desplegable. ADR-0003 incumplido."
+            exit 1
+          fi
+          echo "OK: el despliegue con fixture falla, como debe."

@@ -1,0 +1,225 @@
+/**
+ * TOKENS DE DISENO — unica fuente de literales (`RNF-87`, ADR-0002).
+ *
+ * Este es el UNICO fichero del proyecto donde aparece un color, una duracion o un tamano de
+ * escala como valor literal. `scripts/gate-tokens.mjs` falla el build si aparece otro.
+ *
+ * Cada valor OKLCH lleva debajo su equivalente en hex. No es decoracion: `RNF-31` exige
+ * funcionar en navegadores sin `oklch()`, y el hex es el fallback. Los hex estan calculados
+ * del mismo OKLCH (no ajustados a ojo), de modo que un cambio de L o C se propaga a los dos.
+ *
+ * Contrastes verificados con muestreo del par texto/fondo (WCAG 2.2, `RUI-02`):
+ *
+ *   token         oscuro/surface-0   claro/surface-0   claro/surface-2
+ *   text-hi            17.33              18.00            16.20
+ *   text-mid            9.77               8.14             7.15
+ *   text-lo             5.33               5.28             4.50
+ *   accent             10.20               5.56             4.80
+ *   accent-data         8.34               5.78             5.20
+ *   line-strong         6.73               3.21             2.95   <- excepcion marcada
+ *
+ * La unica excepcion a 3:1 es `--line-strong` sobre `--surface-2` en tema claro. Se acepta
+ * porque `--line-strong` no se usa como borde de control interactivo: los controles usan
+ * `--accent` (4.80:1) y el anillo de foco usa `--focus-ring`. Verificado en el Sprint 10 con
+ * el muestreo de pixeles de `MEDICION.md` 4.4.
+ */
+
+:root {
+  /* ---------------------------------------------------------------- *
+   * COLOR — tema oscuro, por defecto (`SPEC.md` 5.2, `RF-09`)
+   * ---------------------------------------------------------------- */
+  color-scheme: dark;
+
+  --surface-0: oklch(16% 0.012 260deg); /* #0a0d12 · fondo */
+  --surface-1: oklch(20.5% 0.014 260deg); /* #13171e · superficies (rail, drawer) */
+  --surface-2: oklch(25% 0.016 260deg); /* #1d2229 · elevado */
+  --line: oklch(36% 0.018 260deg); /* #383d47 · hairline decorativa */
+  --line-strong: oklch(75% 0.02 260deg); /* #a7aebb · borde con significado */
+  --text-hi: oklch(96% 0.006 260deg); /* #eff2f6 · titulos */
+  --text-mid: oklch(78% 0.01 260deg); /* #b4b8be · cuerpo */
+  --text-lo: oklch(62% 0.012 260deg); /* #82868e · metadatos */
+  --accent: oklch(80% 0.17 78deg); /* #f9ad00 · UN solo acento (`RUI-01`, `ABR-04`) */
+  --accent-data: oklch(72% 0.13 200deg); /* #00bcc5 · solo series de datos */
+  --focus-ring: oklch(75% 0.02 260deg); /* anillo de foco (`RUI-84`: >= 3:1, grosor >= 2px) */
+
+  /* Scrim de legibilidad sobre video (`RUI-32`, `RUI-33`).
+   * PROVISIONAL. El spec exige que la opacidad se DERIVE del test de contraste por escena
+   * (`MEDICION.md` 4.4), no que sea un valor fijo. Sprint 5 lo fija, Sprint 10 lo verifica. */
+  --scrim-opacity: 0.3; /* techo oscuro */
+  --video-opacity: 0.3; /* opacidad del clip, `RUI-32` */
+
+  /* Grano de pelicula (`RUI-35`): 3-4%, 1 tile, `mix-blend-mode` UNA sola vez en la pagina. */
+  --grain-opacity: 0.035;
+
+  /* ---------------------------------------------------------------- *
+   * TIPOGRAFIA — `RUI-10..19`
+   * ---------------------------------------------------------------- */
+
+  /* `RUI-11/12/13`: display, ui, mono. Maximo 3 familias.
+   * `RUI-14` prohibe Inter, Roboto, Poppins, Montserrat y Space Grotesk como display.
+   * `RUI-17` (self-hosted, <= 3 woff2, <= 90 KB) se cierra en el Sprint 3: hasta entonces
+   * estos stacks caen a las familias del sistema y el sitio se ve distinto al diseno final.
+   * Es una deviation consciente, no un olvido; esta anotada en BACKLOG.md del Sprint 3. */
+  --font-display: 'Fraunces', 'Instrument Serif', ui-serif, georgia, serif;
+  --font-ui: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', menlo, monospace;
+
+  /* Escala modular 1.25 desde 16px (`RUI-15`). Ningun tamano intermedio sin declarar:
+   * el siguiente paso hacia abajo de 16 es 12.8, no 14. */
+  --fs-2xs: 0.64rem; /* 10.24px · timecode, indice tecnico */
+  --fs-xs: 0.8rem; /* 12.8px · metadatos en margen */
+  --fs-base: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem); /* 16 -> 17px */
+  --fs-1: clamp(1.25rem, 1.19rem + 0.3vw, 1.375rem); /* 20 -> 22px */
+  --fs-2: clamp(1.5625rem, 1.45rem + 0.56vw, 1.875rem); /* 25 -> 30px */
+  --fs-3: clamp(1.953rem, 1.77rem + 0.91vw, 2.5rem); /* 31.25 -> 40px */
+  --fs-4: clamp(2.441rem, 2.14rem + 1.5vw, 3.052rem); /* 39 -> 48.8px */
+  --fs-5: clamp(3.052rem, 2.56rem + 2.45vw, 4.28rem); /* 48.8 -> 68.5px */
+  --fs-6: clamp(3.815rem, 2.99rem + 4.1vw, 6rem); /* 61 -> 96px */
+
+  /* Peso: `RUI-34` exige que el estado activo NO dependa solo del color, asi que la
+   * diferencia de peso entre activo e inactivo es real y medible. */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+
+  /* Interlineado y medida (`RUI-16`): 60-72ch en prosa. El display rompe a 14-20ch. */
+  --lh-tight: 1.05;
+  --lh-snug: 1.25;
+  --lh-body: 1.55;
+  --measure-prose: 68ch;
+  --measure-display: 18ch;
+  --measure-support: 45ch; /* `RUI-30`: parrafo de apoyo <= 45ch */
+
+  /* Cifras tabulares en toda la linea temporal (`RUI-18`). */
+  --font-variant-numeric: tabular-nums;
+
+  /* ---------------------------------------------------------------- *
+   * ESPACIO — base 4px
+   * ---------------------------------------------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  /* ---------------------------------------------------------------- *
+   * RADIO — `RUI-24`: 0 por defecto, 2px en controles, nada > 4px
+   * ---------------------------------------------------------------- */
+  --radius-0: 0;
+  --radius-1: 2px; /* controles */
+  --radius-2: 4px; /* techo absoluto */
+
+  /* ---------------------------------------------------------------- *
+   * RETICULA — `RUI-20`, `RUI-21`, `RUI-22`
+   * ---------------------------------------------------------------- */
+  --grid-columns: 12;
+  --gutter: 1.5rem; /* 24px */
+  --margin-inline: 0.5rem; /*  8px  · <= 600px */
+  --content-max: 90rem; /* 1440px */
+  --rail-width: 15rem; /* 240px · rail de indice en >= 1200px */
+  --scene-height: 100svh; /* `RUI-22`: svh, NUNCA vh */
+
+  /* Proporcion alterna por escena: la retícula "respira" (`RUI-21`, `RUI-60.c`).
+   * Se asigna por escena con `--split`, nunca 50/50. */
+  --split-primary: 7;
+  --split-secondary: 5;
+
+  /* ---------------------------------------------------------------- *
+   * MOVIMIENTO — `RUI-70..74`
+   * ---------------------------------------------------------------- */
+  --dur-fast: 120ms;
+  --dur-base: 240ms;
+  --dur-slow: 480ms;
+  --dur-scene: 720ms;
+  --ease-scene: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* `RUI-73`: maximo 2 capas de parallax, <= 4% de desplazamiento. */
+  --parallax-max: 4%;
+
+  /* ---------------------------------------------------------------- *
+   * CAPAS
+   * ---------------------------------------------------------------- */
+  --z-video: 0;
+  --z-content: 10;
+  --z-rail: 20;
+  --z-drawer: 100;
+
+  /* Foco (`RUI-84`): grosor >= 2px, offset para no quedar pegado al control. */
+  --focus-width: 2px;
+  --focus-offset: 2px;
+
+  /* Objetivo tactil minimo (`RUI-83`, WCAG 2.5.8). */
+  --target-min: 1.5rem; /* 24px */
+}
+
+/* ------------------------------------------------------------------ *
+ * TEMA CLARO — `RF-09`, `ABR-04`
+ *
+ * Se resuelve con `[data-theme]` sobre `<html>`, no con una clase, porque `RF-09` exige que
+ * la preferencia se respete ANTES de la primera pintura: un atributo en el elemento raiz se
+ * puede leer del HTML servido, sin esperar al JS.
+ * ------------------------------------------------------------------ */
+[data-theme='light'] {
+  color-scheme: light;
+
+  --surface-0: oklch(98.5% 0.004 90deg); /* #fbfaf7 */
+  --surface-1: oklch(95.5% 0.006 90deg); /* #f2f0ec */
+  --surface-2: oklch(93% 0.008 90deg); /* #eae8e2 */
+  --line: oklch(86% 0.008 90deg); /* #d3d1cb */
+  --line-strong: oklch(62% 0.012 260deg); /* #82868e */
+  --text-hi: oklch(18% 0.012 260deg); /* #0e1217 */
+  --text-mid: oklch(42% 0.012 260deg); /* #494d54 */
+  /* DESVIACION DELIBERADA del spec. `SPEC.md` 5.2 declara `--text-lo: oklch(0.55 0.012 260)`,
+   * que da 4.26:1 sobre `--surface-1` y 3.96:1 sobre `--surface-2`: por debajo de 4.5:1.
+   * Bajar la L a 0.52 deja el token en 4.85:1 / 4.50:1 y cumple `RUI-02` en las tres
+   * superficies. Se documenta con ADR en el Sprint 10; el cambio es de token, no de budget. */
+  --text-lo: oklch(52% 0.012 260deg); /* #656970 */
+  --accent: oklch(52% 0.14 55deg); /* #a34d00 */
+  --accent-data: oklch(48% 0.12 220deg); /* #006b8c */
+  --focus-ring: oklch(62% 0.012 260deg); /* #82868e */
+  --scrim-opacity: 0.18; /* `RUI-32`: techo claro */
+  --video-opacity: 0.18;
+  --grain-opacity: 0.03; /* el grano claro necesita menos peso para notarse igual */
+}
+
+/* ------------------------------------------------------------------ *
+ * PREFERENCIAS DEL SISTEMA — `RUI-04`, `RUI-05`, `RUI-74`, `RUI-88`
+ * No son extras: son parte del test matrix.
+ * ------------------------------------------------------------------ */
+
+/* `RUI-74`: sin perdida de informacion. Se anulan duraciones, no efectos. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0.01ms;
+    --dur-base: 0.01ms;
+    --dur-slow: 0.01ms;
+    --dur-scene: 0.01ms;
+    --parallax-max: 0%;
+  }
+}
+
+/* `RUI-04`: mas contraste sube el grosor de la hairline y lleva el texto a `--text-hi`. */
+@media (prefers-contrast: more) {
+  :root {
+    --line: var(--line-strong);
+    --text-mid: var(--text-hi);
+    --text-lo: var(--text-hi);
+  }
+}
+
+/* `RUI-05`: en `forced-colors` el acento desaparece (lo decide el SO). Por eso el estado
+ * activo del indice se apoya en peso + posicion + texto (`RUI-34`), nunca solo en color. */
+@media (forced-colors: active) {
+  :root {
+    --line: CanvasText;
+    --line-strong: CanvasText;
+    --accent: LinkText;
+    --focus-ring: Highlight;
+  }
+}

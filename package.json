@@ -1,0 +1,44 @@
+{
+  "name": "my-cv",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Portafolio / CV 'Dossier'. Sitios de una pagina con direccion de arte propia, renderizado en servidor y chat de IA con guardrails. Ver docs/SPEC.md.",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "packageManager": "pnpm@10.4.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check && tsc --noEmit",
+    "lint": "eslint . --max-warnings 0 && stylelint \"src/**/*.css\"",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:cv": "node --experimental-strip-types scripts/check-cv.mjs",
+    "gate:tokens": "node --experimental-strip-types scripts/gate-tokens.mjs",
+    "gate:placeholders": "node scripts/gate-placeholders.mjs",
+    "gate:budgets": "node scripts/gate-budgets.mjs",
+    "gate:artifacts": "node --experimental-strip-types scripts/gate-artifacts.mjs",
+    "gate": "pnpm format:check && pnpm typecheck && pnpm lint && pnpm check:cv && pnpm gate:tokens && pnpm build && pnpm gate:placeholders && pnpm gate:budgets && pnpm gate:artifacts",
+    "verify": "pnpm gate"
+  },
+  "dependencies": {
+    "astro": "^5.14.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^26.6.3",
+    "eslint": "^10.11.0",
+    "globals": "^17.12.0",
+    "prettier": "^3.6.2",
+    "stylelint": "^16.24.0",
+    "stylelint-config-standard": "^39.0.1",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.45.0"
+  }
+}

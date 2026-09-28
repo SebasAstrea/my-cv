@@ -1,0 +1,257 @@
+/* Retícula y layout. Sin literales: todo pasa por `tokens.css` (`RNF-87`). */
+
+@import url('./tokens.css');
+@import url('./reset.css');
+
+body {
+  /* Una escena = un viewport (`RUI-22`). */
+  display: grid;
+  grid-template-rows: 1fr;
+}
+
+/* ------------------------------------------------------------------ *
+ * Retícula de 12 columnas con gutter de 24px (`RUI-20`)
+ * ------------------------------------------------------------------ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--gutter);
+  inline-size: 100%;
+  max-inline-size: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--margin-inline);
+}
+
+/* ------------------------------------------------------------------ *
+ * Layout asimetrico: rail de indice + contenido (`RUI-21`)
+ *
+ * La proporcion NUNCA es 50/50. Se alterna por escena con `--split-primary` /
+ * `--split-secondary` para que el ojo se mueva (`RUI-60.c`).
+ * ------------------------------------------------------------------ */
+.layout {
+  display: grid;
+  grid-template-columns: var(--rail-width) minmax(0, 1fr);
+  column-gap: var(--gutter);
+  align-items: start;
+  inline-size: 100%;
+  max-inline-size: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--margin-inline);
+}
+
+/* Columnas internas de una escena, en proporcion asimetrica. */
+.scene-split {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+
+.scene-split > .col-primary {
+  grid-column: 1 / span min(var(--split-primary), var(--grid-columns));
+}
+
+.scene-split > .col-secondary {
+  grid-column: calc(var(--split-primary) + 1) / span
+    min(var(--split-secondary), calc(var(--grid-columns) - var(--split-primary)));
+}
+
+/* Escenas impares invierten la proporcion para que la retícula respire. */
+.scene[data-split='invert'] {
+  --split-primary: 5;
+  --split-secondary: 7;
+}
+
+.scene[data-split='invert'] > .col-primary {
+  grid-column: calc(var(--grid-columns) - var(--split-primary) + 1) / span
+    min(var(--split-primary), var(--grid-columns));
+}
+
+.scene[data-split='invert'] > .col-secondary {
+  grid-column: 1 / span min(var(--split-secondary), calc(var(--grid-columns) - 1));
+}
+
+/* ------------------------------------------------------------------ *
+ * Escena
+ * ------------------------------------------------------------------ */
+.scene {
+  position: relative;
+  display: grid;
+  align-content: center;
+  min-block-size: var(--scene-height);
+  padding-block: var(--space-8);
+  padding-inline: var(--margin-inline);
+  scroll-margin-block-start: var(--space-4);
+}
+
+/* `RF-01` + `RUI-82`: cada escena es una seccion semantica, identificada por su heading.
+ * El `tabindex="-1"` vive en el heading (no en la seccion) para que el foco caiga en el texto. */
+.scene:focus-within {
+  outline: none;
+}
+
+.scene__heading {
+  /* `RUI-72`: solo se anima transform/opacity. */
+  opacity: var(--scene-opacity, 1);
+  transform: translate3d(0, var(--scene-offset, 0), 0);
+  transition:
+    opacity var(--dur-scene) var(--ease-scene),
+    transform var(--dur-scene) var(--ease-scene);
+}
+
+/* Estado de escena al entrar: opacidad + desplazamiento vertical, nunca un fade generico
+ * entre escenas (`RUI-60.g` exige corte, no fade; el corte lo produce el clip, Sprint 5). */
+.scene[data-state='entering'] .scene__heading {
+  --scene-opacity: 0;
+  --scene-offset: var(--space-4);
+}
+
+/* ------------------------------------------------------------------ *
+ * Rail de indice
+ * ------------------------------------------------------------------ */
+.rail {
+  position: sticky;
+  inset-block-start: var(--space-5);
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  padding-inline-end: var(--space-4);
+}
+
+.rail__item {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: var(--space-2);
+  align-items: baseline;
+  padding-block: var(--space-1);
+  color: var(--text-lo);
+  text-decoration: none;
+  border-inline-start: 2px solid transparent;
+  padding-inline-start: var(--space-2);
+  transition:
+    color var(--dur-base) var(--ease-scene),
+    border-color var(--dur-base) var(--ease-scene);
+}
+
+/* `RUI-34`: el estado actual se lee por TRES vías redundantes — posicion (el numeral no
+ * cambia), peso tipografico, y el texto "actual" del `aria-current`. Nunca solo por color. */
+.rail__item[aria-current='true'] {
+  color: var(--text-hi);
+  font-weight: var(--fw-semibold);
+  border-inline-start-color: var(--accent);
+}
+
+.rail__num {
+  font-variant-numeric: var(--font-variant-numeric);
+  letter-spacing: 0.04em;
+}
+
+/* Duracion real de cada etapa, en el margen (`RUI-60.f`): el rail tambien es indice. */
+.rail__duration {
+  justify-self: end;
+  color: var(--text-lo);
+  font-size: var(--fs-2xs);
+  font-variant-numeric: var(--font-variant-numeric);
+}
+
+/* ------------------------------------------------------------------ *
+ * Cabecera de escena: metadatos en el margen
+ * ------------------------------------------------------------------ */
+.scene__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: baseline;
+  margin-block-end: var(--space-4);
+}
+
+/* ------------------------------------------------------------------ *
+ * Responsive — `RUI-90`, `RUI-91`
+ *
+ * Breakpoints declarados en `SPEC.md` 5. Responsive: 360 / 600 / 900 / 1200 / 1440.
+ * CSS puro no puede usar custom properties en condiciones de media, asi que viven aqui.
+ * CAMBIAR AQUI si alguna vez se mueven. No duplicarlos en componentes.
+ * ------------------------------------------------------------------ */
+@media (width < 1200px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rail {
+    position: static;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    overflow-x: auto;
+    padding-block-end: var(--space-2);
+    border-block-end: 1px solid var(--line);
+  }
+
+  .rail__item {
+    grid-template-columns: auto auto;
+  }
+
+  .rail__duration {
+    display: none; /* el ancho no da para la duracion sin tapar el nombre */
+  }
+}
+
+@media (width < 900px) {
+  .scene-split,
+  .scene[data-split='invert'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .scene-split > .col-primary,
+  .scene-split > .col-secondary,
+  .scene[data-split='invert'] > .col-primary,
+  .scene[data-split='invert'] > .col-secondary {
+    grid-column: 1 / -1;
+  }
+
+  :root {
+    --measure-display: 24ch;
+  }
+}
+
+@media (width <= 600px) {
+  :root {
+    --margin-inline: var(--space-4);
+    --gutter: var(--space-4);
+  }
+
+  .scene {
+    padding-block: var(--space-7);
+  }
+
+  /* `RUI-95`: en <= 600px el video se deshabilita por defecto. El poster es lo que se ve. */
+  .scene__video {
+    display: none;
+  }
+}
+
+@media (width <= 360px) {
+  :root {
+    --margin-inline: var(--space-3);
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Datos semilla — `ADR-0003`
+ *
+ * Distintivo de "estos datos no son reales". Solo visible cuando el flag es `fixture`,
+ * y el build de produccion no puede tener el flag en `fixture` (`astro.config.mjs`).
+ * ------------------------------------------------------------------ */
+.fixture-banner {
+  position: fixed;
+  inset-block-end: 0;
+  inset-inline: 0;
+  z-index: var(--z-rail);
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface-2);
+  border-block-start: var(--focus-width) solid var(--accent);
+  color: var(--text-hi);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-align: center;
+}
