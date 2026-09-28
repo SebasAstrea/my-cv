@@ -72,4 +72,18 @@ export default tseslint.config(
       'no-console': 'off',
     },
   },
+  {
+    // Scripts de medicion: `scripts/medir-*.mjs` y `scripts/graficas.mjs`.
+    //
+    // Mezclan DOS entornos en el mismo fichero, y por eso necesitan los dos juegos de globals:
+    // el servidor estatico, el `fs` y el Playwright se ejecutan en Node, mientras que todo lo
+    // que va dentro de `page.evaluate()` se serializa y corre en el NAVEGADOR. Sin declarar
+    // `window`/`document` aqui, `no-undef` marca como no definido precisamente el codigo que si
+    // lo esta. Es mas honesto que un `eslint-disable` por linea: los dos entornos son reales en
+    // estos ficheros, no es codigo muerto que hay que silenciar.
+    files: ['scripts/medir-*.mjs', 'scripts/graficas.mjs'],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.browser },
+    },
+  },
 )

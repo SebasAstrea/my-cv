@@ -195,9 +195,24 @@ qué se ejecutó, con qué comando, y qué número dio. Lo que no aparece aquí 
 | `RNF-07` | M: primera carga sin vídeo | `pnpm gate:budgets` | 4.8 KB / 350 KB | **Cumplido** |
 | `RNF-08` | M: JS en ruta crítica | `pnpm gate:budgets` | 0.0 KB / 110 KB | **Cumplido** |
 | `RNF-09` | M: CSS total | `pnpm gate:budgets` | 2.6 KB / 24 KB | **Cumplido** |
-| `RNF-10..12` | M: fuentes, poster LCP, primer segmento | `pnpm gate:budgets` | 0.0 KB (aún no hay material) | **Cumplido** |
+| `RNF-10..12` | M: fuentes, poster LCP, primer segmento | `pnpm gate:budgets` | `sin material` en `dist/`: no medibles hasta el sprint de fuentes y de vídeo | **No medible** |
 | `RNF-33` | T: HTML semántico generado en build, parseable sin JS | `pnpm build` | 1 página estática, 0 KB de JS | **Cumplido** |
-| `SCRUM.md` §5 | T: la cadena de gates es reproducible con un comando | `pnpm gate` | exit 0 | **Cumplido** |
+| `SCRUM.md` §5 | T: la cadena de gates es reproducible con un comando | `pnpm gate` | exit 0, 10 pasos | **Cumplido** |
+| `RNF-01` | T4: LCP de lab, mediana de 3 (desktop, 4g, cold) | `pnpm medir:lab` | 0,268 s / 1,8 s | **Cumplido** |
+| `RNF-15` | T4: TBT de lab, mediana de 3 | `pnpm medir:lab` | 0,006 s / 0,150 s | **Cumplido** |
+| `RNF-03` | T4: CLS de lab, mediana de 3 | `pnpm medir:lab` | 0,0000 / 0,02 | **Cumplido** |
+| `RNF-04` | T4: TTFB de lab, mediana de 3 | `pnpm medir:lab` | 0,001 s / 0,4 s | **Cumplido** |
+| `RNF-01..04` | T4: los 5 perfiles de red de `MEDICION.md` §5, móvil y desktop | `pnpm medir:lab` | peor caso 0,74 s (`3g-fast`), margen 59 % | **Cumplido** |
+| `RNF-07..09` | T5: budgets sobre `dist/`, gzip | `pnpm medir:estatico` | 4,8 / 0,0 / 2,6 KB | **Cumplido** |
+| `RUI-02` | T: contraste de texto resuelto en el navegador, WCAG 2.1 AA | `pnpm medir:diseno` | 5/5 pares cumplen, peor 5,28:1 | **Cumplido** |
+| `RNF-84` | T: axe-core WCAG 2.2 AA, 3 de los 5 estados de §4.8 | `pnpm medir:lab` | 0 violaciones, 0 serious/critical | **Cumplido** |
+| `RNF-84` | T: reflow 320 px sin scroll horizontal | `pnpm medir:lab` | 0 px de scroll en 3 estados | **Cumplido** |
+| `RNF-84` | T: `prefers-reduced-motion` sin animaciones vivas | `pnpm medir:lab` | 0 animaciones en ejecución | **Cumplido** |
+| `RNF-84` | T: target size, 0 objetivos < 24 px | `pnpm medir:lab` | 0 casos | **Cumplido** |
+| `RUI-01` | T5: presupuesto de diseño por escena, §4.3 | `pnpm medir:diseno` | **3/7 escenas cumplen**; `stack` 27 nodos y `experiencia` 757 caracteres | **Incumplido** (`TD-11`) |
+| `SEG-01..06` | T: auditoría de dependencias | `pnpm audit --audit-level=high` | 1 crítica (CVSS 9,8, `astro`), 4 altas; explotabilidad actual verificada nula | **Incumplido** (`TD-06`) |
+| `SCRUM.md` §5 | T: las cifras de `STATUS.md` §1 coinciden con la realidad | `pnpm status` | nº de pasos y rango `TD-*` verificados, 4 negativos probados | **Cumplido** |
+| `RNF-07..12` | T: el gate **sigue detectando** el exceso tras el cambio a `sin material` | `pnpm gate:budgets` con CSS de 43,4 KB / 4 fuentes | exit 1 en ambos casos | **Cumplido** |
 
 **Lo que NO cubre el Sprint 1, y no debe leerse como cumplido:** `RUI-70..74` están implementados
 solo en la parte de `reset.css` (`prefers-reduced-motion`, foco visible); el resto llega con el

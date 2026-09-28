@@ -20,10 +20,11 @@
 |---|---|
 | **Sprint activo** | **2 — Fuente de verdad y render SSR** (recién planificado, sin empezar) |
 | **Último sprint aceptado** | **1 — Fundación y toolchain** (`ACCEPTED`, commit `b7f1cb8`) |
-| **Gate** | `pnpm gate` — 8 pasos, exit 0 |
+| **Gate** | `pnpm gate` — 10 pasos, exit 0 |
 | **Bloqueo** | Ninguno conocido |
-| **Deuda registrada** | 4 ítems (`TD-01`..`TD-04` en `BACKLOG.md`) |
+| **Deuda registrada** | 11 ítems (`TD-01`..`TD-11` en `BACKLOG.md`) |
 | **Riesgos abiertos** | 8 aceptados (`RK-01`..`RK-08` en `TRACEABILITY.md` §12) |
+| **Medición de calidad** | Sprint 1 medido y publicado en `docs/reportes-calidad/1-fundacion-y-toolchain/REPORTE.md`. T4/T5, sin datos de campo. 4 de 7 escenas incumplen el presupuesto §4.3 (`TD-11`) y hay 1 crítica de seguridad abierta (`TD-06`) |
 
 **Siguiente acción concreta:** `src/data/cv.real.ts` no existe. Es el primer paso del Sprint 2
 y el único bloqueante para renderizar contenido real — se gitignora a propósito (`SEG-30`).

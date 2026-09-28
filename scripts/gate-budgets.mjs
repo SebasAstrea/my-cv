@@ -77,17 +77,20 @@ const measured = [
   { id: 'RNF-09', value: sum(css, gz), parts: `${css.length} ficheros` },
   {
     id: 'RNF-10',
-    value: sum(fonts, gz),
+    // `null` cuando no hay ficheros, no `0`. `0 KB / max 90 KB` dice "verificado y en el
+    // limite" cuando en realidad no se ha medido nada: un presupuesto que nadie ha comprobado
+    // no es un presupuesto que se cumple, y asi es como un gate empieza a dar un falso verde.
+    value: fonts.length === 0 ? null : sum(fonts, gz),
     parts: `${fonts.length} ficheros (top ${BUDGETS['RNF-10'].maxFiles})`,
   },
   {
     id: 'RNF-11',
-    value: posters.length === 0 ? 0 : Math.max(...posters.map((f) => raw(readFileSync(f)))),
+    value: posters.length === 0 ? null : Math.max(...posters.map((f) => raw(readFileSync(f)))),
     parts: `${posters.length} posters`,
   },
   {
     id: 'RNF-12',
-    value: segments.length === 0 ? 0 : Math.max(...segments.map((f) => raw(readFileSync(f)))),
+    value: segments.length === 0 ? null : Math.max(...segments.map((f) => raw(readFileSync(f)))),
     parts: `${segments.length} segmentos`,
   },
 ]
@@ -99,6 +102,18 @@ for (const m of measured) {
   const budget = BUDGETS[m.id]
   if (budget === undefined) continue
   const limit = `max ${budget.maxKB} KB`
+
+  // Un budget sin material se declara `n/m` y NO falla. Fallar dejaria el gate en rojo por un
+  // requisito que todavia no existe (RNF-11 y RNF-12 son del sprint de video), y un gate rojo
+  // por lo que aun no toca teaches a ignorar el gate. Se imprime de forma visible para que
+  // nadie lo lea como un 0 KB aprobado.
+  if (m.value === null) {
+    console.log(
+      `  · ${m.id}  ${'sin material'.padEnd(21)}${limit}  ························  ${m.parts}`,
+    )
+    continue
+  }
+
   const ok = m.value <= budget.maxKB
   const bar = '█'.repeat(Math.min(24, Math.round((m.value / budget.maxKB) * 24))).padEnd(24, '·')
   console.log(
@@ -116,6 +131,8 @@ for (const m of measured) {
   }
 }
 
+const sinMedir = measured.filter((m) => m.value === null).map((m) => m.id)
+
 console.log('')
 
 if (violations.length > 0) {
@@ -128,4 +145,8 @@ if (violations.length > 0) {
   process.exit(1)
 }
 
-console.log('  OK  budgets — todos dentro de limite\n')
+console.log(
+  `  OK  budgets — ${measured.length - sinMedir.length} medidos dentro de limite` +
+    (sinMedir.length > 0 ? `, ${sinMedir.length} sin material (${sinMedir.join(', ')})` : '') +
+    '\n',
+)

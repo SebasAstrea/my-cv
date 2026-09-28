@@ -1,0 +1,684 @@
+{
+  "generadoPor": "scripts/medir-lab.mjs",
+  "sprint": "1-fundacion-y-toolchain",
+  "nivelProbatorio": "T4/T5",
+  "entorno": {
+    "navegador": "chromium 153.0.8010.12",
+    "node": "v24.18.0",
+    "sistema": "linux x64",
+    "ejecucion": "completo",
+    "metodo": "mediana de 3 runs, contexto nuevo por run (cache cold de verdad)",
+    "perfilesRed": {
+      "slow-4g": "slow-4g (1,6 Mbps / 150 ms)",
+      "3g-fast": "3g-fast (1,6 Mbps / 300 ms)",
+      "4g": "4g (9 Mbps / 85 ms)",
+      "wifi": "wifi (100 Mbps / 10 ms)",
+      "native": "native (sin throttling)"
+    },
+    "dispositivos": [
+      {
+        "id": "moto-g-power",
+        "viewport": {
+          "width": 412,
+          "height": 823
+        },
+        "cpu": 4,
+        "dpr": 1.75,
+        "mobile": true
+      },
+      {
+        "id": "desktop-1440",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "cpu": 4,
+        "dpr": 1,
+        "mobile": false
+      }
+    ],
+    "nota": "Laboratorio unico. MEDICION.md §5 pide 3 dispositivos fisicos para el video; aqui no hay video, asi que no aplica todavia. Sin GPU (RK-01)."
+  },
+  "objetivos": {
+    "RNF-01": {
+      "metrica": "LCP (lab)",
+      "objetivo": 1.8,
+      "unidad": "s",
+      "min": true
+    },
+    "RNF-15": {
+      "metrica": "TBT (lab)",
+      "objetivo": 0.15,
+      "unidad": "s",
+      "min": true
+    },
+    "RNF-03": {
+      "metrica": "CLS (lab)",
+      "objetivo": 0.02,
+      "unidad": "",
+      "min": true
+    },
+    "RNF-04": {
+      "metrica": "TTFB (lab)",
+      "objetivo": 0.4,
+      "unidad": "s",
+      "min": true
+    }
+  },
+  "vitals": [
+    {
+      "dispositivo": "moto-g-power",
+      "red": "slow-4g",
+      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 432,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 1,
+      "fcpMedianaMs": 432,
+      "longTasks": 3,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": 2
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "slow-4g",
+      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 428,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "3g-fast",
+      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 740,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 740,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": 2
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "3g-fast",
+      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 732,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "4g",
+      "redLabel": "4g (9 Mbps / 85 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 264,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 264,
+      "longTasks": 1,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": 6
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "4g",
+      "redLabel": "4g (9 Mbps / 85 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 264,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "wifi",
+      "redLabel": "wifi (100 Mbps / 10 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 108,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 108,
+      "longTasks": 1,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": 7
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "wifi",
+      "redLabel": "wifi (100 Mbps / 10 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 112,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "native",
+      "redLabel": "native (sin throttling)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 84,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 84,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": 14
+    },
+    {
+      "dispositivo": "moto-g-power",
+      "red": "native",
+      "redLabel": "native (sin throttling)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 84,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "slow-4g",
+      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 432,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 7,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 432,
+      "longTasks": 3,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": 1
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "slow-4g",
+      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 440,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "3g-fast",
+      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 740,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 5,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 740,
+      "longTasks": 3,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": 2
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "3g-fast",
+      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.8,
+      "fcpMedianaMs": 736,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "4g",
+      "redLabel": "4g (9 Mbps / 85 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 268,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 6,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 268,
+      "longTasks": 3,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": 0
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "4g",
+      "redLabel": "4g (9 Mbps / 85 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 256,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "wifi",
+      "redLabel": "wifi (100 Mbps / 10 ms)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 112,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 2,
+      "ttfbMedianaMs": 1,
+      "fcpMedianaMs": 112,
+      "longTasks": 3,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": 14
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "wifi",
+      "redLabel": "wifi (100 Mbps / 10 ms)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 112,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": null
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "native",
+      "redLabel": "native (sin throttling)",
+      "cache": "cold",
+      "n": 3,
+      "instrumentada": true,
+      "metricasSinMedir": [],
+      "lcpMedianaMs": 88,
+      "lcpObservadoEnTodos": true,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 4,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 88,
+      "longTasks": 3,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": 5
+    },
+    {
+      "dispositivo": "desktop-1440",
+      "red": "native",
+      "redLabel": "native (sin throttling)",
+      "cache": "static",
+      "n": 3,
+      "instrumentada": false,
+      "metricasSinMedir": [
+        "LCP",
+        "CLS",
+        "TBT"
+      ],
+      "lcpMedianaMs": 0,
+      "lcpObservadoEnTodos": false,
+      "hayNavegacion": true,
+      "clsMediana": 0,
+      "tbtMedianaMs": 0,
+      "ttfbMedianaMs": 0.9,
+      "fcpMedianaMs": 84,
+      "longTasks": 0,
+      "bytesTransferidos": 19029,
+      "desviacionLcpPct": null
+    }
+  ],
+  "diseno": {
+    "escenas": [
+      {
+        "id": "identidad",
+        "nodos": 11,
+        "caracteresApoyo": 163,
+        "textos": 11
+      },
+      {
+        "id": "perfil",
+        "nodos": 5,
+        "caracteresApoyo": 248,
+        "textos": 5
+      },
+      {
+        "id": "experiencia",
+        "nodos": 14,
+        "caracteresApoyo": 757,
+        "textos": 14
+      },
+      {
+        "id": "proyectos",
+        "nodos": 12,
+        "caracteresApoyo": 534,
+        "textos": 12
+      },
+      {
+        "id": "stack",
+        "nodos": 27,
+        "caracteresApoyo": 602,
+        "textos": 27
+      },
+      {
+        "id": "formacion",
+        "nodos": 5,
+        "caracteresApoyo": 41,
+        "textos": 5
+      },
+      {
+        "id": "contacto",
+        "nodos": 6,
+        "caracteresApoyo": 39,
+        "textos": 5
+      }
+    ],
+    "videosEnDom": 0,
+    "totalNodosEscena": 11,
+    "capturas": [
+      {
+        "id": "identidad",
+        "archivo": "capturas/identidad.png"
+      },
+      {
+        "id": "perfil",
+        "archivo": "capturas/perfil.png"
+      },
+      {
+        "id": "experiencia",
+        "archivo": "capturas/experiencia.png"
+      },
+      {
+        "id": "proyectos",
+        "archivo": "capturas/proyectos.png"
+      },
+      {
+        "id": "stack",
+        "archivo": "capturas/stack.png"
+      },
+      {
+        "id": "formacion",
+        "archivo": "capturas/formacion.png"
+      },
+      {
+        "id": "contacto",
+        "archivo": "capturas/contacto.png"
+      }
+    ]
+  },
+  "contraste": [
+    {
+      "contexto": "span.rail__num",
+      "fontSizePx": 12.8,
+      "fontWeight": "400",
+      "color": "oklch(0.52 0.012 260)",
+      "fondo": "rgb(251, 250, 247)",
+      "ratio": 5.28,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "p.support",
+      "fontSizePx": 17,
+      "fontWeight": "400",
+      "color": "oklch(0.42 0.012 260)",
+      "fondo": "rgb(251, 250, 247)",
+      "ratio": 8.14,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "a.skip-link",
+      "fontSizePx": 17,
+      "fontWeight": "400",
+      "color": "oklch(0.18 0.012 260)",
+      "fondo": "rgb(234, 232, 226)",
+      "ratio": 15.34,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "h2",
+      "fontSizePx": 48.83,
+      "fontWeight": "600",
+      "color": "oklch(0.18 0.012 260)",
+      "fondo": "rgb(251, 250, 247)",
+      "ratio": 18,
+      "minimo": 3,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "h3",
+      "fontSizePx": 22,
+      "fontWeight": "600",
+      "color": "oklch(0.18 0.012 260)",
+      "fondo": "rgb(251, 250, 247)",
+      "ratio": 18,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    }
+  ],
+  "accesibilidad": [
+    {
+      "estado": "inicio",
+      "violaciones": [],
+      "seriousCritical": 0,
+      "passes": 23,
+      "inaplicables": 40,
+      "scrollHorizontalExcesoPx": 0,
+      "reducedMotion": {
+        "vivas": 0,
+        "declaradasSobreNeutro": 0,
+        "ejemplos": []
+      },
+      "targetsMenoresDe24px": []
+    },
+    {
+      "estado": "medio-de-escena",
+      "violaciones": [],
+      "seriousCritical": 0,
+      "passes": 23,
+      "inaplicables": 40,
+      "scrollHorizontalExcesoPx": 0,
+      "reducedMotion": {
+        "vivas": 0,
+        "declaradasSobreNeutro": 0,
+        "ejemplos": []
+      },
+      "targetsMenoresDe24px": []
+    },
+    {
+      "estado": "reflow-320",
+      "violaciones": [],
+      "seriousCritical": 0,
+      "passes": 23,
+      "inaplicables": 40,
+      "scrollHorizontalExcesoPx": 0,
+      "reducedMotion": {
+        "vivas": 0,
+        "declaradasSobreNeutro": 0,
+        "ejemplos": []
+      },
+      "targetsMenoresDe24px": []
+    },
+    {
+      "estado": "drawer-chat-abierto",
+      "aplicable": false,
+      "motivo": "El chat es Sprint 6+ (CHA-*). No hay drawer ni toggle en el DOM."
+    },
+    {
+      "estado": "drawer-video-reduced-motion",
+      "aplicable": false,
+      "motivo": "No hay <video> ni overlay de video: 0 videos en dist/ y el poster LCP es RNF-11, sin material todavia."
+    },
+    {
+      "estado": "error-carga-video",
+      "aplicable": false,
+      "motivo": "Sin fuente de video no hay error de carga que representar. El estado de error del video se medira con el video."
+    }
+  ]
+}

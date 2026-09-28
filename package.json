@@ -24,7 +24,13 @@
     "gate:budgets": "node scripts/gate-budgets.mjs",
     "gate:artifacts": "node --experimental-strip-types scripts/gate-artifacts.mjs",
     "gate": "pnpm status && pnpm format:check && pnpm typecheck && pnpm lint && pnpm check:cv && pnpm gate:tokens && pnpm build && pnpm gate:placeholders && pnpm gate:budgets && pnpm gate:artifacts",
-    "verify": "pnpm gate"
+    "verify": "pnpm gate",
+    "medir:estatico": "node --experimental-strip-types scripts/medir-estatico.mjs",
+    "medir:lab": "node --experimental-strip-types scripts/medir-lab.mjs",
+    "medir:lab:rapido": "node --experimental-strip-types scripts/medir-lab.mjs --rapido",
+    "medir:diseno": "python3 scripts/medir-diseno.py",
+    "medir:graficas": "node --experimental-strip-types scripts/graficas.mjs",
+    "medir": "pnpm build && pnpm medir:estatico && pnpm medir:lab && pnpm medir:diseno && pnpm medir:graficas"
   },
   "dependencies": {
     "astro": "^5.14.1",
@@ -32,10 +38,12 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9.36.0",
     "@types/node": "^26.6.3",
     "eslint": "^10.11.0",
     "globals": "^17.12.0",
+    "playwright": "1.63.0",
     "prettier": "^3.6.2",
     "stylelint": "^16.24.0",
     "stylelint-config-standard": "^39.0.1",

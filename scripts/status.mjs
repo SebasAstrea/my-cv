@@ -95,6 +95,69 @@ if (!chain.includes('build') && gateRows.some(([, , c]) => c === 'pnpm gate:arti
 }
 
 /* ------------------------------------------------------------------ *
+ * 3-bis. Las cifras de §1 contra la realidad
+ * ------------------------------------------------------------------ *
+ *
+ * §1 dice "N pasos" y "M items de deuda". Son las dos cifras del documento que mas se pudren,
+ * porque cambian solas cada vez que se anade un gate o una TD, y nadie vuelve a contarlas.
+ * La cabecera de este script describe justo ese fallo ("dice 8 pasos y son 9"), asi que
+ * dejarlo sin comprobar seria incoherente.
+ */
+
+const pasosDeclarados = status.match(/\*\*Gate\*\*.*?—\s*(\d+)\s*pasos?/s)
+if (pasosDeclarados) {
+  const declarado = Number(pasosDeclarados[1])
+  if (declarado !== chain.length) {
+    fail(
+      `STATUS.md §1 dice que \`pnpm gate\` tiene ${declarado} pasos y la cadena tiene ` +
+        `${chain.length}. Actualiza el numero en §1.`,
+    )
+  }
+}
+
+const backlog = readFileSync(join(ROOT, 'docs/BACKLOG.md'), 'utf8')
+const tdIds = [...backlog.matchAll(/^\|\s*`(TD-\d+)`\s*\|/gm)].map((m) => m[1])
+const tdDeclarados = status.match(
+  /\*\*Deuda registrada\*\*.*?(\d+)\s*ítems?.*?`TD-(\d+)`\.\.`TD-(\d+)`/s,
+)
+
+// Un check que no encuentra lo que busca y se calla es un check que siempre pasa: es el mismo
+// error que medir "0 KB" cuando no hay material. Si §1 cambia de forma, esto tiene que LUCHAR,
+// no saltarse en silencio.
+if (!tdDeclarados) {
+  fail(
+    'No se encontro la fila "**Deuda registrada**" en STATUS.md §1 con el formato ' +
+      '`N items (`TD-01`..`TD-NN` en `BACKLOG.md`)`. Actualiza el regex de status.mjs si ' +
+      'el formato cambio a proposito.',
+  )
+} else {
+  const [, cantidad, primero, ultimo] = tdDeclarados
+  // Los grupos capturan los DIGITOS, no el identificador completo: el `TD-` y las comillas
+  // quedan fuera del grupo.
+  const primeroCompleto = `TD-${primero}`
+  const ultimoCompleto = `TD-${ultimo}`
+  if (tdIds.length === 0) {
+    fail('BACKLOG.md no tiene filas `TD-*` pero STATUS.md §1 declara deuda registrada.')
+  } else {
+    const esperadoUltimo = `TD-${String(tdIds.length).padStart(2, '0')}`
+    if (Number(cantidad) !== tdIds.length) {
+      fail(`STATUS.md §1 dice ${cantidad} items de deuda y BACKLOG.md tiene ${tdIds.length}.`)
+    }
+    if (ultimoCompleto !== esperadoUltimo) {
+      fail(
+        `STATUS.md §1 dice que la deuda acaba en \`${ultimoCompleto}\` y BACKLOG.md tiene ` +
+          `${tdIds.length} items (${tdIds[0]}..${tdIds[tdIds.length - 1]}).`,
+      )
+    }
+    if (primeroCompleto !== tdIds[0]) {
+      fail(
+        `STATUS.md §1 empieza la deuda en \`${primeroCompleto}\` y BACKLOG.md empieza en \`${tdIds[0]}\`.`,
+      )
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ *
  * 4-5. Sprints
  * ------------------------------------------------------------------ */
 

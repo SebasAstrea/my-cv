@@ -1,0 +1,153 @@
+{
+  "generadoPor": "scripts/medir-estatico.mjs",
+  "sprint": "1-fundacion-y-toolchain",
+  "nivelProbatorio": "T5",
+  "budgets": [
+    {
+      "id": "RNF-07",
+      "label": "Transfer 1ª carga sin vídeo",
+      "categoria": "HTML + CSS + JS",
+      "maxKb": 350,
+      "actualKb": 4.8,
+      "presupuestoKb": 350,
+      "medible": true,
+      "pct": 1.4,
+      "usoPct": 1.4,
+      "estado": "ok"
+    },
+    {
+      "id": "RNF-08",
+      "label": "JS ruta crítica",
+      "categoria": "JavaScript",
+      "maxKb": 110,
+      "actualKb": 0,
+      "presupuestoKb": 110,
+      "medible": true,
+      "pct": 0,
+      "usoPct": 0,
+      "estado": "ok"
+    },
+    {
+      "id": "RNF-09",
+      "label": "CSS total",
+      "categoria": "CSS",
+      "maxKb": 24,
+      "actualKb": 2.6,
+      "presupuestoKb": 24,
+      "medible": true,
+      "pct": 10.8,
+      "usoPct": 10.8,
+      "estado": "ok"
+    },
+    {
+      "id": "RNF-10",
+      "label": "Fuentes (3 ficheros)",
+      "categoria": "Webfonts",
+      "maxKb": 90,
+      "actualKb": null,
+      "presupuestoKb": 90,
+      "medible": false,
+      "pct": null,
+      "usoPct": null,
+      "estado": "sin-medir"
+    },
+    {
+      "id": "RNF-11",
+      "label": "Poster LCP",
+      "categoria": "Imagen",
+      "maxKb": 70,
+      "actualKb": null,
+      "presupuestoKb": 70,
+      "medible": false,
+      "pct": null,
+      "usoPct": null,
+      "estado": "sin-medir"
+    },
+    {
+      "id": "RNF-12",
+      "label": "Primer segmento de vídeo",
+      "categoria": "Vídeo",
+      "maxKb": 800,
+      "actualKb": null,
+      "presupuestoKb": 800,
+      "medible": false,
+      "pct": null,
+      "usoPct": null,
+      "estado": "sin-medir"
+    }
+  ],
+  "composicion": {
+    "html": {
+      "raw": 9350,
+      "gzip": 2241
+    },
+    "css": [
+      {
+        "file": "_astro/index.CYt8vmfx.css",
+        "gzip": 2672
+      }
+    ],
+    "js": [],
+    "总": 2672
+  },
+  "tokens": {
+    "declarados": 71,
+    "locales": 2,
+    "total": 73,
+    "ficherosEscaneados": 8,
+    "porCategoria": {
+      "surface": 10,
+      "espacio": 10,
+      "tipografia": 7,
+      "radio": 3,
+      "motion": 6,
+      "z": 4,
+      "layout": 3,
+      "otros": 28
+    },
+    "literalesFueraDeTokens": []
+  },
+  "cobertura": {
+    "requisitosConEvidencia": 16,
+    "requisitosVerificados": 15,
+    "filasEvidencia": 22,
+    "filasCumplidas": 21,
+    "requisitosDeclaradosEnStatus": 0,
+    "requisitos": [
+      "RNF-80",
+      "RND-03",
+      "SEG-31",
+      "SEG-32",
+      "RNF-87",
+      "RNF-07",
+      "RNF-08",
+      "RNF-09",
+      "RNF-33",
+      "RNF-01",
+      "RNF-15",
+      "RNF-03",
+      "RNF-04",
+      "RUI-02",
+      "RNF-84"
+    ],
+    "sprintsRoadmap": 13,
+    "sprintsHechos": 2
+  },
+  "codigo": {
+    "ficheros": {
+      "ts": 7,
+      "astro": 5,
+      "css": 3,
+      "mjs": 9,
+      "md": 0
+    },
+    "lineas": {
+      "ts": 1321,
+      "astro": 368,
+      "css": 679,
+      "mjs": 2411,
+      "md": 0
+    },
+    "docsLoc": 2444
+  }
+}

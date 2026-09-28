@@ -1,0 +1,286 @@
+{
+  "generadoPor": "scripts/medir-diseno.py",
+  "sprint": "1-fundacion-y-toolchain",
+  "contraste": [
+    {
+      "contexto": "span.rail__num",
+      "fontSizePx": 12.8,
+      "fontWeight": "400",
+      "color": "oklch(0.52 0.012 260)",
+      "fondo": "rgb(251, 250, 247)",
+      "ratio": 5.28,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "p.support",
+      "fontSizePx": 17,
+      "fontWeight": "400",
+      "color": "oklch(0.42 0.012 260)",
+      "fondo": "rgb(251, 250, 247)",
+      "ratio": 8.14,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "a.skip-link",
+      "fontSizePx": 17,
+      "fontWeight": "400",
+      "color": "oklch(0.18 0.012 260)",
+      "fondo": "rgb(234, 232, 226)",
+      "ratio": 15.34,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "h2",
+      "fontSizePx": 48.83,
+      "fontWeight": "600",
+      "color": "oklch(0.18 0.012 260)",
+      "fondo": "rgb(251, 250, 247)",
+      "ratio": 18,
+      "minimo": 3,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "h3",
+      "fontSizePx": 22,
+      "fontWeight": "600",
+      "color": "oklch(0.18 0.012 260)",
+      "fondo": "rgb(251, 250, 247)",
+      "ratio": 18,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    }
+  ],
+  "resumenContraste": {
+    "evaluados": 5,
+    "incumplen": 0,
+    "nota": "oklch() no se convierte sin colorjs; los tokens en oklch salen como 'n/m' y quedan cubiertos por el calculo en el navegador, no por esta conversion."
+  },
+  "pixeles": [
+    {
+      "archivo": "capturas/identidad.png",
+      "id": "identidad",
+      "coberturaTintaPct": 3.63,
+      "pixelesAcentoPct": 0.0,
+      "areaEnBlancoPct": 96.37
+    },
+    {
+      "archivo": "capturas/perfil.png",
+      "id": "perfil",
+      "coberturaTintaPct": 3.41,
+      "pixelesAcentoPct": 0.0,
+      "areaEnBlancoPct": 96.59
+    },
+    {
+      "archivo": "capturas/experiencia.png",
+      "id": "experiencia",
+      "coberturaTintaPct": 3.67,
+      "pixelesAcentoPct": 0.0,
+      "areaEnBlancoPct": 96.33
+    },
+    {
+      "archivo": "capturas/proyectos.png",
+      "id": "proyectos",
+      "coberturaTintaPct": 3.21,
+      "pixelesAcentoPct": 0.0,
+      "areaEnBlancoPct": 96.79
+    },
+    {
+      "archivo": "capturas/stack.png",
+      "id": "stack",
+      "coberturaTintaPct": 3.67,
+      "pixelesAcentoPct": 0.0,
+      "areaEnBlancoPct": 96.33
+    },
+    {
+      "archivo": "capturas/formacion.png",
+      "id": "formacion",
+      "coberturaTintaPct": 2.09,
+      "pixelesAcentoPct": 0.0,
+      "areaEnBlancoPct": 97.91
+    },
+    {
+      "archivo": "capturas/contacto.png",
+      "id": "contacto",
+      "coberturaTintaPct": 2.03,
+      "pixelesAcentoPct": 0.0,
+      "areaEnBlancoPct": 97.97
+    }
+  ],
+  "capturasVacias": [],
+  "presupuestoDiseno": [
+    {
+      "id": "identidad",
+      "nodos": 11,
+      "caracteresApoyo": 163,
+      "textos": 11,
+      "pixeles": {
+        "archivo": "capturas/identidad.png",
+        "id": "identidad",
+        "coberturaTintaPct": 3.63,
+        "pixelesAcentoPct": 0.0,
+        "areaEnBlancoPct": 96.37
+      },
+      "cumple": false,
+      "incumplimientos": [
+        "nodos 11 > 6"
+      ]
+    },
+    {
+      "id": "perfil",
+      "nodos": 5,
+      "caracteresApoyo": 248,
+      "textos": 5,
+      "pixeles": {
+        "archivo": "capturas/perfil.png",
+        "id": "perfil",
+        "coberturaTintaPct": 3.41,
+        "pixelesAcentoPct": 0.0,
+        "areaEnBlancoPct": 96.59
+      },
+      "cumple": true,
+      "incumplimientos": []
+    },
+    {
+      "id": "experiencia",
+      "nodos": 14,
+      "caracteresApoyo": 757,
+      "textos": 14,
+      "pixeles": {
+        "archivo": "capturas/experiencia.png",
+        "id": "experiencia",
+        "coberturaTintaPct": 3.67,
+        "pixelesAcentoPct": 0.0,
+        "areaEnBlancoPct": 96.33
+      },
+      "cumple": false,
+      "incumplimientos": [
+        "nodos 14 > 6",
+        "caracteres de apoyo 757 > 280"
+      ]
+    },
+    {
+      "id": "proyectos",
+      "nodos": 12,
+      "caracteresApoyo": 534,
+      "textos": 12,
+      "pixeles": {
+        "archivo": "capturas/proyectos.png",
+        "id": "proyectos",
+        "coberturaTintaPct": 3.21,
+        "pixelesAcentoPct": 0.0,
+        "areaEnBlancoPct": 96.79
+      },
+      "cumple": false,
+      "incumplimientos": [
+        "nodos 12 > 6",
+        "caracteres de apoyo 534 > 280"
+      ]
+    },
+    {
+      "id": "stack",
+      "nodos": 27,
+      "caracteresApoyo": 602,
+      "textos": 27,
+      "pixeles": {
+        "archivo": "capturas/stack.png",
+        "id": "stack",
+        "coberturaTintaPct": 3.67,
+        "pixelesAcentoPct": 0.0,
+        "areaEnBlancoPct": 96.33
+      },
+      "cumple": false,
+      "incumplimientos": [
+        "nodos 27 > 6",
+        "caracteres de apoyo 602 > 280"
+      ]
+    },
+    {
+      "id": "formacion",
+      "nodos": 5,
+      "caracteresApoyo": 41,
+      "textos": 5,
+      "pixeles": {
+        "archivo": "capturas/formacion.png",
+        "id": "formacion",
+        "coberturaTintaPct": 2.09,
+        "pixelesAcentoPct": 0.0,
+        "areaEnBlancoPct": 97.91
+      },
+      "cumple": true,
+      "incumplimientos": []
+    },
+    {
+      "id": "contacto",
+      "nodos": 6,
+      "caracteresApoyo": 39,
+      "textos": 5,
+      "pixeles": {
+        "archivo": "capturas/contacto.png",
+        "id": "contacto",
+        "coberturaTintaPct": 2.03,
+        "pixelesAcentoPct": 0.0,
+        "areaEnBlancoPct": 97.97
+      },
+      "cumple": true,
+      "incumplimientos": []
+    }
+  ],
+  "accesibilidad": [
+    {
+      "estado": "inicio",
+      "aplicable": true,
+      "violaciones": 0,
+      "seriousCritical": 0,
+      "reflow320SinScrollHorizontal": true,
+      "animacionesVivasConReducedMotion": 0,
+      "targetsMenoresDe24px": 0,
+      "cumple": true
+    },
+    {
+      "estado": "medio-de-escena",
+      "aplicable": true,
+      "violaciones": 0,
+      "seriousCritical": 0,
+      "reflow320SinScrollHorizontal": true,
+      "animacionesVivasConReducedMotion": 0,
+      "targetsMenoresDe24px": 0,
+      "cumple": true
+    },
+    {
+      "estado": "reflow-320",
+      "aplicable": true,
+      "violaciones": 0,
+      "seriousCritical": 0,
+      "reflow320SinScrollHorizontal": true,
+      "animacionesVivasConReducedMotion": 0,
+      "targetsMenoresDe24px": 0,
+      "cumple": true
+    },
+    {
+      "estado": "drawer-chat-abierto",
+      "aplicable": false,
+      "motivo": "El chat es Sprint 6+ (CHA-*). No hay drawer ni toggle en el DOM.",
+      "cumple": null
+    },
+    {
+      "estado": "drawer-video-reduced-motion",
+      "aplicable": false,
+      "motivo": "No hay <video> ni overlay de video: 0 videos en dist/ y el poster LCP es RNF-11, sin material todavia.",
+      "cumple": null
+    },
+    {
+      "estado": "error-carga-video",
+      "aplicable": false,
+      "motivo": "Sin fuente de video no hay error de carga que representar. El estado de error del video se medira con el video.",
+      "cumple": null
+    }
+  ]
+}

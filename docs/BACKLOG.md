@@ -82,6 +82,12 @@ saboteó a sabiendas, con fecha de caducidad, para que no se pierda.
 | `TD-03` | `scripts/*.mjs` se lintan sin reglas type-aware. | Son CLI de Node; sus errores de tipo los caza `tsc --noEmit` igualmente. Las reglas type-aware solo producían ruido sobre `JSON.parse`. |—when se escriba lógica de dominio en un gate | `RNF-80` (parcial) |
 | `TD-04` | `.astro` queda fuera de ESLint. | `astro check` lo valida con el compilador real; el parser de TS solo vería el frontmatter y daría una imagen falsa del fichero. | Cuando haya plugin oficial de Astro para ESLint | — |
 | `TD-05` | `docs/` queda fuera de Prettier. | `SPEC.md` y `MEDICION.md` están escritos a mano con prosa a ~100 columnas y tablas anchas; Prettier realinearía las tablas enteras y el diff sería ilegible sin mejorar nada. | Cuando exista un formateador que no reescriba tablas existentes | — |
+| `TD-06` | **`astro@5.18.2` con 1 vulnerabilidad crítica (CVSS 9,8, RCE vía optimización AVIF) y 4 altas.** El fix exige Astro ≥ 7,2,8: dos versiones mayores. | Verificada **no explotable hoy**: 0 imágenes en `dist/`, sin `<Image>`, sin `astro:assets`, `slot=` literales, salida estática sin servidor. El riesgo se arma en cuanto entre el primer `<Image>`, que es el Sprint 5. No se migró porque hacerlo *después* de ver el número es el anti-patrón de `MEDICION.md` §9 y arriesgaría un baseline recién en verde. Detalle en el reporte de calidad §6. | Antes del Sprint 5 | `SEG-01..06` |
+| `TD-07` | `MEDICION.md` §5 pide 3 cachés; el estado `warm` no es medible porque **no hay Service Worker** y sin SW la segunda visita es idéntica a la primera. | No se mide un `warm` inexistente: se declararía `cold` con otro nombre. `MEDICION.md` §5 define `warm` como «con Service Worker activo». | Cuando exista el SW, o se corrija §5 | `RNF-07` |
+| `TD-08` | `MEDICION.md` §5 pide iPhone 12 (WebKit) y el estado no es medible: **WebKit no arranca** en este entorno (falta la librería de sistema `libicu74`). | Instalar una librería de sistema requiere `sudo`, fuera del alcance de un agente. Afecta también al contraste sobre vídeo de §4.4, que necesita Chromium+WebKit para cubrir iOS. | `sudo apt-get install libicu74` | `RNF-01`, `RUI-02` |
+| `TD-09` | Lighthouse no está instalado, así que el gate de §4.2 «Performance ≥ 0,95 / ≥ 0,98» no se ejecuta. | La medición de este sprint usa `PerformanceObserver` directamente, que mide LCP/TBT/CLS reales pero **no** produce el score de Lighthouse. Es una métrica distinta, no un sustituto. | Sprint 2 | `RNF-01..04` |
+| `TD-10` | `medir-diseno.py` requiere Python 3 con `pillow` y `numpy`, que no son dependencias de Node. | El muestreo de píxeles de §4.3 es array maths sobre imágenes; hacerlo en JS exigiría decodificar PNG a mano. Se documenta el prerrequisito en vez de instalar una dependencia nativa de Node que solo se usa al medir. | Cuando exista una razon para medir en CI | `RUI-01` |
+| `TD-11` | El presupuesto de diseño §4.3 incumple en 4 de 7 escenas con contenido semilla (27 nodos y 757 caracteres contra límites de 6 y 280). | **No es una regresión**: es el shell sin revelado progresivo (`RUI-30`, Sprint 4) y texto de fixture. **No se relajó ningún umbral** para que pasara (§9). Como gate de PR bloquearía cambios legítimos sobre esas escenas mientras el contenido sea semilla. | Al llegar contenido real | `RUI-30`, `RUI-52` |
 
 ## Gates registrados en CI
 
@@ -92,3 +98,20 @@ saboteó a sabiendas, con fecha de caducidad, para que no se pierda.
 | `gate:placeholders` | `pnpm gate:placeholders` | `RF-25` | En despliegue |
 | `gate:budgets` | `pnpm gate:budgets` | `RNF-07..12` | Sí |
 | `gate:artifacts` | `pnpm gate:artifacts` | `SEG-31`, `SEG-32` | Sí |
+
+## Reportes de calidad por sprint
+
+La medición vive en `docs/reportes-calidad/<sprint>/`. Un `REPORTE.md` y sus gráficas por
+sprint, con los datos crudos en JSON al lado para que las cifras del informe no estén tecleadas
+a mano.
+
+| Sprint | Reporte | Cobertura | Estado |
+|---|---|---|---|
+| 1 — Fundación y toolchain | `1-fundacion-y-toolchain/REPORTE.md` | T4/T5 completo. Sin datos T1/T2: no hay tráfico. 4 de 7 escenas incumplen §4.3, y 1 crítica de seguridad abierta (`TD-06`) | `DONE` |
+
+Reproducir: `pnpm medir`. Prerequisites: `playwright install chromium` (ya en el repo) y
+Python 3 con `pillow` + `numpy` para el muestreo de píxeles (`TD-10`).
+
+Estos scripts **no** forman parte de `pnpm gate`: la medición completa tarda minutos y necesita
+navegador, mientras que `pnpm gate` es el gate rápido de PR. La medición se ejecuta a demanda
+y en el reporte semanal de `MEDICION.md` §8.
