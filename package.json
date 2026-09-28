@@ -33,11 +33,11 @@
     "medir": "pnpm build && pnpm medir:estatico && pnpm medir:lab && pnpm medir:diseno && pnpm medir:graficas"
   },
   "dependencies": {
-    "astro": "^5.14.1",
+    "astro": "^7.3.5",
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.4",
+    "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9.36.0",
     "@types/node": "^26.6.3",
