@@ -170,6 +170,13 @@ if (video !== null) {
   })
 }
 
+/* Si tampoco hay poster (p. ej. despliegue sin clips), se oculta en vez de mostrar un roto. */
+if (posterImg !== null) {
+  posterImg.addEventListener('error', () => {
+    posterImg.hidden = true
+  })
+}
+
 /* Re-evalua al cambiar las preferencias o el ancho. */
 window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
   if (activeIndex !== -1) activate(activeIndex)
