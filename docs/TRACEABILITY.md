@@ -291,6 +291,27 @@ opacidad de video, area en blanco) depende del video (Sprint 5) y de la medicion
 
 ---
 
+## 12 sexies. Trabajo adelantado — Seguridad (Sprint 9) y Rendimiento (Sprint 8)
+
+El Sprint 5 (vídeo) está bloqueado por material externo (`ABR-05`). Por decisión del PO se
+adelanta el trabajo que **no depende del vídeo** en los Sprints 8 y 9.
+
+| Requisito | Método | Comando | Resultado | Estado |
+|---|---|---|---|---|
+| `RNF-62` / `SEG-02` | T: CSP con hash del script inline, sin `unsafe-eval`/`unsafe-inline` | `pnpm gate:security` | 1 hash inline recalculado; directivas exigidas presentes | **Cumplido** |
+| `SEG-03` | T: `nosniff`, `Referrer-Policy`, `Permissions-Policy`, COOP | `pnpm gate:security` | presentes y válidas en `_headers` + `vercel.json` | **Cumplido** |
+| `SEG-05` | T: `frame-ancestors 'none'` (+ `X-Frame-Options: DENY`) | `pnpm gate:security` | presente | **Cumplido** |
+| `RNF-63` / `SEG-01` | T: HSTS `max-age` + `includeSubDomains` + `preload` | `pnpm gate:security` | presente en ambas configs | **Cumplido** |
+| `RNF-72` | T: `_headers` versionado y coherente con `vercel.json` | `pnpm gate:security` | las dos CSP coinciden | **Parcial** (sondeo HTTP del preview: Sprint 12) |
+| `SEG-21` / `RNF-61` | T: auditoría de dependencias de producción | `pnpm audit --audit-level=high` | 0 vulnerabilidades | **Cumplido** |
+
+**Pendiente de seguridad (depende del chat o del release):** `SEG-22` (SBOM CycloneDX en cada
+release), `SEG-25`/`SEG-33..35`/`RNF-67/68/69` (chat: prompt server-only, rate limit, Turnstile,
+privacidad), `SEG-23/24` (pesos del modelo), `SEG-44` (supresión). Sprint 9 completo se cierra
+con el chat (Sprints 6-7) y el release (Sprint 12).
+
+---
+
 ## 13. Definición de Hecho (DoD) por requisito
 
 Para que un requisito pase a "cumplido" en la matriz:

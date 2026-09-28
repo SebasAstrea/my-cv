@@ -20,7 +20,7 @@
 |---|---|
 | **Sprint activo** | **5 — Sistema de vídeo** (bloqueado: faltan los clips, `ABR-05`) |
 | **Último sprint aceptado** | **4 — Divulgación progresiva y presupuesto** (`ACCEPTED`) |
-| **Gate** | `pnpm gate` — 12 pasos, exit 0 |
+| **Gate** | `pnpm gate` — 13 pasos, exit 0 |
 | **Bloqueo** | Ninguno conocido |
 | **Deuda registrada** | 11 ítems (`TD-01`..`TD-11` en `BACKLOG.md`) |
 | **Riesgos abiertos** | 8 aceptados (`RK-01`..`RK-08` en `TRACEABILITY.md` §12) |
@@ -35,6 +35,11 @@ integrar; se puede avanzar en el resto (rendimiento, seguridad) mientras tanto.
 pnpm gate:saturation   # RUI-30..37: <= 6 nodos y <= 280 caracteres visibles por escena
 pnpm gate:keyboard     # navegación, teclado, RF-13 y revelado de email (RF-27)
 ```
+
+**Trabajo adelantado (decisión del PO):** como el Sprint 5 está bloqueado por los clips, se
+adelantan el **Sprint 9 (seguridad)** — cabeceras + CSP con hash del script inline y auditoría de
+dependencias (`gate:security`, `SEG-02/03/05`, `RNF-62/63`) — y el **Sprint 8 (rendimiento)**.
+Detalle en `TRACEABILITY.md` §12 sexies.
 
 ---
 
@@ -92,13 +97,14 @@ Cada fila debe corresponded con un script real de `package.json` y con un ficher
 | `gate:tokens` | `pnpm gate:tokens` | `RNF-87`, `RUI-70`, `RUI-24` — 0 literales fuera de tokens | Sí |
 | `build` | `pnpm build` | Genera `dist/`. Sin él, los tres gates siguientes no tienen nada que medir | Sí |
 | `gate:ats` | `pnpm gate:ats` | `RNF-33`, `RNF-100`, `RND-08` — HTML semántico + JSON-LD `Person`/`Occupation` y los 4 exportadores en `dist/` | Sí |
+| `gate:security` | `pnpm gate:security` | `SEG-02/03/05`, `RNF-62/63` — CSP (hash del script inline recalculado) y cabeceras en `_headers` + `vercel.json` | Sí |
 | `gate:placeholders` | `pnpm gate:placeholders` | `RF-25` — marcadores de fixture | En despliegue |
 | `gate:budgets` | `pnpm gate:budgets` | `RNF-07..12` — budgets sobre `dist/` real | Sí |
 | `gate:artifacts` | `pnpm gate:artifacts` | `SEG-31`, `SEG-32` — ningún campo `private` en cliente | Sí |
 
 **Comando único:** `pnpm gate` = `status` → `format:check` → `typecheck` → `lint` → `test`
-→ `check:cv` → `gate:tokens` → `build` → `gate:ats` → `gate:placeholders` → `gate:budgets`
-→ `gate:artifacts`.
+→ `check:cv` → `gate:tokens` → `build` → `gate:ats` → `gate:security` → `gate:placeholders`
+→ `gate:budgets` → `gate:artifacts`.
 Equivale a `pnpm verify`.
 
 **Fuera de `pnpm gate` (gates de sprint):** `pnpm gate:keyboard` (`RF-02..06`, `RF-09`, `RF-13`,

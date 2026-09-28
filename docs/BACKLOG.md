@@ -96,6 +96,7 @@ saboteó a sabiendas, con fecha de caducidad, para que no se pierda.
 | `check:cv` | `node --experimental-strip-types scripts/check-cv.mjs` | `RF-20`, `RND-03` | Sí |
 | `gate:tokens` | `pnpm gate:tokens` | `RNF-87`, `RUI-70` | Sí |
 | `gate:ats` | `pnpm gate:ats` | `RNF-33`, `RNF-100`, `RND-08` | Sí |
+| `gate:security` | `pnpm gate:security` | `SEG-02/03/05`, `RNF-62/63` | Sí |
 | `gate:keyboard` | `pnpm gate:keyboard` | `RF-02..06`, `RF-09`, `RF-13` (Playwright) | Sí (job `keyboard`) |
 | `gate:saturation` | `pnpm gate:saturation` | `RUI-30..37`, `RUI-52` (Playwright) | Sí (job `keyboard`) |
 | `gate:placeholders` | `pnpm gate:placeholders` | `RF-25` | En despliegue |

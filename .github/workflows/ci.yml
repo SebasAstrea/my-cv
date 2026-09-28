@@ -44,6 +44,10 @@ jobs:
       - name: Instalar dependencias
         run: pnpm install --frozen-lockfile
 
+      # `SEG-21` / `RNF-61`: dependencias de produccion sin vulnerabilidades de severidad alta.
+      - name: Auditoria de dependencias
+        run: pnpm audit --audit-level=high
+
       # Un solo `pnpm gate`: typecheck, lint, validacion del CV, tokens, build, placeholders,
       # budgets y artefactos. La cadena esta en `package.json`; duplicarla aqui la dejaria
       # desincronizada en el primer sprint que anada un gate.
