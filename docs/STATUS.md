@@ -20,7 +20,7 @@
 |---|---|
 | **Sprint activo** | **2 — Fuente de verdad y render SSR** (recién planificado, sin empezar) |
 | **Último sprint aceptado** | **1 — Fundación y toolchain** (`ACCEPTED`, commit `b7f1cb8`) |
-| **Gate** | `pnpm gate` — 10 pasos, exit 0 |
+| **Gate** | `pnpm gate` — 11 pasos, exit 0 |
 | **Bloqueo** | Ninguno conocido |
 | **Deuda registrada** | 11 ítems (`TD-01`..`TD-11` en `BACKLOG.md`) |
 | **Riesgos abiertos** | 8 aceptados (`RK-01`..`RK-08` en `TRACEABILITY.md` §12) |
@@ -83,6 +83,7 @@ Cada fila debe corresponded con un script real de `package.json` y con un ficher
 | `format:check` | `pnpm format:check` | Consistencia de formato del código (`docs/` exento a propósito) | Sí |
 | `typecheck` | `pnpm typecheck` | `RNF-80` — `strict`, `noUncheckedIndexedAccess`, 0 `any` | Sí |
 | `lint` | `pnpm lint` | `RNF-80`, `ADR-0002` — ESLint + Stylelint | Sí |
+| `test` | `pnpm test` | Pruebas unitarias (`node:test`) sobre fechas y documento | Sí |
 | `check:cv` | `pnpm check:cv` | `RF-20`, `RND-03` — schema Zod y reglas cruzadas | Sí |
 | `gate:tokens` | `pnpm gate:tokens` | `RNF-87`, `RUI-70`, `RUI-24` — 0 literales fuera de tokens | Sí |
 | `build` | `pnpm build` | Genera `dist/`. Sin él, los tres gates siguientes no tienen nada que medir | Sí |
@@ -90,8 +91,8 @@ Cada fila debe corresponded con un script real de `package.json` y con un ficher
 | `gate:budgets` | `pnpm gate:budgets` | `RNF-07..12` — budgets sobre `dist/` real | Sí |
 | `gate:artifacts` | `pnpm gate:artifacts` | `SEG-31`, `SEG-32` — ningún campo `private` en cliente | Sí |
 
-**Comando único:** `pnpm gate` = `status` → `format:check` → `typecheck` → `lint` → `check:cv`
-→ `gate:tokens` → `build` → `gate:placeholders` → `gate:budgets` → `gate:artifacts`.
+**Comando único:** `pnpm gate` = `status` → `format:check` → `typecheck` → `lint` → `test`
+→ `check:cv` → `gate:tokens` → `build` → `gate:placeholders` → `gate:budgets` → `gate:artifacts`.
 Equivale a `pnpm verify`.
 
 ### 3.1 Gates probados en negativo

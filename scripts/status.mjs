@@ -63,6 +63,7 @@ for (const [, name, command] of gateRows) {
     'format:check',
     'status',
     'build',
+    'test',
   ].includes(script)
   if (!hasOwnFile && !isWrapper) {
     fail(

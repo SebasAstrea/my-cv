@@ -39,20 +39,44 @@ export function monthsBetween(startIso: string, endIso: string): number | undefi
 }
 
 /**
+ * El mes en curso como `YYYY-MM`, **en hora local y no en UTC**.
+ *
+ * `now.toISOString().slice(0, 7)` parece equivalente y no lo es: `toISOString()` devuelve
+ * UTC. A las 00:30 del dia 1 en Madrid (UTC+2) eso responde "agosto" cuando el calendario
+ * local ya dice septiembre, de modo que todo rol en curso pierde un mes y "2 anos 7 meses"
+ * se muestra como "2 anos 6 meses". Un ATS que contraste el HTML contra el PDF ve la
+ * contradiccion, y `RND-02` deriva los anos de experiencia del mismo mes.
+ *
+ * Se devuelve la cadena y no el indice a proposito: el resto del modulo la compara
+ * lexicograficamente contra fechas `YYYY-MM` del dato, y los indices obligarian a
+ * reconvertir en cada comparacion.
+ */
+export function localMonth(now: Date): string {
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  return `${year}-${month}`
+}
+
+/**
  * `RF-23`: "3 anos 7 meses" a partir de dos fechas ISO. Sin fechas hardcodeadas.
  * Devuelve el texto relativo; el absoluto lo compone el presentador.
  */
 export function formatDuration(startIso: string, endIso: string | null, now: Date): string {
-  const end = endIso ?? now.toISOString().slice(0, 7)
+  const end = endIso ?? localMonth(now)
   const months = monthsBetween(startIso, end)
   if (months === undefined) return ''
   if (months <= 0) return 'menos de un mes'
 
   const years = Math.floor(months / 12)
   const rest = months % 12
+  const monthPart = `${rest} ${rest === 1 ? 'mes' : 'meses'}`
+  // Menos de un ano no se dice "0 anos 7 meses": se dice "7 meses". El caso no aparece en el
+  // fixture porque todos sus roles duran mas de un ano, asi que salia solo al rellenar el CV
+  // real con un puesto de menos de doce meses.
+  if (years === 0) return monthPart
   const yearPart = years === 1 ? '1 ano' : `${years} anos`
   if (rest === 0) return yearPart
-  return `${yearPart} ${rest} ${rest === 1 ? 'mes' : 'meses'}`
+  return `${yearPart} ${monthPart}`
 }
 
 /** `RF-23`: "Mar 2022 - Presente". */
@@ -105,7 +129,7 @@ const issue = (path: string, message: string, requirement: string): CvIssue => (
  */
 function collectIntegrityIssues(cv: CvDocument, now: Date): CvIssue[] {
   const issues: CvIssue[] = []
-  const nowMonth = now.toISOString().slice(0, 7)
+  const nowMonth = localMonth(now)
 
   // --- Unicidad de ids en cada coleccion ---
   const collections = {
@@ -312,7 +336,7 @@ export function toPublicCv(cv: CvDocument): PublicCvDocument {
  * atar el calculo al documento privado haria que cada presentador leyera el original.
  */
 export function totalExperienceMonths(cv: PublicCvDocument, now: Date = new Date()): number {
-  const nowMonth = now.toISOString().slice(0, 7)
+  const nowMonth = localMonth(now)
   const covered = new Set<number>()
   for (const r of cv.roles) {
     const from = monthIndex(r.start)

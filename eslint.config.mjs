@@ -35,7 +35,15 @@ export default tseslint.config(
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   {
-    files: ['src/**/*.ts'],
+    // `tests/` entra en el mismo set type-aware que `src/`, y no por conveniencia.
+    //
+    // Los presets `strictTypeChecked` se aplican a todos los ficheros, asi que un `.ts` fuera
+    // de este bloque recibe reglas que piden informacion de tipos sin proyecto detras y ESLint
+    // revienta con un error de `parserServices` en vez de un diagnostico util.
+    //
+    // Y un test merece el mismo/set mas estricto que el codigo que prueba: un `any` en una
+    // asercion es la forma mas facil de escribir un test que no comprueba nada.
+    files: ['src/**/*.ts', 'tests/**/*.ts'],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -57,6 +65,20 @@ export default tseslint.config(
       '@typescript-eslint/no-unnecessary-condition': 'off',
       eqeqeq: ['error', 'always', { null: 'ignore' }],
       'no-console': ['error', { allow: ['warn', 'error', 'info'] }],
+    },
+  },
+  {
+    // Excepcion acotada a los ficheros de test, y con motivo concreto.
+    //
+    // `test()` y `describe()` de `node:test` devuelven una promesa que el runner registra por
+    // su cuenta; el uso documentado es declararlos sin `await`. La regla marca esas 42 llamadas
+    // como promesas flotantes, asi que activarla aqui solo obligaria a ensuciar cada
+    // declaracion con `void`, que es peor: esconderia de verdad las promesas mal esperadas del
+    // resto del fichero. El resto de reglas type-aware sigue activa, y un `any` en una
+    // asercion —la forma mas facil de escribir un test que no comprueba nada— sigue fallando.
+    files: ['tests/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'off',
     },
   },
   {
