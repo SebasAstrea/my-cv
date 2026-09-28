@@ -172,6 +172,25 @@ try {
     ok(`tema conmuta (${before}→${after}) y persiste`, 'RF-09')
   else fail('tema', `before=${before} after=${after} persisted=${persisted}`)
 
+  // 8. `RF-13`: la URL del detalle de proyecto es compartible y lo abre.
+  const projectId = await page.evaluate(
+    () => document.querySelector('details[id^="proyecto-"]')?.id ?? null,
+  )
+  if (projectId === null) {
+    fail('RF-13', 'no hay ningun <details> de proyecto')
+  } else {
+    await page.goto(`${origin}/#${projectId}`, { waitUntil: 'load' })
+    const openVisible = await page.evaluate((id) => {
+      const el = document.getElementById(id)
+      return el instanceof HTMLDetailsElement && el.open && el.checkVisibility()
+    }, projectId)
+    if (openVisible) {
+      ok(`deep-link abre el detalle ${projectId}`, 'RF-13')
+    } else {
+      fail('RF-13', `#${projectId} no abre el detalle`)
+    }
+  }
+
   await context.close()
 } finally {
   await browser.close()

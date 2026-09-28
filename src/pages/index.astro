@@ -2,14 +2,13 @@
 /**
  * Pagina unica — `RF-01`, `RNF-33`, `RF-07`, `SUP-05`.
  *
- * Este es el unico documento. Se renderiza entero en build, sin JS, y es lo que lee el ATS
- * (`RNF-33`) y lo que lee una persona con el scripting deshabilitado (`RF-07`). El contenido
- * sale integro de `getCv()`, que ya paso por `toPublicCv`: no hay PII en el HTML generado
- * (`SEG-31`).
+ * `RUI-30..31` (presupuesto de saturacion, "el requisito central"): cada escena muestra el
+ * minimo (titulo, apoyo, una accion y <= 3 chips) y el resto vive en un `<details>` colapsado.
+ * Se usa `<details>` nativo y no un drawer con JS porque asi el detalle sigue siendo legible
+ * sin scripting (`RF-07`, `RNF-101`) y accesible de serie (foco, `aria-expanded` implicito).
  *
- * Sprint 2: las 7 escenas muestran el CV real al completo. La divulgacion progresiva (drawer
- * de detalle, `RUI-31`) y el revelado del email (`RF-27`) llegan en el Sprint 4; por eso el
- * contacto solo publica los enlaces publicos.
+ * `RF-13`: cada proyecto es a su vez un `<details>` colapsado con id estable
+ * (`#proyecto-<slug>`), de modo que su URL es compartible.
  */
 
 import Base from '../layouts/Base.astro'
@@ -79,198 +78,216 @@ const scene = (id: string) => {
       class="scene--identity"
       level={1}
     >
-      <dl class="facts mono">
-        <dt>Rol</dt>
-        <dd>{cv.person.role}</dd>
-        <dt>Experiencia</dt>
-        <dd>{years} años</dd>
-        <dt>Ubicación</dt>
-        <dd>{cv.person.location}</dd>
-      </dl>
-      <ul class="links">
-        {cv.contact.github !== undefined && (
-          <li>
-            <a href={cv.contact.github}>GitHub</a>
-          </li>
-        )}
-        {cv.contact.linkedin !== undefined && (
-          <li>
-            <a href={cv.contact.linkedin}>LinkedIn</a>
-          </li>
-        )}
+      <ul class="chips">
+        <li class="chip">{cv.person.role}</li>
+        <li class="chip">{years} años</li>
+        <li class="chip">{cv.person.location}</li>
       </ul>
+      <details class="detail">
+        <summary class="detail__summary">Enlaces</summary>
+        <ul class="links">
+          {cv.contact.github !== undefined && (
+            <li>
+              <a href={cv.contact.github}>GitHub</a>
+            </li>
+          )}
+          {cv.contact.linkedin !== undefined && (
+            <li>
+              <a href={cv.contact.linkedin}>LinkedIn</a>
+            </li>
+          )}
+        </ul>
+      </details>
     </Scene>
 
     {/* 01 — Perfil. */}
-    <Scene meta={scene('perfil')} title="Perfil">
-      <p class="prose">{cv.summary}</p>
+    <Scene meta={scene('perfil')} title="Perfil" support="Resumen profesional.">
+      <details class="detail">
+        <summary class="detail__summary">Perfil completo</summary>
+        <p class="prose">{cv.summary}</p>
+      </details>
     </Scene>
 
     {/* 02 — Experiencia. `RFU-02` mide si se encuentra rol + empresa mas recientes, asi que
         el primer item de la lista es deliberadamente el mas reciente. */}
     <Scene meta={scene('experiencia')} title="Experiencia" support={`${years} años.`}>
-      <ol class="entries">
-        {cv.roles.map((role) => (
-          <li class="entry">
-            <h3 class="entry__title">
-              {role.title} <span class="entry__company">{role.company}</span>
-            </h3>
-            <p class="entry__meta mono">
-              {formatRange(role.start, role.end)} · {formatDuration(role.start, role.end, now)}
-              {role.location !== undefined && ` · ${role.location}`}
-            </p>
-            <p class="entry__scope">{role.scope}</p>
-            <ul class="highlights">
-              {role.highlights.map((highlight) => (
-                <li class="highlight">
-                  {highlight.text}{' '}
-                  <span class="metric">
-                    {highlight.metric.value} {highlight.metric.unit}
-                  </span>
-                  {highlight.metric.evidence !== undefined && (
-                    <>
-                      {' '}
-                      <a class="metric__source" href={highlight.metric.evidence}>
-                        evidencia
-                      </a>
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ol>
+      <details class="detail">
+        <summary class="detail__summary">Roles y logros</summary>
+        <ol class="entries">
+          {cv.roles.map((role) => (
+            <li class="entry">
+              <h3 class="entry__title">
+                {role.title} <span class="entry__company">{role.company}</span>
+              </h3>
+              <p class="entry__meta mono">
+                {formatRange(role.start, role.end)} · {formatDuration(role.start, role.end, now)}
+                {role.location !== undefined && ` · ${role.location}`}
+              </p>
+              <p class="entry__scope">{role.scope}</p>
+              <ul class="highlights">
+                {role.highlights.map((highlight) => (
+                  <li class="highlight">
+                    {highlight.text}{' '}
+                    <span class="metric">
+                      {highlight.metric.value} {highlight.metric.unit}
+                    </span>
+                    {highlight.metric.evidence !== undefined && (
+                      <>
+                        {' '}
+                        <a class="metric__source" href={highlight.metric.evidence}>
+                          evidencia
+                        </a>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ol>
+      </details>
     </Scene>
 
-    {/* 03 — Proyectos. */}
+    {/* 03 — Proyectos. `RF-13`: cada proyecto es un detalle expandible con URL propia. */}
     <Scene
       meta={scene('proyectos')}
       title="Proyectos"
       support={`${cv.projects.length} destacados.`}
     >
-      <ol class="entries">
-        {cv.projects.map((project) => (
-          <li class="entry">
-            <h3 class="entry__title">
-              {project.link !== undefined ? (
-                <a href={project.link}>{project.name}</a>
-              ) : (
-                project.name
-              )}
-            </h3>
-            <p class="entry__meta mono">{project.role}</p>
-            <p class="entry__scope">{project.problem}</p>
-            <ul class="tags">
-              {project.stack.map((tech) => (
-                <li class="tag">{tech}</li>
-              ))}
-            </ul>
-            <p class="entry__outcome">{project.outcome}</p>
-            {project.evidence !== undefined && (
-              <p class="mono">
-                <a href={project.evidence}>Evidencia</a>
-              </p>
-            )}
-          </li>
-        ))}
-      </ol>
+      <details class="detail">
+        <summary class="detail__summary">Ver proyectos</summary>
+        <ol class="entries">
+          {cv.projects.map((project) => (
+            <li class="entry">
+              <details class="detail" id={`proyecto-${project.id}`}>
+                <summary class="detail__summary">{project.name}</summary>
+                <p class="entry__meta mono">{project.role}</p>
+                <p class="entry__scope">{project.problem}</p>
+                <ul class="tags">
+                  {project.stack.map((tech) => (
+                    <li class="tag">{tech}</li>
+                  ))}
+                </ul>
+                <p class="entry__outcome">{project.outcome}</p>
+                {project.link !== undefined && (
+                  <p class="mono">
+                    <a href={project.link}>{project.link}</a>
+                  </p>
+                )}
+                {project.evidence !== undefined && (
+                  <p class="mono">
+                    <a href={project.evidence}>Evidencia</a>
+                  </p>
+                )}
+              </details>
+            </li>
+          ))}
+        </ol>
+      </details>
     </Scene>
 
     {/* 04 — Stack. `RF-22`: cada nivel declara su significado. */}
     <Scene meta={scene('stack')} title="Stack" support="Niveles con significado declarado.">
-      <div class="entries">
-        {cv.stack.map((group) => (
-          <section class="entry">
-            <h3 class="entry__title">{group.label}</h3>
-            <ul class="tags">
-              {group.items.map((item) => (
-                <li class="tag">
-                  {item.name} · {item.level}
-                  {item.years !== undefined && ` · ${item.years} años`}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
-      <dl class="levels">
-        {levelsUsed.map((level) => (
-          <>
-            <dt class="mono">{level}</dt>
-            <dd>{STACK_LEVELS[level]}</dd>
-          </>
-        ))}
-      </dl>
+      <details class="detail">
+        <summary class="detail__summary">Ver stack</summary>
+        <div class="entries">
+          {cv.stack.map((group) => (
+            <section class="entry">
+              <h3 class="entry__title">{group.label}</h3>
+              <ul class="tags">
+                {group.items.map((item) => (
+                  <li class="tag">
+                    {item.name} · {item.level}
+                    {item.years !== undefined && ` · ${item.years} años`}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+        <dl class="levels">
+          {levelsUsed.map((level) => (
+            <>
+              <dt class="mono">{level}</dt>
+              <dd>{STACK_LEVELS[level]}</dd>
+            </>
+          ))}
+        </dl>
+      </details>
     </Scene>
 
     {/* 05 — Formación, certificaciones y publicaciones. */}
     <Scene meta={scene('formacion')} title="Formación" support={`${formationCount} entradas.`}>
-      {cv.education.length > 0 && (
-        <ol class="entries">
-          {cv.education.map((entry) => (
-            <li class="entry">
-              <h3 class="entry__title">{entry.title}</h3>
-              <p class="entry__meta mono">
-                {entry.institution} · {formatRange(entry.start, entry.end)}
-              </p>
-              {entry.detail !== undefined && <p class="entry__scope">{entry.detail}</p>}
-            </li>
-          ))}
-        </ol>
-      )}
-
-      {cv.certifications.length > 0 && (
-        <section class="entry">
-          <h3 class="entry__title">Certificaciones</h3>
-          <ul class="highlights">
-            {cv.certifications.map((cert) => (
-              <li class="highlight">
-                {cert.name} — {cert.issuer}
-                <br />
-                <span class="mono">
-                  {cert.date}
-                  {cert.expires !== null && ` · caduca ${cert.expires}`}
-                </span>
+      <details class="detail">
+        <summary class="detail__summary">Ver formación</summary>
+        {cv.education.length > 0 && (
+          <ol class="entries">
+            {cv.education.map((entry) => (
+              <li class="entry">
+                <h3 class="entry__title">{entry.title}</h3>
+                <p class="entry__meta mono">
+                  {entry.institution} · {formatRange(entry.start, entry.end)}
+                </p>
+                {entry.detail !== undefined && <p class="entry__scope">{entry.detail}</p>}
               </li>
             ))}
-          </ul>
-        </section>
-      )}
+          </ol>
+        )}
 
-      {cv.publications.length > 0 && (
-        <section class="entry">
-          <h3 class="entry__title">Publicaciones</h3>
-          <ul class="highlights">
-            {cv.publications.map((pub) => (
-              <li class="highlight">
-                <a href={pub.url}>{pub.title}</a>
-                <br />
-                <span class="mono">
-                  {pub.kind} · {pub.date}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+        {cv.certifications.length > 0 && (
+          <section class="entry">
+            <h3 class="entry__title">Certificaciones</h3>
+            <ul class="highlights">
+              {cv.certifications.map((cert) => (
+                <li class="highlight">
+                  {cert.name} — {cert.issuer}
+                  <br />
+                  <span class="mono">
+                    {cert.date}
+                    {cert.expires !== null && ` · caduca ${cert.expires}`}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {cv.publications.length > 0 && (
+          <section class="entry">
+            <h3 class="entry__title">Publicaciones</h3>
+            <ul class="highlights">
+              {cv.publications.map((pub) => (
+                <li class="highlight">
+                  <a href={pub.url}>{pub.title}</a>
+                  <br />
+                  <span class="mono">
+                    {pub.kind} · {pub.date}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </details>
     </Scene>
 
-    {/* 06 — Contacto. Sin datos privados: `toPublicCv` los elimino en build (`SEG-31`).
-        El revelado del email (`RF-27`) llega en el Sprint 4. */}
+    {/* 06 — Contacto. Sin datos privados: `toPublicCv` los elimino en build (`SEG-31`). */}
     <Scene meta={scene('contacto')} title="Contacto" support="Escríbeme.">
-      <ul class="links">
-        {cv.contact.github !== undefined && (
-          <li>
-            <a href={cv.contact.github}>GitHub</a>
-          </li>
-        )}
-        {cv.contact.linkedin !== undefined && (
-          <li>
-            <a href={cv.contact.linkedin}>LinkedIn</a>
-          </li>
-        )}
-      </ul>
+      <details class="detail">
+        <summary class="detail__summary">Enlaces</summary>
+        <ul class="links">
+          {cv.contact.github !== undefined && (
+            <li>
+              <a href={cv.contact.github}>GitHub</a>
+            </li>
+          )}
+          {cv.contact.linkedin !== undefined && (
+            <li>
+              <a href={cv.contact.linkedin}>LinkedIn</a>
+            </li>
+          )}
+        </ul>
+      </details>
     </Scene>
 
     {isFixture && <FixtureBanner />}

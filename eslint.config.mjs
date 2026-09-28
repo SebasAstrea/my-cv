@@ -103,7 +103,12 @@ export default tseslint.config(
     // `window`/`document` aqui, `no-undef` marca como no definido precisamente el codigo que si
     // lo esta. Es mas honesto que un `eslint-disable` por linea: los dos entornos son reales en
     // estos ficheros, no es codigo muerto que hay que silenciar.
-    files: ['scripts/medir-*.mjs', 'scripts/graficas.mjs', 'scripts/gate-keyboard.mjs'],
+    files: [
+      'scripts/medir-*.mjs',
+      'scripts/graficas.mjs',
+      'scripts/gate-keyboard.mjs',
+      'scripts/gate-saturation.mjs',
+    ],
     languageOptions: {
       globals: { ...globals.node, ...globals.browser },
     },

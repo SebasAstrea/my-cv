@@ -172,3 +172,34 @@ if (themeToggle !== null) {
     applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light')
   })
 }
+
+/* ------------------------------------------------------------------ *
+ * `RF-13`: cada detalle de proyecto tiene URL compartible (`#proyecto-<slug>`).
+ * ------------------------------------------------------------------ */
+
+/** Abre desde el hash el `<details>` destino y todos sus ancestros `<details>`. */
+function openDetailFromHash(): void {
+  const id = location.hash.replace('#', '')
+  if (id === '') return
+  const target = document.getElementById(id)
+  if (target === null) return
+  let node: HTMLElement | null = target
+  let opened = false
+  while (node !== null) {
+    if (node instanceof HTMLDetailsElement && !node.open) {
+      node.open = true
+      opened = true
+    }
+    node = node.parentElement
+  }
+  if (opened) target.scrollIntoView({ block: 'center' })
+}
+
+openDetailFromHash()
+window.addEventListener('hashchange', openDetailFromHash)
+
+for (const details of document.querySelectorAll<HTMLDetailsElement>('details[id^="proyecto-"]')) {
+  details.addEventListener('toggle', () => {
+    if (details.open) history.replaceState(null, '', `#${details.id}`)
+  })
+}

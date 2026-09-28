@@ -269,6 +269,27 @@ el toggle vía `--target-min`, pendiente de la medición por píxel de `MEDICION
 
 ---
 
+## 12 quinquies. Verificación ejecutada — Sprint 4 (Divulgación progresiva y presupuesto)
+
+Gate principal: `pnpm gate:saturation` (Playwright, job `keyboard` de CI). Resultado: 7 escenas
+dentro de presupuesto. Estado `WIP`: faltan email (`RF-26/27`) y PDF (`RF-11`).
+
+| Requisito | Método | Comando | Resultado | Estado |
+|---|---|---|---|---|
+| `RUI-30` | T: ≤ 6 nodos de contenido y ≤ 280 caracteres visibles por escena | `pnpm gate:saturation` | escena-00 6 nodos/137 car.; resto 3 nodos | **Cumplido** |
+| `RUI-31` | T: el exceso va a un `<details>` colapsado | `pnpm gate:saturation` | se mide solo lo visible (`checkVisibility`) | **Cumplido** |
+| `RUI-52` | T: el presupuesto se verifica por Playwright, umbral numérico | `pnpm gate:saturation` | exit 0 | **Cumplido** |
+| `RF-13` | T: cada proyecto es un detalle colapsado con URL compartible | `pnpm gate:keyboard` | `#proyecto-<slug>` abre el detalle | **Cumplido** |
+| `RUI-36` | T: un único elemento focal (el `<summary>`) por escena | `pnpm gate:saturation` | 1 acción por escena | **Cumplido** |
+| `RF-26/27` | T: revelado de email sin PII en el HTML inicial | — | **pendiente**: choca con la regla 6 de `AGENTS.md` (exige ADR) | **WIP** |
+| `RF-10/11` | T: descarga PDF y texto plano | — | texto ya en `/cv.txt`; PDF **pendiente** de decidir generación | **WIP** |
+
+**Lo que NO cubre el Sprint 4 (aún):** el revelado de email y la generación de PDF. El resto del
+presupuesto `RUI-32..37` (acento por píxel, opacidad de vídeo, área en blanco) depende del vídeo
+(Sprint 5) y de la medición por píxel (`MEDICION.md` §4.3/§4.4), que se cierra en el Sprint 10.
+
+---
+
 ## 13. Definición de Hecho (DoD) por requisito
 
 Para que un requisito pase a "cumplido" en la matriz:

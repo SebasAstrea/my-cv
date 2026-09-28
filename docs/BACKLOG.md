@@ -57,8 +57,8 @@ llega con el teclado del Sprint 3), `RF-26/27` (email), `RF-40..45` (vídeo).
 | Sprint | Goal | Requisitos núcleo | Gate principal | Estado |
 |---|---|---|---|---|
 | 2 | Fuente de verdad y render SSR | `DEC-03`, `RF-01`, `RF-23`, `RF-25`, `RNF-33`, `RNF-100` | Parseo ATS + `RF-25` | `DONE` |
-| 3 | Navegación, teclado y tema | `RF-02..06`, `RF-09`, `RUI-81` | `gate:keyboard` — teclado 100 % | `WIP` |
-| 4 | Divulgación progresiva y presupuesto | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` | `RUI-52` Playwright | `TODO` |
+| 3 | Navegación, teclado y tema | `RF-02..06`, `RF-09`, `RUI-81` | `gate:keyboard` — teclado 100 % | `DONE` |
+| 4 | Divulgación progresiva y presupuesto | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` | `gate:saturation` — `RUI-52` | `WIP` |
 | 5 | Sistema de vídeo | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` | 1 `<video>` DOM + `RF-41` | `TODO` |
 | 6 | Chat G1–G4 (guardrails) | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-25` | 100 % cobertura guardrails | `TODO` |
 | 7 | Chat G5–G6 + eval set | `DEC-01.b/f`, `RF-50..58`, `RNF-68/69`, `CHA-30..39` | `CHA-30` ≤ 1 % | `TODO` |
@@ -96,7 +96,8 @@ saboteó a sabiendas, con fecha de caducidad, para que no se pierda.
 | `check:cv` | `node --experimental-strip-types scripts/check-cv.mjs` | `RF-20`, `RND-03` | Sí |
 | `gate:tokens` | `pnpm gate:tokens` | `RNF-87`, `RUI-70` | Sí |
 | `gate:ats` | `pnpm gate:ats` | `RNF-33`, `RNF-100`, `RND-08` | Sí |
-| `gate:keyboard` | `pnpm gate:keyboard` | `RF-02..06`, `RF-09` (Playwright) | Sí (job `keyboard`) |
+| `gate:keyboard` | `pnpm gate:keyboard` | `RF-02..06`, `RF-09`, `RF-13` (Playwright) | Sí (job `keyboard`) |
+| `gate:saturation` | `pnpm gate:saturation` | `RUI-30..37`, `RUI-52` (Playwright) | Sí (job `keyboard`) |
 | `gate:placeholders` | `pnpm gate:placeholders` | `RF-25` | En despliegue |
 | `gate:budgets` | `pnpm gate:budgets` | `RNF-07..12` | Sí |
 | `gate:artifacts` | `pnpm gate:artifacts` | `SEG-31`, `SEG-32` | Sí |

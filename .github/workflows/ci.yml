@@ -93,13 +93,13 @@ jobs:
           echo "OK: el despliegue con fixture falla, como debe."
 
   keyboard:
-    name: Navegacion por teclado
+    name: Navegacion y presupuesto de escena
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     # El gate rapido (`verify`) no incluye Playwright a proposito: descargar Chromium en cada
-    # PR es caro. La navegacion solo-teclado (`RF-02..06`) se verifica en su propio job, que
-    # es el gate principal del Sprint 3 (`MEDICION.md` 4.8).
+    # PR es caro. La navegacion solo-teclado (`RF-02..06`) y el presupuesto de saturacion
+    # (`RUI-30..37`, `RUI-52`) se verifican aqui, que es el gate principal del Sprint 3/4.
     steps:
       - uses: actions/checkout@v5
 
@@ -122,3 +122,6 @@ jobs:
 
       - name: Gate de teclado
         run: pnpm gate:keyboard
+
+      - name: Gate de saturacion
+        run: pnpm gate:saturation

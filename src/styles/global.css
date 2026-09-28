@@ -358,6 +358,66 @@ body {
 }
 
 /* ------------------------------------------------------------------ *
+ * Divulgacion progresiva — `RUI-30`, `RUI-31`, `RF-13`
+ *
+ * El exceso vive en un `<details>` nativo: colapsado por defecto, accesible y legible sin JS.
+ * El `<summary>` es la unica "accion" de la escena (`RUI-36`).
+ * ------------------------------------------------------------------ */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-start: var(--space-4);
+}
+
+.chip {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-lo);
+}
+
+.chip + .chip::before {
+  content: '/';
+  margin-inline-end: var(--space-2);
+  color: var(--line-strong);
+}
+
+.detail {
+  margin-block-start: var(--space-4);
+  border-block-start: 1px solid var(--line);
+}
+
+.detail .detail {
+  border-block-start: 0;
+}
+
+.detail__summary {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  justify-content: space-between;
+  padding-block: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-lo);
+  list-style: none;
+  cursor: pointer;
+}
+
+.detail__summary::-webkit-details-marker {
+  display: none;
+}
+
+.detail__summary::after {
+  content: '+';
+  color: var(--accent);
+}
+
+.detail[open] > .detail__summary::after {
+  content: '−';
+}
+
+/* ------------------------------------------------------------------ *
  * Toggle de tema — `RF-09`
  * ------------------------------------------------------------------ */
 .theme-toggle {
