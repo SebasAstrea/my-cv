@@ -18,20 +18,22 @@
 
 | | |
 |---|---|
-| **Sprint activo** | **2 — Fuente de verdad y render SSR** (recién planificado, sin empezar) |
+| **Sprint activo** | **2 — Fuente de verdad y render SSR** (en curso) |
 | **Último sprint aceptado** | **1 — Fundación y toolchain** (`ACCEPTED`, commit `b7f1cb8`) |
-| **Gate** | `pnpm gate` — 11 pasos, exit 0 |
+| **Gate** | `pnpm gate` — 12 pasos, exit 0 |
 | **Bloqueo** | Ninguno conocido |
 | **Deuda registrada** | 11 ítems (`TD-01`..`TD-11` en `BACKLOG.md`) |
 | **Riesgos abiertos** | 8 aceptados (`RK-01`..`RK-08` en `TRACEABILITY.md` §12) |
 | **Medición de calidad** | Sprint 1 medido y publicado en `docs/reportes-calidad/1-fundacion-y-toolchain/REPORTE.md`. T4/T5, sin datos de campo. 4 de 7 escenas incumplen el presupuesto §4.3 (`TD-11`) y hay 1 crítica de seguridad abierta (`TD-06`) |
 
-**Siguiente acción concreta:** `src/data/cv.real.ts` no existe. Es el primer paso del Sprint 2
-y el único bloqueante para renderizar contenido real — se gitignora a propósito (`SEG-30`).
+**Siguiente acción concreta:** el contenido real ya se renderiza en las 7 escenas, el JSON-LD
+`Person` + `Occupation` y los 4 exportadores (`/cv.json`, `/cv.jsonld`, `/cv.md`, `/cv.txt`)
+salen en `dist/`. Falta **preparar y ejecutar el despliegue** (Cloudflare Pages o Vercel) sin
+exponer `cv.real.ts`, que es PII (`SEG-30`), y cerrar el resto de `§2.1`.
 
 ```bash
-cp src/data/cv.fixture.ts src/data/cv.real.ts   # y rellena con los datos reales
-CV_DATA_SOURCE=real pnpm check:cv                # el fixture no vale: RF-25/SEG-30
+CV_DATA_SOURCE=real PUBLIC_SITE_URL=https://tu-dominio pnpm build   # genera dist/ + exportadores
+CV_DATA_SOURCE=real pnpm check:cv                                   # el CV real valida
 ```
 
 ---
@@ -44,7 +46,7 @@ CV_DATA_SOURCE=real pnpm check:cv                # el fixture no vale: RF-25/SEG
 |---|---|---|---|---|
 | 0 | Especificar | `DONE` | Revisión de los 240 requisitos | — |
 | 1 | Fundación y toolchain | `DONE` | `pnpm gate` | `RNF-80`, `RNF-87`, `RF-20`, `RND-03`, `RUI-01..24`, `RUI-70..74` |
-| 2 | Fuente de verdad y render SSR | `TODO` | Parseo ATS + `RF-25` | `DEC-03`, `RF-01`, `RF-23`, `RF-25`, `RNF-33`, `RNF-100` |
+| 2 | Fuente de verdad y render SSR | `WIP` | Parseo ATS + `RF-25` | `DEC-03`, `RF-01`, `RF-23`, `RF-25`, `RNF-33`, `RNF-100` |
 | 3 | Navegación, teclado y tema | `TODO` | Teclado 100 % flujos | `RF-02..06`, `RF-09`, `RUI-81` |
 | 4 | Divulgación progresiva y presupuesto | `TODO` | `RUI-52` Playwright | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` |
 | 5 | Sistema de vídeo | `TODO` | 1 `<video>` DOM + `RF-41` | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` |
@@ -58,17 +60,15 @@ CV_DATA_SOURCE=real pnpm check:cv                # el fixture no vale: RF-25/SEG
 
 ### 2.1 Sprint 2 — desglose de trabajo
 
-Nada de esto está empezado. El desglose se escribe aquí, no en `BACKLOG.md`, y se mueve allí
-al cerrar el sprint.
-
-- [ ] Crear `src/data/cv.real.ts` desde el fixture y rellenarlo con datos reales
-- [ ] `CV_DATA_SOURCE=real pnpm check:cv` en verde sin marcadores de fixture
-- [ ] Renderizar el contenido real en las 7 escenas (`RF-01` de la escena de contacto aparte)
-- [ ] JSON-LD `Person` completo y válido (`RNF-100`)
-- [ ] 4 exportadores del CV (`RNF-100..103`: JSON, Markdown, PDF, print)
-- [ ] Test de parseo ATS (`RNF-33`) como gate de CI
-- [ ] Cerrar `TD-01` (tests unitarios) o moverlo al Sprint 3 con motivo
+- [x] Crear `src/data/cv.real.ts` desde el fixture y rellenarlo con datos reales
+- [x] `CV_DATA_SOURCE=real pnpm check:cv` en verde sin marcadores de fixture
+- [x] Renderizar el contenido real en las 7 escenas (`RF-01` de la escena de contacto aparte)
+- [x] JSON-LD `Person` + `Occupation` completo y válido (`RNF-33`)
+- [x] 4 exportadores del CV (`/cv.json`, `/cv.jsonld`, `/cv.md`, `/cv.txt`; el PDF es `RF-11`, Sprint 4)
+- [x] Test de parseo ATS (`RNF-33`) como gate de CI (`gate:ats`)
+- [x] Cerrar `TD-01` (tests unitarios de presentación en `tests/exporters.test.ts`)
 - [ ] Alinear `packageManager` con `corepack` (`TD-02`)
+- [ ] Preparar y ejecutar el despliegue (Cloudflare Pages o Vercel) sin exponer `cv.real.ts`
 
 ---
 
@@ -87,12 +87,14 @@ Cada fila debe corresponded con un script real de `package.json` y con un ficher
 | `check:cv` | `pnpm check:cv` | `RF-20`, `RND-03` — schema Zod y reglas cruzadas | Sí |
 | `gate:tokens` | `pnpm gate:tokens` | `RNF-87`, `RUI-70`, `RUI-24` — 0 literales fuera de tokens | Sí |
 | `build` | `pnpm build` | Genera `dist/`. Sin él, los tres gates siguientes no tienen nada que medir | Sí |
+| `gate:ats` | `pnpm gate:ats` | `RNF-33`, `RNF-100`, `RND-08` — HTML semántico + JSON-LD `Person`/`Occupation` y los 4 exportadores en `dist/` | Sí |
 | `gate:placeholders` | `pnpm gate:placeholders` | `RF-25` — marcadores de fixture | En despliegue |
 | `gate:budgets` | `pnpm gate:budgets` | `RNF-07..12` — budgets sobre `dist/` real | Sí |
 | `gate:artifacts` | `pnpm gate:artifacts` | `SEG-31`, `SEG-32` — ningún campo `private` en cliente | Sí |
 
 **Comando único:** `pnpm gate` = `status` → `format:check` → `typecheck` → `lint` → `test`
-→ `check:cv` → `gate:tokens` → `build` → `gate:placeholders` → `gate:budgets` → `gate:artifacts`.
+→ `check:cv` → `gate:tokens` → `build` → `gate:ats` → `gate:placeholders` → `gate:budgets`
+→ `gate:artifacts`.
 Equivale a `pnpm verify`.
 
 ### 3.1 Gates probados en negativo

@@ -18,10 +18,17 @@ interface Props {
   /** Parrafo de apoyo. `RUI-30`: uno por escena, <= 45ch. */
   support?: string
   class?: string
+  /**
+   * Nivel del heading. `RUI-81` exige UN solo `h1` en la pagina: la escena 00 usa 1 y el
+   * resto 2. Es un prop y no `title` + markup propio para que `aria-labelledby` siga
+   * cuadrando en un unico sitio.
+   */
+  level?: 1 | 2
 }
 
-const { meta, title, support, class: className } = Astro.props
+const { meta, title, support, class: className, level = 2 } = Astro.props
 const headingId = `${meta.anchor}-titulo`
+const Heading = level === 1 ? 'h1' : 'h2'
 ---
 
 <section
@@ -40,9 +47,9 @@ const headingId = `${meta.anchor}-titulo`
       </div>
 
       <div class="scene__heading">
-        <h2 id={headingId} tabindex="-1">
+        <Heading id={headingId} tabindex="-1">
           {title}
-        </h2>
+        </Heading>
         {support !== undefined && <p class="support">{support}</p>}
       </div>
     </div>

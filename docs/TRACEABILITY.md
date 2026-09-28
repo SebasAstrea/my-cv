@@ -223,6 +223,30 @@ pendiente para cuando haya capturas que mirar. Sin tests unitarios: registrado c
 
 ---
 
+## 12 ter. Verificación ejecutada — Sprint 2 (Fuente de verdad y render SSR)
+
+Mismo contrato que §12 bis: cada fila es un requisito con su comando y su número. `WIP` no es
+"cumplido": el sprint sigue abierto hasta cerrar `TD-02` y desplegar.
+
+| Requisito | Método | Comando | Resultado | Estado |
+|---|---|---|---|---|
+| `DEC-03.a` | T: un único origen; UI, JSON-LD y exportadores salen de `getCv()` | `pnpm build` | HTML + 4 exportadores desde el mismo documento | **Cumplido** |
+| `RF-01` | T: 7 escenas, heading con id estable y un solo `h1` | `pnpm gate:ats` | 1 `h1` + 6 `h2`, ids `escena-00..06` | **Cumplido** |
+| `RF-23` | T: fechas relativas + absolutas calculadas desde ISO | `pnpm test` + `pnpm build` | `formatRange`/`formatDuration` en las 7 escenas | **Cumplido** |
+| `RF-24` | T: metadatos de escena generados del storyboard | `pnpm build` | timecodes e índices `00/07..06/07` en el markup | **Cumplido** |
+| `RF-25` | T: sin marcadores de fixture en artefacto desplegable | `pnpm gate:placeholders` | 0 bloqueantes con datos reales | **Cumplido** |
+| `RNF-33` | T: HTML semántico + JSON-LD `Person`/`Occupation` | `pnpm gate:ats` | 1 `h1`, 7 escenas, JSON-LD `Person` + `Occupation` | **Cumplido** |
+| `RNF-100` | T: 4 exportadores estáticos en `dist/` | `pnpm gate:ats` | `cv.json`, `cv.jsonld`, `cv.md`, `cv.txt` | **Cumplido** (falta PDF: `RF-11`, Sprint 4) |
+| `RND-08` | T: texto plano completo sin JS ni vídeo | `pnpm gate:ats` | `dist/cv.txt` no vacío | **Cumplido** |
+| `TD-01` | T: tests unitarios de la lógica de presentación | `pnpm test` | 37 tests, 0 fallos | **Cumplido** |
+
+**Lo que NO cubre el Sprint 2:** la divulgación progresiva (`RUI-30..37`, Sprint 4) todavía no
+reduce el número de nodos visibles por escena, así que `TD-11` sigue abierto. El PDF es `RF-11`
+(Sprint 4). La alineación de `packageManager` con `corepack` (`TD-02`) queda pendiente: el
+entorno local trae pnpm 12.x y no trae `corepack`; el CI fija 10.4.1 vía `pnpm/action-setup`.
+
+---
+
 ## 13. Definición de Hecho (DoD) por requisito
 
 Para que un requisito pase a "cumplido" en la matriz:

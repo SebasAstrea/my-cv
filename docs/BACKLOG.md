@@ -56,7 +56,7 @@ llega con el teclado del Sprint 3), `RF-26/27` (email), `RF-40..45` (vídeo).
 
 | Sprint | Goal | Requisitos núcleo | Gate principal | Estado |
 |---|---|---|---|---|
-| 2 | Fuente de verdad y render SSR | `DEC-03`, `RF-01`, `RF-23`, `RF-25`, `RNF-33`, `RNF-100` | Parseo ATS + `RF-25` | `TODO` |
+| 2 | Fuente de verdad y render SSR | `DEC-03`, `RF-01`, `RF-23`, `RF-25`, `RNF-33`, `RNF-100` | Parseo ATS + `RF-25` | `WIP` |
 | 3 | Navegación, teclado y tema | `RF-02..06`, `RF-09`, `RUI-81` | Teclado 100 % flujos | `TODO` |
 | 4 | Divulgación progresiva y presupuesto | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` | `RUI-52` Playwright | `TODO` |
 | 5 | Sistema de vídeo | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` | 1 `<video>` DOM + `RF-41` | `TODO` |
@@ -77,7 +77,7 @@ saboteó a sabiendas, con fecha de caducidad, para que no se pierda.
 
 | ID | Qué | Por qué | Caduca | Requisitos afectados |
 |---|---|---|---|---|
-| `TD-01` | Sin tests unitarios. La verificación es por gates end-to-end sobre artefactos. | El Sprint 1 no tiene lógica con ramas sino validación; los gates cubren el resultado observable. Un test unitario de `validate.ts` sin gate que lo invoque es decorativo. | Sprint 2 (con la lógica de presentación) | `RNF-80` (parcial) |
+| `TD-01` | **CERRADA (Sprint 2):** tests unitarios de la lógica de presentación en `tests/exporters.test.ts` (37 tests en `pnpm test`). | El Sprint 1 no tenía lógica con ramas; la deuda se cierra al llegar la presentación exportable. | Cerrada en Sprint 2 | `RNF-80` |
 | `TD-02` | `package.json` declara `packageManager: pnpm@10.4.1`; el entorno local tiene otra versión. | El lockfile fija la resolución de dependencias, que es lo que importa para reproducibilidad. Se alinea en el Sprint 2 con `corepack`. | Sprint 2 | — |
 | `TD-03` | `scripts/*.mjs` se lintan sin reglas type-aware. | Son CLI de Node; sus errores de tipo los caza `tsc --noEmit` igualmente. Las reglas type-aware solo producían ruido sobre `JSON.parse`. |—when se escriba lógica de dominio en un gate | `RNF-80` (parcial) |
 | `TD-04` | `.astro` queda fuera de ESLint. | `astro check` lo valida con el compilador real; el parser de TS solo vería el frontmatter y daría una imagen falsa del fichero. | Cuando haya plugin oficial de Astro para ESLint | — |
@@ -95,6 +95,7 @@ saboteó a sabiendas, con fecha de caducidad, para que no se pierda.
 |---|---|---|---|
 | `check:cv` | `node --experimental-strip-types scripts/check-cv.mjs` | `RF-20`, `RND-03` | Sí |
 | `gate:tokens` | `pnpm gate:tokens` | `RNF-87`, `RUI-70` | Sí |
+| `gate:ats` | `pnpm gate:ats` | `RNF-33`, `RNF-100`, `RND-08` | Sí |
 | `gate:placeholders` | `pnpm gate:placeholders` | `RF-25` | En despliegue |
 | `gate:budgets` | `pnpm gate:budgets` | `RNF-07..12` | Sí |
 | `gate:artifacts` | `pnpm gate:artifacts` | `SEG-31`, `SEG-32` | Sí |

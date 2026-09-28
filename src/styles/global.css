@@ -237,6 +237,127 @@ body {
 }
 
 /* ------------------------------------------------------------------ *
+ * Contenido de las escenas — `RF-01`, `RNF-33` (Sprint 2)
+ *
+ * Sin cards ni sombras: la unica agrupacion es la hairline (`RUI-23`). Los logros y proyectos
+ * se separan por aire, no por contenedores. Los colores y tamanos salen de `tokens.css`.
+ * ------------------------------------------------------------------ */
+.prose {
+  max-inline-size: var(--measure-prose);
+  color: var(--text-mid);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-1) var(--space-4);
+  margin-block-start: var(--space-4);
+}
+
+.facts dt {
+  color: var(--text-lo);
+}
+
+.facts dd {
+  color: var(--text-hi);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-block-start: var(--space-4);
+}
+
+.entries {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.entry + .entry {
+  border-block-start: 1px solid var(--line);
+  padding-block-start: var(--space-6);
+}
+
+.entry__title {
+  color: var(--text-hi);
+  font-size: var(--fs-1);
+}
+
+.entry__company {
+  color: var(--text-lo);
+  font-weight: var(--fw-regular);
+}
+
+.entry__meta {
+  margin-block-start: var(--space-1);
+}
+
+.entry__scope,
+.entry__outcome {
+  margin-block-start: var(--space-2);
+  max-inline-size: var(--measure-prose);
+  color: var(--text-mid);
+}
+
+.highlights {
+  display: grid;
+  gap: var(--space-2);
+  margin-block-start: var(--space-3);
+}
+
+.highlight {
+  border-inline-start: var(--focus-width) solid var(--line);
+  padding-inline-start: var(--space-3);
+  max-inline-size: var(--measure-prose);
+}
+
+.metric {
+  color: var(--accent-data);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+.metric__source {
+  color: var(--text-lo);
+  font-size: var(--fs-xs);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-start: var(--space-3);
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-lo);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-1);
+  padding: var(--space-1) var(--space-2);
+}
+
+.levels {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-1) var(--space-4);
+  margin-block-start: var(--space-6);
+  padding-block-start: var(--space-4);
+  border-block-start: 1px solid var(--line);
+}
+
+.levels dt {
+  color: var(--accent-data);
+}
+
+.levels dd {
+  max-inline-size: var(--measure-prose);
+  color: var(--text-lo);
+}
+
+/* ------------------------------------------------------------------ *
  * Datos semilla — `ADR-0003`
  *
  * Distintivo de "estos datos no son reales". Solo visible cuando el flag es `fixture`,

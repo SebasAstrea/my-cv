@@ -50,11 +50,13 @@ export function isProductionBuild(): boolean {
  * La unica nocion de "esto va a desplegarse" que usa el proyecto.
  *
  * No es `NODE_ENV=production`: `astro build` lo pone siempre, y eso haria imposible compilar
- * en local con el fixture, que es justamente lo que `ADR-0003` habilita. Es la presencia de
- * un entorno de despliegue (Vercel), que es donde el fixture seria un problema real.
+ * en local con el fixture, que es justamente lo que `ADR-0003` habilita. Es la presencia de un
+ * entorno de despliegue (Vercel o Cloudflare Pages), que es donde el fixture seria un problema
+ * real. `CF_PAGES` lo fija Cloudflare Pages durante el build; sin esta rama, un despliegue en
+ * Pages con `CV_DATA_SOURCE=fixture` no lo bloquearia `astro.config.mjs`.
  */
 export function isDeployBuild(): boolean {
-  return read('VERCEL') === '1' || read('VERCEL_ENV') !== undefined
+  return read('VERCEL') === '1' || read('VERCEL_ENV') !== undefined || read('CF_PAGES') === '1'
 }
 
 export function isCi(): boolean {

@@ -18,6 +18,16 @@ cv.real.json
 .env.*
 !.env.example
 
+# secretos y credenciales — nunca versionar
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+.dev.vars
+.wrangler/
+
 # test / coverage
 coverage/
 .nyc_output/
