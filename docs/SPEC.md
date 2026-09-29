@@ -1,6 +1,6 @@
 # Especificación de Requerimientos — Portafolio / CV "Dossier"
 
-**Versión** 0.1 · **Estado** Propuesta para revisión · **Norma base** ISO/IEC 25000:2017 (SQuaRE)
+**Versión** 0.2 · **Estado** Propuesta para revisión · **Norma base** ISO/IEC 25000:2017 (SQuaRE)
 **Documentos relacionados** [`MEDICION.md`](./MEDICION.md) (protocolo estadístico y gates) · [`TRACEABILITY.md`](./TRACEABILITY.md) (matriz de trazabilidad)
 
 ---
@@ -277,15 +277,15 @@ La referencia mental no es una landing de startup ni un portfolio de plantilla. 
 
 | ID | Requisito | Prio |
 |---|---|---|
-| `RUI-30` | **Presupuesto por escena** (`100svh`): 1 título, 1 párrafo de apoyo (≤ 45ch), 1 acción primaria, ≤ 3 chips de metadatos, ≤ 6 nodos de contenido discretos. | M |
-| `RUI-31` | Si una escena excede el presupuesto → **divulgación progresiva**: el exceso va a un drawer "detalle" colapsado. El gate `RUI-52` de Playwright falla el build si una escena lo excede. | M |
+| `RUI-30` | **Presupuesto por escena** (`100svh`): 1 título, 1 párrafo de apoyo (≤ 45ch), 1 acción primaria, ≤ 3 chips de metadatos y ≤ **29** nodos de contenido discretos (`ADR-0010`; antes 6, con el detalle colapsado). | M |
+| `RUI-31` | Si una escena excede el presupuesto → el exceso va a un drawer "detalle", **abierto por defecto desde `ADR-0010`** (el PO decidió que el contenido escondido no se lee). La divulgación progresiva deja de ser el mecanismo: lo que protege el contenido es el **techo por escena**, no el colapso. El gate `RUI-52` de Playwright falla el build si una escena lo excede. | M |
 | `RUI-32` | Opacidad del vídeo ≤ 0.30 (oscuro) / ≤ 0.18 (claro) tras el scrim. Scrim con opacidad mínima derivada del test de contraste por escena, no un valor fijo. | M |
 | `RUI-33` | El texto nunca compite con el vídeo: ningún párrafo se superpone a la zona de mayor luminancia del clip sin scrim. Verificado por muestreo de píxel en 7 escenas × 2 temas × 3 anchos (`RUI-33`, protocolo `MEDICION.md §4.4`). | M |
 | `RUI-34` | El estado actual es legible por 3 vías redundantes (posición, peso tipográfico, texto), no solo por color. | M |
 | `RUI-35` | Grano de película: 1 tile ≤ 12 KB, opacidad 3–4%, `mix-blend-mode` usado **una sola vez** en toda la página. | S |
 | `RUI-36` | Un solo elemento focal por escena. La acción primaria es la única cosa con peso de botón en el viewport. | M |
 | `RUI-37` | Espacio en blanco ≥ 40% del área de la escena. Ratio máximo de densidad de texto (caracteres/área) definido y testeado. | M |
-| `RUI-52` | Los presupuestos de `RUI-30`…`RUI-37` se verifican automáticamente en CI por Playwright (conteo de nodos, caracteres, píxeles de acento, opacidad de vídeo, área en blanco, nº de `<video>` en DOM). Ningún umbral es subjetivo. Detalle en `MEDICION.md §4.3`. | M |
+| `RUI-52` | Los presupuestos de `RUI-30`…`RUI-37` se verifican automáticamente en CI por Playwright (conteo de nodos, caracteres, píxeles de acento, opacidad de vídeo, área en blanco, nº de `<video>` en DOM). Techo vigente: **29 nodos / 1.064 caracteres** visibles por escena, el máximo medido con los desplegables abiertos (`ADR-0010`). Ningún umbral es subjetivo. Detalle en `MEDICION.md §4.3`. | M |
 
 #### Antipatrones prohibidos (anti-IA)
 

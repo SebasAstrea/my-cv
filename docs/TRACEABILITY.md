@@ -277,9 +277,10 @@ dentro de presupuesto; email y PDF verificados con `gate:keyboard`. Estado: `DON
 
 | Requisito | Método | Comando | Resultado | Estado |
 |---|---|---|---|---|
-| `RUI-30` | T: ≤ 6 nodos de contenido y ≤ 280 caracteres visibles por escena | `pnpm gate:saturation` | escena-00 6 nodos/137 car.; resto 3 nodos | **Cumplido** |
-| `RUI-31` | T: el exceso va a un `<details>` colapsado | `pnpm gate:saturation` | se mide solo lo visible (`checkVisibility`) | **Cumplido** |
-| `RUI-52` | T: el presupuesto se verifica por Playwright, umbral numérico | `pnpm gate:saturation` | exit 0 | **Cumplido** |
+| `RUI-30` | T: ≤ 29 nodos de contenido y ≤ 1.064 caracteres visibles por escena | `pnpm gate:saturation` | peor escena `escena-04` 29 nodos/846 car.; `escena-03` 26/1.064; techo = máximo medido con los desplegables abiertos (`ADR-0010`, antes 6/280) | **Cumplido** |
+| `RUI-31` | T: el exceso va a un `<details>`, y se mide solo lo visible | `pnpm gate:saturation` | `checkVisibility()` + los 8 con `open` en el HTML construido | **Cumplido** (ya no colapsa: `ADR-0010`) |
+| `RUI-52` | T: el presupuesto se verifica por Playwright, umbral numérico | `pnpm gate:saturation` | exit 0 con 29/1.064 | **Cumplido** |
+| `RUI-37` | T: ninguna escena se recorta al abrir el detalle | `pnpm gate:saturation` (medición manual de alto) | `scrollHeight === clientHeight` en las 7; 0 px de desborde interno. 3 escenas miden más que `--scene-height` | **Parcial**: sin umbral de alto (`TD-13`) |
 | `RF-13` | T: cada proyecto es un detalle colapsado con URL compartible | `pnpm gate:keyboard` | `#proyecto-<slug>` abre el detalle | **Cumplido** |
 | `RUI-36` | T: un único elemento focal (el `<summary>`) por escena | `pnpm gate:saturation` | 1 acción por escena | **Cumplido** |
 | `RF-27` | T: revelado de email sin el email en el HTML inicial | `pnpm gate:keyboard` con `PUBLIC_CONTACT_EMAIL` | botón real, `aria-expanded`, `mailto:` al revelar; email en 0 HTML, en 1 JS | **Cumplido** (`ADR-0006`) |

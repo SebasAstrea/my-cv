@@ -87,7 +87,7 @@ const scene = (id: string) => {
         <li class="chip">{years} años</li>
         <li class="chip">{cv.person.location}</li>
       </ul>
-      <details class="detail">
+      <details class="detail" open>
         <summary class="detail__summary">Enlaces</summary>
         <ul class="links">
           {cv.contact.github !== undefined && (
@@ -106,7 +106,7 @@ const scene = (id: string) => {
 
     {/* 01 — Perfil. */}
     <Scene meta={scene('perfil')} title="Perfil" support="Resumen profesional.">
-      <details class="detail">
+      <details class="detail" open>
         <summary class="detail__summary">Perfil completo</summary>
         <p class="prose">{cv.summary}</p>
       </details>
@@ -115,7 +115,7 @@ const scene = (id: string) => {
     {/* 02 — Experiencia. `RFU-02` mide si se encuentra rol + empresa mas recientes, asi que
         el primer item de la lista es deliberadamente el mas reciente. */}
     <Scene meta={scene('experiencia')} title="Experiencia" support={`${years} años.`}>
-      <details class="detail">
+      <details class="detail" open>
         <summary class="detail__summary">Roles y logros</summary>
         <ol class="entries">
           {cv.roles.map((role) => (
@@ -158,12 +158,12 @@ const scene = (id: string) => {
       title="Proyectos"
       support={`${cv.projects.length} destacados.`}
     >
-      <details class="detail">
+      <details class="detail" open>
         <summary class="detail__summary">Ver proyectos</summary>
         <ol class="entries">
           {cv.projects.map((project) => (
             <li class="entry">
-              <details class="detail" id={`proyecto-${project.id}`}>
+              <details class="detail" open id={`proyecto-${project.id}`}>
                 <summary class="detail__summary">{project.name}</summary>
                 <p class="entry__meta mono">{project.role}</p>
                 <p class="entry__scope">{project.problem}</p>
@@ -192,7 +192,7 @@ const scene = (id: string) => {
 
     {/* 04 — Stack. `RF-22`: cada nivel declara su significado. */}
     <Scene meta={scene('stack')} title="Stack" support="Niveles con significado declarado.">
-      <details class="detail">
+      <details class="detail" open>
         <summary class="detail__summary">Ver stack</summary>
         <div class="entries">
           {cv.stack.map((group) => (
@@ -222,7 +222,7 @@ const scene = (id: string) => {
 
     {/* 05 — Formación, certificaciones y publicaciones. */}
     <Scene meta={scene('formacion')} title="Formación" support={`${formationCount} entradas.`}>
-      <details class="detail">
+      <details class="detail" open>
         <summary class="detail__summary">Ver formación</summary>
         {cv.education.length > 0 && (
           <ol class="entries">
@@ -280,7 +280,7 @@ const scene = (id: string) => {
       <button type="button" class="action" data-print>
         Descargar PDF
       </button>
-      <details class="detail">
+      <details class="detail" open>
         <summary class="detail__summary">Más contacto</summary>
         <ul class="links">
           {cv.contact.github !== undefined && (

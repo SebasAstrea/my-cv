@@ -22,8 +22,22 @@ import { chromium } from 'playwright'
 import { staticDir } from './lib/static.mjs'
 
 const DIST = staticDir()
-const MAX_NODES = 6
-const MAX_CHARS = 280
+/**
+ * Presupuestos por escena (`RUI-30..37`, `MEDICION.md` §4.3).
+ *
+ * `ADR-0010`: el PO decidió que **todos los `<details>` van abiertos por defecto**. Eso baja la
+ * divulgacion progresiva de `RUI-31` y obliga a subir estos dos techo. Los numeros son los
+ * medidos con los 8 desplegables abiertos, y son el maximo observado, sin holgura a proposito:
+ * si el CV crece, el gate tiene que volver a morder.
+ *
+ *   antes   6 nodos · 280 car.   (escenas de 4-6 nodos, el detalle escondido)
+ *   ahora  29 nodos · 1.064 car. (escena-04 Stack 29/846 · escena-03 Proyectos 26/1.064)
+ *
+ * Ojo con el otro efecto, que este gate **no** mide: con el detalle abierto, tres escenas dejan de
+ * caber en una pantalla (1.394 / 1.099 / 1.084 px a 800 px de alto). Ver `ADR-0010`.
+ */
+const MAX_NODES = 29
+const MAX_CHARS = 1064
 const SCENE_COUNT = 7
 
 const TYPES = {

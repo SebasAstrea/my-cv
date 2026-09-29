@@ -22,7 +22,7 @@
 | **Último sprint aceptado** | **6 — Chat G1–G4 (guardrails)** |
 | **Gate** | `pnpm gate` — 14 pasos, exit 0 |
 | **Bloqueo** | Ninguno conocido |
-| **Deuda registrada** | 12 ítems (`TD-01`..`TD-12` en `BACKLOG.md`) |
+| **Deuda registrada** | 13 ítems (`TD-01`..`TD-13` en `BACKLOG.md`) |
 | **Riesgos abiertos** | 9 aceptados (`RK-01`..`RK-09` en `TRACEABILITY.md` §12) |
 | **Medición de calidad** | Sprint 1 medido en `docs/reportes-calidad/1-fundacion-y-toolchain/REPORTE.md`; Sprint 8 (rendimiento) en `docs/reportes-calidad/8-rendimiento/`. T4/T5, sin datos de campo. `TD-06` (Astro) cerrada por `ADR-0005`; `TD-11` (presupuesto de diseño) sigue abierto |
 
@@ -30,7 +30,7 @@
 `openai/gpt-oss-120b` en Groq, con `reasoning_effort: 'low'`, sin reintentos, con la clave solo en
 el servidor y con `off` como reserva. `pnpm gate:chat` sube a **40/40** y el gate completo sigue en
 verde. Lo que falta del Sprint 7 es lo que no se puede escribir sin medir: la **UI** (`RF-51..58`) y
-el **eval set** que da `CHA-30/32/33`. Antes de desplegar hay que **rotar `GROQ_API_KEY`**: la que se
+el **eval set** que da `CHA-30/32/33`. Aparte, y por decisión del PO a mitad de sprint, los desplegables de escena van **abiertos por defecto** (`ADR-0010`), lo que subió el presupuesto de saturación a 29 nodos / 1.064 car. y dejó 3 escenas más altas que una pantalla (`TD-13`). Antes de desplegar hay que **rotar `GROQ_API_KEY`**: la que se
 usó para las pruebas se lordó en texto plano y no es una credencial válida para producción.
 
 El Sprint 6 sigue cerrado y verificado: G1–G4 cortan antes y después del modelo, sin gastar un
@@ -87,6 +87,7 @@ queda declarado como pendiente en lugar de marcado como hecho.
 - [x] G4 acepta la cita con corchetes que el modelo copia del bloque de datos (`CHA-36`)
 - [x] `RNF-68`: 10/min **por IP** + ventana de sesión, con IP del primer salto de `x-forwarded-for`
 - [x] `pnpm gate:chat` en 40/40 y `tests/chat-proveedor.test.ts` con 23 pruebas
+- [x] `ADR-0010`: los 8 `<details>` abiertos por defecto, con el techo de saturación subido al máximo medido
 - [ ] **UI** `RF-51..58` y `DEC-01.f` (kill switch): no existe componente que llame a `/api/chat`
 - [ ] `RNF-69` (Turnstile), cuota diaria por fingerprint y `Retry-After` en el 429
 - [ ] **Eval set** y medición de `CHA-30`, `CHA-32`, `CHA-33`; `RNF-17` sin datos suficientes
@@ -228,6 +229,7 @@ Que no esté aquí como «cumplido» aunque parezca cerca:
 | [`0007`](./adr/0007-clips-una-vez-sin-bucle.md) | Los clips se reproducen una vez y congelan el último frame (no bucle, `RF-42`) | Aceptada |
 | [`0008`](./adr/0008-chat-una-ruta-on-demand.md) | El chat es una única función on-demand; `output: 'static'` se mantiene (`SEG-25`, `RNF-08`) | Aceptada |
 | [`0009`](./adr/0009-groq-cierra-abr-01.md) | `ABR-01` cerrado: el modelo es `openai/gpt-oss-120b` en Groq, clave solo en servidor, `off` como reserva | Aceptada |
+| [`0010`](./adr/0010-desplegables-abiertos.md) | Los 8 `<details>` van **abiertos** por defecto; `RUI-31`/`RUI-52` suben a 29 nodos / 1.064 car. Entró a mitad de sprint por decisión del PO | Aceptada |
 
 **Abierto a propósito:** nada de `ABR-01` (cerrado por `ADR-0009`). Lo que sigue abierto y
 **declarado** es la medición: `CHA-30/32/33` necesitan el eval set, y el límite de 10/min por IP es
