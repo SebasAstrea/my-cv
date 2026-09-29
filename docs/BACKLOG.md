@@ -59,8 +59,8 @@ llega con el teclado del Sprint 3), `RF-26/27` (email), `RF-40..45` (vídeo).
 | 2 | Fuente de verdad y render SSR | `DEC-03`, `RF-01`, `RF-23`, `RF-25`, `RNF-33`, `RNF-100` | Parseo ATS + `RF-25` | `DONE` |
 | 3 | Navegación, teclado y tema | `RF-02..06`, `RF-09`, `RUI-81` | `gate:keyboard` — teclado 100 % | `DONE` |
 | 4 | Divulgación progresiva y presupuesto | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` | `gate:saturation` — `RUI-52` | `DONE` |
-| 5 | Sistema de vídeo | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` | 1 `<video>` DOM + `RF-41` | `WIP` |
-| 6 | Chat G1–G4 (guardrails) | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-25` | 100 % cobertura guardrails | `TODO` |
+| 5 | Sistema de vídeo | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` | 1 `<video>` DOM + `RF-41` | `DONE` |
+| 6 | Chat G1–G4 (guardrails) | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-20/25/31/35` | `pnpm gate:chat` — 31/31 | `DONE` |
 | 7 | Chat G5–G6 + eval set | `DEC-01.b/f`, `RF-50..58`, `RNF-68/69`, `CHA-30..39` | `CHA-30` ≤ 1 % | `TODO` |
 | 8 | Rendimiento | `RNF-01..23`, `RNF-85`, `MEDICION.md` §4.5 | Todos los budgets §4.2 | `TODO` |
 | 9 | Seguridad | `SEG-01..06`, `SEG-20..25`, `SEG-30..35`, `RNF-61..71` | 0 hallazgos §4.7 | `TODO` |
@@ -87,6 +87,7 @@ saboteó a sabiendas, con fecha de caducidad, para que no se pierda.
 | `TD-08` | `MEDICION.md` §5 pide iPhone 12 (WebKit) y el estado no es medible: **WebKit no arranca** en este entorno (falta la librería de sistema `libicu74`). | Instalar una librería de sistema requiere `sudo`, fuera del alcance de un agente. Afecta también al contraste sobre vídeo de §4.4, que necesita Chromium+WebKit para cubrir iOS. | `sudo apt-get install libicu74` | `RNF-01`, `RUI-02` |
 | `TD-09` | Lighthouse no está instalado, así que el gate de §4.2 «Performance ≥ 0,95 / ≥ 0,98» no se ejecuta. | La medición de este sprint usa `PerformanceObserver` directamente, que mide LCP/TBT/CLS reales pero **no** produce el score de Lighthouse. Es una métrica distinta, no un sustituto. | Sprint 2 | `RNF-01..04` |
 | `TD-10` | `medir-diseno.py` requiere Python 3 con `pillow` y `numpy`, que no son dependencias de Node. | El muestreo de píxeles de §4.3 es array maths sobre imágenes; hacerlo en JS exigiría decodificar PNG a mano. Se documenta el prerrequisito en vez de instalar una dependencia nativa de Node que solo se usa al medir. | Cuando exista una razon para medir en CI | `RUI-01` |
+| `TD-12` | La ventana de tasa de `/api/chat` es **por instancia de serverless** y su identificador lo pone el cliente: mitiga un bucle torpe desde una pestaña, no a un atacante que distribuya peticiones. | No hay infraestructura de rate limiting compartido sin un servicio externo, que es una dependencia que este proyecto no quiere. `SEG-23` se marca cumplido con esta limitación escrita, no como cuota. | Cuando exista coste real por token que proteger (es decir, al cerrar `ABR-01`) | `SEG-23`, `CHA-21` |
 | `TD-11` | El presupuesto de diseño §4.3 incumple en 4 de 7 escenas con contenido semilla (27 nodos y 757 caracteres contra límites de 6 y 280). | **No es una regresión**: es el shell sin revelado progresivo (`RUI-30`, Sprint 4) y texto de fixture. **No se relajó ningún umbral** para que pasara (§9). Como gate de PR bloquearía cambios legítimos sobre esas escenas mientras el contenido sea semilla. | Al llegar contenido real | `RUI-30`, `RUI-52` |
 
 ## Gates registrados en CI
@@ -103,6 +104,7 @@ saboteó a sabiendas, con fecha de caducidad, para que no se pierda.
 | `gate:placeholders` | `pnpm gate:placeholders` | `RF-25` | En despliegue |
 | `gate:budgets` | `pnpm gate:budgets` | `RNF-07..12` | Sí |
 | `gate:artifacts` | `pnpm gate:artifacts` | `SEG-31`, `SEG-32` | Sí |
+| `gate:chat` | `pnpm gate:chat` | `CHA-01..07`, `CHA-20/22/31/34/36/37`, `SEG-11/20/25/31/35`, `ADR-0008` | Sí |
 
 ## Reportes de calidad por sprint
 

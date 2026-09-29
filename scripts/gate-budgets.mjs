@@ -20,10 +20,9 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { gzipSync } from 'node:zlib'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { staticDir } from './lib/static.mjs'
 
-const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const DIST = join(ROOT, 'dist')
+const DIST = staticDir()
 
 /** Budgets v1.0. Ver ADR si alguno cambia. */
 export const BUDGETS = {

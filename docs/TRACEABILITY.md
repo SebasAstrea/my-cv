@@ -165,6 +165,7 @@ Un hueco declarado es mejor que un hueco oculto. Estado actual:
 | `RK-06` | Sin datos de conversión fiables (tráfico bajo) para validar `RFU-07`. | No concluyente. | Declarado en `MEDICION.md §7.2` como experimento no concluyente; se usa `RFU-03` como proxy | Aceptado |
 | `RK-07` | Los antipatrones `RUI-50` dependen de revisión humana, no solo de lint. | Deriva de diseño. | Snapshot visual + revisión de diseño por persona en cada PR con cambio de `RUI` | Mitigado |
 | `RK-08` | El presupuesto de saturación (`RUI-30`) puede ser subjetivo en el límite. | Discrepancias entre revisores. | Playwright cuenta nodos; el límite numérico (6) elimina la subjetividad | Mitigado |
+| `RK-09` | Los guardrails del chat (G1–G4) se han verificado solo contra un proveedor determinista, nunca contra un modelo real (`ABR-01` abierto). | La tasa de fuga real (`CHA-30`), el coste (`CHA-32`) y la latencia (`CHA-33`) **no están medidos**. G3 y G4 están construidos y probados contra entradas simuladas, no contra el adversarial de un LLM de verdad. | Sprint 7: cerrar `ABR-01`, montar el eval set y medir. El Sprint 6 no declara cumplidos `CHA-30/32/33` | **Aceptado, con hueco declarado** |
 
 ---
 
@@ -335,6 +336,51 @@ de corte) y `RUI-60.b` (timecodes = clips) quedan para el material definitivo.
 | `RF-42` | T: clips sin audio; reproducen una vez y congelan el último frame (`ADR-0007`) | `ffmpeg -an` + `pnpm gate:video` | 7/7 sin audio; 1 vez + congelado; reinicio al volver al principio | **Cumplido** |
 | `RNF-12` | M: primer segmento de vídeo ≤ 800 KB | `pnpm medir:estatico` | 437,8 KB / 800 KB (total 2,5 MB) | **Cumplido** |
 | `RUI-60.b` | T: los timecodes corresponden a los clips | `pnpm build` | clips de 5,000 s; `storyboard.ts` y `SPEC.md` §5.9 alineados | **Cumplido** |
+
+---
+
+## 12 octies. Verificación ejecutada — Sprint 6 (Chat G1–G4, guardrails)
+
+Gate principal: `pnpm gate:chat`. Resultado: **31/31 comprobaciones en verde**, más 41 asserts
+unitarios en `pnpm test` sobre G1–G4. Sin proveedor de modelo: `ABR-01` sigue abierto, así que
+lo verificado aquí es el **andamiaje de seguridad**, no la calidad de la respuesta (`CHA-30` es
+del Sprint 7 y no se marca).
+
+| Requisito | Método | Comando | Resultado | Estado |
+|---|---|---|---|---|
+| `CHA-01` | T: pregunta → recuperación acotada; nunca más de 8 chunks ni 3.000 chars | `pnpm gate:chat` + `tests/chat-guardrails.test.ts` | presupuesto respetado en todas las consultas | **Cumplido** |
+| `CHA-02` | T: el corpus del chat se deriva de `buildChunks(cv)`, no está escrito a mano | `tests/chat-guardrails.test.ts` | `buildAllowlist` deriva de los chunks; id inexistente → `false` | **Cumplido** |
+| `CHA-03` | T: la allowlist la fija el servidor; el cliente no envía ids de chunk | `pnpm gate:chat` | `chatRequest` es `.strict()`: una clave extra → 400 | **Cumplido** |
+| `CHA-04` | T: G1 recorta a 500 chars en vez de rechazar | `tests/chat-guardrails.test.ts` | 900 chars → `ok: true`, 500 exactos | **Cumplido** |
+| `CHA-05` | T: toda cita de la respuesta existe en la allowlist | `pnpm gate:chat` | cita inventada → `cita-no-permitida` | **Cumplido** |
+| `CHA-06` | T: sin contexto suficiente se dice "no consta en el CV" | `pnpm gate:chat` | pregunta de bitcoin → `No consta en el CV.`, sin proveedor | **Cumplido** |
+| `CHA-07` | T: la respuesta no supera 700 caracteres | `tests/chat-guardrails.test.ts` | truncada con `…` + aviso `truncada` | **Cumplido** |
+| `CHA-20` | T: fuera de alcance se responde con texto fijo, **sin** llamar al modelo | `pnpm gate:chat` | `reason: fuera-de-alcance`, proveedor inyectado que lanza → nunca llamado | **Cumplido** |
+| `CHA-21` | T: ventana de tasa por instancia | `pnpm gate:chat` | 12/min; la 13.ª → 429 | **Cumplido** (best-effort, no cuota) |
+| `CHA-22` | T: opinión personal y consejo vital se rechazan como fuera de alcance, no como insulto | `tests/chat-guardrails.test.ts` | "¿me recomiendas Rust?" → `out_of_scope`; "eres idiota" → `abusive` | **Cumplido** |
+| `SEG-11` | T: el corpus lo elige el servidor; los ids de chunk no se pueden pedir | `tests/chat-guardrails.test.ts` | `isAllowed('experiencia.<inventado>')` → `false` | **Cumplido** |
+| `SEG-20` | T: origen ajeno, método, tamaño de cuerpo y formato | `pnpm gate:chat` | 403 / 405 / 413 / 400 | **Cumplido** |
+| `SEG-25` | T: ninguna firma del prompt ni canario llega a un asset de navegador | `pnpm gate:chat` | 0 fugas en 7 assets; detector autocomprobado | **Cumplido** |
+| `SEG-31` | T: el email `private` no aparece en ninguna respuesta | `pnpm gate:chat` | respuesta con el email inyectado → rechazada; 0 apariciones | **Cumplido** |
+| `SEG-35` | T: PII redactada en entrada y rechazada en salida | `pnpm test` + `pnpm gate:chat` | email/NIF/IBAN → `[redactado]` y `pii-en-salida` | **Cumplido** |
+| `CHA-31` | T: un canario en la salida se rechaza, sin margen | `pnpm gate:chat` | `reason: canario`; el canario no aparece ni en el motivo | **Cumplido** |
+| `CHA-34` | T: citas consistentes entre turnos | `pnpm gate:chat` | desempate por sección e id: misma pregunta → mismos chunks | **Cumplido** |
+| `CHA-36` | T: respuesta larga se trunca; por encima del tope duro se rechaza con su motivo | `tests/chat-guardrails.test.ts` | 1.200 chars → truncada; 8.000 → `demasiado-larga` | **Cumplido** |
+| `CHA-37` | T: confianza baja con contenido afirmativo deriva a no consta | `tests/chat-guardrails.test.ts` | `low` + > 120 chars → `confianza-baja` | **Cumplido** |
+| `RNF-88` | T: el hash del prompt cambia si cambia el corpus o la pregunta | `tests/chat-guardrails.test.ts` | 3 prompts → 3 hashes | **Cumplido** |
+| `ADR-0008` | T: el sitio sigue prerenderizado con el adaptador puesto | `pnpm gate:chat` | `index.html` + 4 exportadores en `dist/client`; función server compilada | **Cumplido** |
+| `RNF-33` | T: el HTML sigue siendo estático y parseable | `pnpm gate:ats` | ver §12 quater (sin cambio con el adaptador) | **Cumplido** |
+| `ABR-01` | T: un `MODEL_PROVIDER` desconocido falla ruidosamente, no cae a `off` | `pnpm gate:chat` | 502 con texto fijo | **Cumplido** (la elección del modelo sigue abierta) |
+
+### Qué **no** cubre este sprint
+
+- `CHA-30` (tasa de fuga real ≤ 1 %), `CHA-32` (coste por turno) y `CHA-33` (latencia p95) **no se
+  pueden medir sin modelo**: son el Sprint 7 con eval set. Marcar el Sprint 6 `DONE` no los
+  declara cumplidos.
+- La ventana de tasa es por instancia y el identificador lo pone el cliente: mitiga un bucle
+  torpe, no a un atacante distribuido. Está escrito en el código y aquí.
+- No hay interfaz: el Sprint 6 construye y verifica el endpoint, no la escena de chat. `RF-50`
+  cubre la ruta; la UI del chat entra en `RF-51..58` (Sprint 7).
 
 ---
 

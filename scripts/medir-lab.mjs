@@ -31,9 +31,10 @@ import { fileURLToPath } from 'node:url'
 
 import { chromium } from 'playwright'
 import AxeBuilder from '@axe-core/playwright'
+import { staticDir } from './lib/static.mjs'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const DIST = join(ROOT, 'dist')
+const DIST = staticDir()
 const OUT = join(ROOT, 'docs/reportes-calidad/1-fundacion-y-toolchain')
 const RAPIDO = process.argv.includes('--rapido')
 

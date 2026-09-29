@@ -26,6 +26,10 @@ export default tseslint.config(
       'dist/**',
       'node_modules/**',
       '.astro/**',
+      // Salida del adaptador de Vercel (`ADR-0008`). Es codigo generado, con tipos propios y
+      // sin tsconfig: lint-earlo no dice nada del codigo del proyecto y revienta el set
+      // type-aware. `.gitignore` ya lo excluye; aqui hace falta la lista de ESLint.
+      '.vercel/**',
       'coverage/**',
       'playwright-report/**',
       '**/*.astro',

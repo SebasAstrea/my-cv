@@ -20,12 +20,11 @@ import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import { extname, join, normalize } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 import { chromium } from 'playwright'
+import { staticDir } from './lib/static.mjs'
 
-const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const DIST = join(ROOT, 'dist')
+const DIST = staticDir()
 const SCENE_COUNT = 7
 
 const TYPES = {

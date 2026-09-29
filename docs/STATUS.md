@@ -18,21 +18,26 @@
 
 | | |
 |---|---|
-| **Sprint activo** | **6 — Chat G1–G4 (guardrails)** (siguiente en el roadmap, sin empezar) |
-| **Último sprint aceptado** | **5 — Sistema de vídeo** (`ACCEPTED`, commit `fa9e3e4`) |
-| **Gate** | `pnpm gate` — 13 pasos, exit 0 |
+| **Sprint activo** | **7 — Chat G5–G6 + eval set** (siguiente en el roadmap, sin empezar) |
+| **Último sprint aceptado** | **6 — Chat G1–G4 (guardrails)** |
+| **Gate** | `pnpm gate` — 14 pasos, exit 0 |
 | **Bloqueo** | Ninguno conocido |
-| **Deuda registrada** | 11 ítems (`TD-01`..`TD-11` en `BACKLOG.md`) |
-| **Riesgos abiertos** | 8 aceptados (`RK-01`..`RK-08` en `TRACEABILITY.md` §12) |
+| **Deuda registrada** | 12 ítems (`TD-01`..`TD-12` en `BACKLOG.md`) |
+| **Riesgos abiertos** | 9 aceptados (`RK-01`..`RK-09` en `TRACEABILITY.md` §12) |
 | **Medición de calidad** | Sprint 1 medido en `docs/reportes-calidad/1-fundacion-y-toolchain/REPORTE.md`; Sprint 8 (rendimiento) en `docs/reportes-calidad/8-rendimiento/`. T4/T5, sin datos de campo. `TD-06` (Astro) cerrada por `ADR-0005`; `TD-11` (presupuesto de diseño) sigue abierto |
 
-**Siguiente acción concreta:** los **sprints que dependen del vídeo** están hechos: Sprint 5
-completo (clips definitivos sin audio, ≤ 800 KB, alineados a 5 s; `ADR-0007`) y el vídeo medido en
-el laboratorio (TBT ~20 ms con vídeo, muy por debajo de `RNF-15`). Lo que falta del vídeo es la
-medición **emparejada** de `MEDICION.md` §4.5 (`RNF-13/14/15`, protocolo con n ≥ 30), que no es un
-`pnpm` suelto. El siguiente sprint del roadmap es el **6 (chat con guardrails)**.
+**Siguiente acción concreta:** el **Sprint 6 está cerrado y verificado** (`pnpm gate:chat`, 31/31):
+G1–G4 cortan antes y después del modelo, sin gastar un token, y el corpus del chat es server-only.
+El siguiente sprint es el **7 (G5–G6 + eval set)**, y su primer paso no es de código: es cerrar
+`ABR-01`, el modelo concreto. Sin eso `CHA-30` (tasa de fuga ≤ 1 %), `CHA-32` (coste) y `CHA-33`
+(latencia p95) no se pueden medir, porque necesitan llamadas reales.
+
+Lo que queda del vídeo sigue igual: Sprint 5 cerrado (clips definitivos sin audio, ≤ 800 KB,
+alineados a 5 s; `ADR-0007`) y solo pendiente la medición **emparejada** de `MEDICION.md` §4.5
+(`RNF-13/14/15`, protocolo con n ≥ 30), que no es un `pnpm` suelto.
 
 ```bash
+pnpm gate:chat         # CHA-01..07, CHA-20/22/31/34/36/37, SEG-11/20/25/31/35, ADR-0008
 pnpm gate:video        # DEC-02 + RF-40..45 + RUI-95/96 + ADR-0007
 pnpm medir:lab         # T4: LCP/TBT/CLS/TTFB con vídeo
 ```
@@ -55,7 +60,7 @@ hash y auditoría; el Sprint 8 (rendimiento) ya trae **fuentes self-hosted** (3 
 | 3 | Navegación, teclado y tema | `DONE` | `gate:keyboard` — teclado 100 % | `RF-02..06`, `RF-09`, `RUI-81` |
 | 4 | Divulgación progresiva y presupuesto | `DONE` | `gate:saturation` — `RUI-52` | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` |
 | 5 | Sistema de vídeo | `DONE` | 1 `<video>` DOM + `RF-41` | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` |
-| 6 | Chat G1–G4 (guardrails) | `TODO` | 100 % cobertura guardrails | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-25` |
+| 6 | Chat G1–G4 (guardrails) | `DONE` | `pnpm gate:chat` — 31/31 | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-20/25/31/35` |
 | 7 | Chat G5–G6 + eval set | `TODO` | `CHA-30` ≤ 1 % | `DEC-01.b/f`, `RF-50..58`, `RNF-68/69`, `CHA-30..39` |
 | 8 | Rendimiento | `TODO` | Todos los budgets §4.2 | `RNF-01..23`, `RNF-85`, `MEDICION.md` §4.5 |
 | 9 | Seguridad | `TODO` | 0 hallazgos §4.7 | `SEG-01..06`, `SEG-20..25`, `SEG-30..35`, `RNF-61..71` |
@@ -63,7 +68,28 @@ hash y auditoría; el Sprint 8 (rendimiento) ya trae **fuentes self-hosted** (3 
 | 11 | PWA, i18n, portabilidad | `TODO` | Matriz de navegadores | `RNF-30..35`, `RF-12` |
 | 12 | Hardening y release v1 | `TODO` | Smoke post-deploy + SLO | `RNF-50..58`, `SEG-43/44`, `RND-01..08`, `G6` |
 
-### 2.1 Sprint 5 — desglose de trabajo
+### 2.1 Sprint 6 — desglose de trabajo
+
+La ruta `/api/chat` es la **única** parte on-demand del sitio (`ADR-0008`): todo lo demás sigue
+HTML prerenderizado, y el adaptador de Vercel solo habilita esa ruta. El corpus del chat no sale
+del servidor en ningún caso (`SEG-25`).
+
+- [x] Chunking del CV en fragmentos con id estable y hash, y allowlist derivada de ellos (`CHA-01/02`)
+- [x] Recuperación por solapamiento de términos, con desempate determinista (`CHA-34`)
+- [x] `G1` en la entrada: recorte, scrub de PII, bloqueo de ataques y abuso, sin gastar un token
+- [x] `G2`: canarios de PII en el prompt, con respuesta binaria y sin margen (`CHA-31`)
+- [x] `G3`: prompt con corpus delimitado como dato no confiable, re-anclaje canónico y hash (`RNF-88`)
+- [x] `G4` en la salida: contrato Zod `.strict()`, citas contra allowlist, PII, fuga y longitud (`CHA-05/36/37`)
+- [x] `POST /api/chat` con origen, método, tasa y cuerpo acotados (`SEG-20/23`)
+- [x] Proveedor de reserva determinista y determinista de verdad: `ABR-01` sigue abierto
+- [x] `pnpm gate:chat` con 31 comprobaciones **y su prueba en negativo** (G1 y G4, rotas a propósito)
+- [x] Separación transporte/lógica (`src/pages/api/chat.ts` monta, `src/lib/chat/handler.ts` decide)
+- [x] `scripts/lib/static.mjs`: los gates resuelven el sitio construido, no asumen `dist/`
+
+**Nota:** la lógica del chat es independiente de Astro para que el gate pueda ejecutarla en Node
+sin Vite (`getCv()` usa `import.meta.glob`). La ruta son 12 líneas de cableado.
+
+### 2.2 Sprint 5 — desglose de trabajo
 
 La infraestructura de vídeo está implementada y en verde (`pnpm gate:video`). Los **clips son
 provisionales** (7 × 5 s), así que la continuidad de corte (`RF-42`) y las duraciones del
@@ -106,16 +132,18 @@ Cada fila debe corresponded con un script real de `package.json` y con un ficher
 | `gate:placeholders` | `pnpm gate:placeholders` | `RF-25` — marcadores de fixture | En despliegue |
 | `gate:budgets` | `pnpm gate:budgets` | `RNF-07..12` — budgets sobre `dist/` real | Sí |
 | `gate:artifacts` | `pnpm gate:artifacts` | `SEG-31`, `SEG-32` — ningún campo `private` en cliente | Sí |
+| `gate:chat` | `pnpm gate:chat` | `CHA-01..07`, `CHA-20/22/31/34/36/37`, `SEG-11/20/25/31/35`, `ADR-0008` | Sí |
 
 **Comando único:** `pnpm gate` = `status` → `format:check` → `typecheck` → `lint` → `test`
 → `check:cv` → `gate:tokens` → `build` → `gate:ats` → `gate:security` → `gate:placeholders`
-→ `gate:budgets` → `gate:artifacts`.
+→ `gate:budgets` → `gate:artifacts` → `gate:chat`.
 Equivale a `pnpm verify`.
 
 **Fuera de `pnpm gate` (gates de sprint):** `pnpm gate:keyboard` (`RF-02..06`, `RF-09`, `RF-13`),
 `pnpm gate:saturation` (`RUI-30..37`, `RUI-52`) y `pnpm gate:video` (`DEC-02`, `RF-40..45`,
 `RUI-95/96`). Corren en el job `keyboard` de CI porque necesitan Chromium; no entran en el gate
 rápido de PR. `gate:video` se omite si no hay clips (son provisionales y gitignored).
+`gate:chat` sí entra en `pnpm gate` y no necesita Chromium: ejercita el handler en Node.
 
 ### 3.1 Gates probados en negativo
 
@@ -127,9 +155,12 @@ Un gate que solo se ha visto pasar no está verificado. Estos tienen su prueba d
 | `gate:artifacts` | Email inyectado en `dist/index.html` | exit 1, `dist/index.html contiene contact.email` |
 | `astro build` | `VERCEL=1 CV_DATA_SOURCE=fixture` | exit 1, mensaje `[ADR-0003]` |
 | `astro build` | `VERCEL=1 CV_DATA_SOURCE=real` sin `cv.real.ts` | exit 1, indica el fichero y cómo crearlo |
+| `gate:chat` | `if (false)` en el bloqueo de G1 | exit 1, nombra `CHA-25` y el ataque concreto que dejó pasar |
+| `gate:chat` | Se desactiva la detección de canario en G4 | exit 1, `CHA-31` |
+| `gate:chat` | Se borra `scripts/lib/static.mjs` | exit 1 antes de medir nada |
 | `deploy-contract` (CI) | Automático en cada push | Verifica los dos anteriores |
 
-**Los cuatro se ejecutan también en CI** (`.github/workflows/ci.yml`, job `deploy-contract`).
+**Los siete se ejecutan también en CI** (`.github/workflows/ci.yml`, job `deploy-contract`).
 
 ---
 
@@ -171,8 +202,10 @@ Que no esté aquí como «cumplido» aunque parezca cerca:
 | [`0005`](./adr/0005-astro-7-cierra-vulnerabilidad-critica.md) | Astro 5 → 7: cierra la vulnerabilidad crítica (CVSS 9,8) de `TD-06` | Aceptada |
 | [`0006`](./adr/0006-email-revelado-bajo-interaccion.md) | Email por revelado bajo interacción (`RF-27`); excepción acotada de `SEG-32` | Aceptada |
 | [`0007`](./adr/0007-clips-una-vez-sin-bucle.md) | Los clips se reproducen una vez y congelan el último frame (no bucle, `RF-42`) | Aceptada |
+| [`0008`](./adr/0008-chat-una-ruta-on-demand.md) | El chat es una única función on-demand; `output: 'static'` se mantiene (`SEG-25`, `RNF-08`) | Aceptada |
 
-**Cerrada:** `ABR-01` (ver `SPEC.md` §9.2). **Sin abrir pendientes.**
+**Abierto a propósito:** `ABR-01` (qué modelo). Lo decide el Sprint 7; hasta entonces el chat
+responde desde el corpus con el proveedor de reserva determinista.
 
 ---
 

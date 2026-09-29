@@ -1,6 +1,8 @@
 dist
 node_modules
 .astro
+# Salida del adaptador de Vercel (ADR-0008), igual que en .gitignore y eslint.config.mjs.
+.vercel
 coverage
 pnpm-lock.yaml
 

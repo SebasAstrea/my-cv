@@ -23,9 +23,10 @@ import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { dataSource, isDeployBuild } from '../src/lib/env.ts'
+import { staticDir } from './lib/static.mjs'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const DIST = join(ROOT, 'dist')
+const DIST = staticDir()
 
 // Estricto si el build va a desplegarse, o si se ha pedido explicitamente datos reales.
 // Un build de PR con el fixture avisa pero no bloquea: el fixture existe para eso (ADR-0003).

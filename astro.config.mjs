@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config'
+import vercel from '@astrojs/vercel'
 import { dataSource, isDeployBuild } from './src/lib/env.ts'
 
 /**
@@ -27,6 +28,14 @@ if (deploying && source !== 'real') {
 }
 
 export default defineConfig({
+  // `output: 'static'` **se mantiene** (`ADR-0001`). El adaptador no convierte el sitio en SSR:
+  // solo habilita que exista una ruta con `prerender = false`, que es lo unico on-demand
+  // (`POST /api/chat`, `ADR-0008`). Todas las paginas siguen saliendo como HTML estatico en
+  // build, y `gate:ats` sigue encontrando las cuatro exportaciones y el JSON-LD igual que antes.
+  //
+  // Sin adaptador, Astro da error al encontrar una ruta no prerenderizada, que es exactamente
+  // la proteccion que se quiere: no se puede añadir una ruta server sin decidirlo.
+  adapter: vercel(),
   output: 'static',
   trailingSlash: 'never',
   build: {

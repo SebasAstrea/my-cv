@@ -20,9 +20,10 @@ import { fileURLToPath } from 'node:url'
 
 import { parseCv, toPublicCv } from '../src/lib/cv/validate.ts'
 import { dataSource } from '../src/lib/env.ts'
+import { staticDir } from './lib/static.mjs'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const DIST = join(ROOT, 'dist')
+const DIST = staticDir()
 
 function walk(dir, out = []) {
   for (const entry of readdirSync(dir)) {

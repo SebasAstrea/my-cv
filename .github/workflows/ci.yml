@@ -96,6 +96,36 @@ jobs:
           fi
           echo "OK: el despliegue con fixture falla, como debe."
 
+      # El segundo sentido de la misma promesa (`ADR-0003`): un despliegue con datos reales tiene
+      # que compilar. Sin esto, "el fixture falla" tambien seria cierto si `pnpm build` fallara
+      # siempre, que es la forma de pasar un gate sin comprobar nada.
+      - name: Un despliegue con datos reales debe compilar y tener la funcion del chat
+        env:
+          VERCEL: '1'
+          VERCEL_ENV: production
+          CV_DATA_SOURCE: real
+        run: |
+          cp src/data/cv.fixture.ts src/data/cv.real.ts
+          pnpm build
+          test -f dist/client/index.html
+          test -n "$(find .vercel/output/functions -name '*.mjs' -print -quit)"
+          echo "OK: sitio prerenderizado y funcion del chat compilada (ADR-0008)."
+
+      # `gate:chat` en negativo (`STATUS.md` §3.1). Un guard que solo se ha visto pasar no sabe si
+      # el camino malo esta cerrado.
+      - name: gate:chat detecta G1 roto
+        run: |
+          pnpm build
+          cp src/lib/chat/guardrails.ts /tmp/guardrails.bak
+          sed -i "s/if (intent === 'attack' || intent === 'abusive')/if (false)/" src/lib/chat/guardrails.ts
+          if pnpm gate:chat; then
+            cp /tmp/guardrails.bak src/lib/chat/guardrails.ts
+            echo "::error::gate:chat paso con G1 desactivado. El guard no comprueba nada."
+            exit 1
+          fi
+          cp /tmp/guardrails.bak src/lib/chat/guardrails.ts
+          echo "OK: gate:chat falla cuando G1 esta roto."
+
   keyboard:
     name: Navegacion y presupuesto de escena
     runs-on: ubuntu-latest

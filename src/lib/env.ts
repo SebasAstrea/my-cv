@@ -78,3 +78,27 @@ export function contactEmail(): string | undefined {
   const value = read('PUBLIC_CONTACT_EMAIL')
   return value !== undefined && value.trim() !== '' ? value.trim() : undefined
 }
+
+/**
+ * Chat encendido (`RF-50`). Por defecto si: el gate necesita poder llamar al endpoint.
+ *
+ * Se declara para poder apagar la funcion sin tocar codigo — un despliegue de prueba, o el
+ * momento en que se decide que el chat no entra en v1. El apagado devuelve 404, no un 503 con
+ * mensaje: si el chat no esta, la ruta no deberia existir desde fuera.
+ */
+export function chatEnabled(): boolean {
+  const value = read('CHAT_ENABLED')
+  return value !== '0' && value !== 'false'
+}
+
+/**
+ * Proveedor de modelo (`ADR-0004`, `ABR-01`).
+ *
+ * Sin valor declarado se usa `"off"`, que es el unico implementado: responde desde el corpus
+ * sin salir a la red. Un valor desconocido **lanza** en vez de caer a `off`, porque caer en
+ * silencio convertiria un despliegue mal configurado en un chat que parece funcionar y no
+ * responde preguntas.
+ */
+export function modelProvider(): string {
+  return read('MODEL_PROVIDER') ?? 'off'
+}

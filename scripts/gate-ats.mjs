@@ -15,10 +15,9 @@
 
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { staticDir } from './lib/static.mjs'
 
-const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const DIST = join(ROOT, 'dist')
+const DIST = staticDir()
 const problems = []
 
 /** `RF-01` fija 7 escenas; el id estable es `#escena-0N` (`Scene.astro`). */

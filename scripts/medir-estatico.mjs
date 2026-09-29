@@ -18,9 +18,10 @@ import { gzipSync } from 'node:zlib'
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { staticDir } from './lib/static.mjs'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const DIST = join(ROOT, 'dist')
+const DIST = staticDir()
 
 /* ------------------------------------------------------------------ *
  * Utilidades

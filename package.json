@@ -30,7 +30,8 @@
     "gate:placeholders": "node scripts/gate-placeholders.mjs",
     "gate:budgets": "node scripts/gate-budgets.mjs",
     "gate:artifacts": "node --experimental-strip-types scripts/gate-artifacts.mjs",
-    "gate": "pnpm status && pnpm format:check && pnpm typecheck && pnpm lint && pnpm test && pnpm check:cv && pnpm gate:tokens && pnpm build && pnpm gate:ats && pnpm gate:security && pnpm gate:placeholders && pnpm gate:budgets && pnpm gate:artifacts",
+    "gate:chat": "node --experimental-strip-types scripts/gate-chat.mjs",
+    "gate": "pnpm status && pnpm format:check && pnpm typecheck && pnpm lint && pnpm test && pnpm check:cv && pnpm gate:tokens && pnpm build && pnpm gate:ats && pnpm gate:security && pnpm gate:placeholders && pnpm gate:budgets && pnpm gate:artifacts && pnpm gate:chat",
     "verify": "pnpm gate",
     "medir:estatico": "node --experimental-strip-types scripts/medir-estatico.mjs",
     "medir:lab": "node --experimental-strip-types scripts/medir-lab.mjs",
@@ -40,6 +41,7 @@
     "medir": "pnpm build && pnpm medir:estatico && pnpm medir:lab && pnpm medir:diseno && pnpm medir:graficas"
   },
   "dependencies": {
+    "@astrojs/vercel": "^11.0.11",
     "astro": "^7.3.5",
     "zod": "^3.25.76"
   },
