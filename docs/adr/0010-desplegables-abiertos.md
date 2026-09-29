@@ -74,8 +74,20 @@ Registrado como `TD-13`.
   protege sigue siendo el techo por escena, no el colapso.
 - **`RUI-52` y `MEDICION.md` §4.3** suben los umbrales a 29 nodos / 1.064 car. Los umbrales
   siguen siendo automáticos, no subjetivos: eso es lo que `RUI-52` promete y no se toca.
-- `pnpm gate:keyboard` sigue en **100 %** (`RF-02..06`, `RF-09`, deep-link a `RF-13`): abrir los
-  desplegables no rompe la navegación por teclado, que era el riesgo real de este cambio.
+- `pnpm gate:keyboard` sigue en **100 %** (`RF-02..06`, `RF-09`, `RF-13`, `RF-27`), pero **hubo que
+  arreglar dos comprobaciones** que daban por supuesto un `<details>` colapsado, y una de ellas
+  había quedado en verde por vacuidad:
+  - `RF-27` pulsaba el `<summary>` de la escena de contacto para llegar al botón de email. Con el
+    desplegable ya abierto, ese clic lo **cerraba** y el botón quedaba invisible. Ahora solo pulsa
+    si de verdad está cerrado.
+  - `RF-13` comprobaba que el deep-link abre el detalle, pero como todos nacen abiertos la
+    comprobación era verde aunque `openDetailFromHash()` no hiciera nada. Ahora cierra el detalle
+    antes de llegar por el hash, y se verificó **en negativo**: con `node.open = true` sustituido
+    por `false`, el gate falla con `RF-13 — #proyecto-… no abre el detalle`.
+
+  Moraleja para el siguiente: abrir un desplegable por defecto no solo cambia lo que se ve, cambia
+  lo que significan los clics en los tests, y hace verdes las comprobaciones que dependían del
+  estado colapsado.
 - Los 8 `<details>` nativos conservan foco, teclado y legibilidad sin JS (`RNF-101`). Abrirlos no
   cambia ese contrato, solo el estado inicial.
 

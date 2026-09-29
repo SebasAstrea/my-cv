@@ -183,9 +183,11 @@ Un gate que solo se ha visto pasar no está verificado. Estos tienen su prueba d
 | `gate:chat` | `if (false)` en el bloqueo de G1 | exit 1, nombra `CHA-25` y el ataque concreto que dejó pasar |
 | `gate:chat` | Se desactiva la detección de canario en G4 | exit 1, `CHA-31` |
 | `gate:chat` | Se borra `scripts/lib/static.mjs` | exit 1 antes de medir nada |
+| `gate:keyboard` | `node.open = true` → `false` en `openDetailFromHash` | exit 1, `RF-13 — #proyecto-… no abre el detalle`. Sin este negativo la comprobación era **verde por vacuidad**: con `ADR-0010` el detalle ya nace abierto, así que daba igual que el deep-link no hiciera nada |
+| `gate:keyboard` | Se quita el clic condicional de `RF-27` | exit 1: el clic en el resumen **cierra** el desplegable ya abierto y el botón de email queda invisible |
 | `deploy-contract` (CI) | Automático en cada push | Verifica los dos anteriores |
 
-**Los siete se ejecutan también en CI** (`.github/workflows/ci.yml`, job `deploy-contract`).
+**Los nueve se ejecutan también en CI** (`.github/workflows/ci.yml`, job `deploy-contract`).
 
 ---
 

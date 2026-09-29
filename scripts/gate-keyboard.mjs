@@ -178,11 +178,20 @@ try {
   if (projectId === null) {
     fail('RF-13', 'no hay ningun <details> de proyecto')
   } else {
+    // Con `ADR-0010` todos los desplegables nacen abiertos, asi que esta comprobacion se quedaria
+    // verde siempre y no probaria nada. Se cierra el detalle a proposito: si al llegar por el
+    // hash vuelve a estar abierto, es el deep-link el que lo abre, no el HTML.
+    await page.goto(origin, { waitUntil: 'load' })
+    await page.evaluate((id) => {
+      const el = document.getElementById(id)
+      if (el instanceof HTMLDetailsElement) el.open = false
+    }, projectId)
     await page.goto(`${origin}/#${projectId}`, { waitUntil: 'load' })
     const openVisible = await page.evaluate((id) => {
       const el = document.getElementById(id)
       return el instanceof HTMLDetailsElement && el.open && el.checkVisibility()
     }, projectId)
+
     if (openVisible) {
       ok(`deep-link abre el detalle ${projectId}`, 'RF-13')
     } else {
@@ -194,7 +203,12 @@ try {
   const emailButtons = await page.locator('[data-contact-email]').count()
   if (emailButtons > 0) {
     await page.goto(origin, { waitUntil: 'load' })
-    await page.locator('#escena-06 .detail__summary').first().click()
+    // Igual que arriba: el desplegable ya nace abierto (`ADR-0010`). Pulsar el resumen sin
+    // comprobarlo lo cerraria y ocultaria justo el boton que esta comprobacion va a pulsar.
+    const yaAbierto = await page.evaluate(
+      () => document.querySelector('#escena-06 .detail')?.hasAttribute('open') ?? false,
+    )
+    if (!yaAbierto) await page.locator('#escena-06 .detail__summary').first().click()
     await page.locator('[data-contact-email]').click()
     const revealed = await page.evaluate(() => {
       const output = document.querySelector('[data-contact-email-output]')
