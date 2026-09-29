@@ -218,6 +218,33 @@ export function normalize(text: string): string {
     .trim()
 }
 
+/**
+ * Reducciyon de plurales y terminaciones, para emparejar en espanol.
+ *
+ * Sin esto el chat falla en las preguntas mas normales que hay: en espanol se **pregunta** en
+ * plural y el CV se **escribe** en singular. "Que certificaciones tiene" contra "Certificacion
+ * CKA" no coincide con ninguna busqueda literal, y lo mismo con tecnologias, tecnologias,
+ * proyectos o años. Medido: sin esto, "¿Que certificaciones tiene?" devolvia "No consta en el
+ * CV" con la respuesta correcta a un metro de distancia en el documento.
+ *
+ * No es un stemmer linguistico: son las cinco terminaciones mas rentables y nada mas. Se aplica
+ * **simetricamente** a la consulta y al corpus, que es lo que lo hace seguro: si "kubernetes" se
+ * reduce a "kubernete", tambien se reduce en el indice, y sigue encontrandose. Lo que puede
+ * pasar es que dos palabras distintas caigan en el mismo tallo y una recupere un fragmento de mas.
+ * Eso es un problema de relevancia, y la respuesta la siguen acotando G4 y la allowlist.
+ *
+ * El minimo de 3 caracteres evita que "usa" -> "us" colisione con medio CV.
+ */
+export function stem(token: string): string {
+  if (token.length <= 3) return token
+  for (const suffix of ['es', 's', 'a', 'o', 'e']) {
+    if (!token.endsWith(suffix)) continue
+    const base = token.slice(0, -suffix.length)
+    if (base.length >= 3) return base
+  }
+  return token
+}
+
 /** Tokens significativos de una consulta, en el orden en que aparecen y sin repetir. */
 export function tokenize(text: string): string[] {
   const seen = new Set<string>()
@@ -297,30 +324,59 @@ function sectionOf(id: string): SectionId {
  * eliminados por `toPublicCv` (`SEG-31`), asi que el tipo hace imposible que entren aqui aunque
  * alguien pase el documento equivocado. Es la garantia estatica de `SEG-11`, no una convencion.
  */
+/**
+ * Construye el corpus recuperable desde el documento **publico**.
+ *
+ * Recibe `PublicCvDocument` y no `CvDocument` a proposito: los campos `private` ya fueron
+ * eliminados por `toPublicCv` (`SEG-31`), asi que el tipo hace imposible que entren aqui aunque
+ * alguien pase el documento equivocado. Es la garantia estatica de `SEG-11`, no una convencion.
+ *
+ * **Por que se trocea por seccion y no por item** (`ADR-0009`). Antes eran 16 fragmentos y el
+ * retrieval se quedaba corto, porque empareja por palabra y las preguntas no usan el vocabulario
+ * del CV. Medido: "¿Que certificaciones tiene?" no encontraba "Certificacion CKA" (plural contra
+ * singular) y contestaba "No consta en el CV". Con un fragmento por seccion, los 8 caben, el CV
+ * completo entra en el contexto y la pregunta llega al modelo con los datos delante.
+ *
+ * Los proyectos siguen siendo fragmentos aparte porque son lo que mas se cita, y se conserva el
+ * `splitLong` para que un texto largo no se corte a mitad de palabra.
+ */
 export function buildChunks(cv: PublicCvDocument): Chunk[] {
   const out: Chunk[] = []
 
-  push(
-    out,
-    'persona',
-    'persona',
+  // 1. Quien es: nombre, rol, ubicacion, resumen y publicaciones en un solo bloque. Una pregunta
+  //    sobre "quien es" o "que publica" no tiene queholders de donde colgar.
+  const publications = cv.publications
+    .map((pub) => {
+      const url = pub.url === undefined ? '' : ` ${pub.url}`
+      return `${pub.title} (${pub.kind}, ${pub.date}):${url}`
+    })
+    .join(' ')
+  const resumen = [
     `${cv.person.name}. ${cv.person.role}. ${cv.person.tagline}. Ubicacion: ${cv.person.location}.`,
-  )
+    cv.summary,
+    publications === '' ? '' : `Publicaciones: ${publications}`,
+  ]
+    .filter((part) => part !== '')
+    .join(' ')
+  push(out, 'persona', 'persona', resumen)
 
-  push(out, 'perfil', 'perfil', cv.summary)
-
-  for (const role of cv.roles) {
+  // 2. Experiencia completa en un bloque. La pregunta tipica ("donde ha trabajado", "que hizo en
+  //    2022") menciona el ano o la empresa, y un fragmento por puesto obligaba a acertar el
+  //    puesto exacto para que la pregunta llegara al fragmento correcto.
+  const roles = cv.roles.map((role) => {
     const header = `${role.company} — ${role.title} (${role.start} – ${role.end ?? 'actualidad'})`
+    // `RF-21` obliga a una metrica por logro, asi que no hay caso "sin metrica": formatearla
+    // siempre es correcto y `formatMetric` no necesita rama de ausencia.
     const achievements = role.highlights.map((h) => {
-      // `RF-21` obliga a una metrica por logro, asi que no hay caso "sin metrica": formatearla
-      // siempre es correcto y `formatMetric` no necesita rama de ausencia.
       const m = h.metric
       const period = m.period === undefined ? '' : `, ${m.period}`
       return `${h.text} (${m.value} ${m.unit}${period})`
     })
-    splitLong(`${header}. ${role.scope} ${achievements.join(' ')}`, `experiencia.${role.id}`, out)
-  }
+    return `${header}. ${role.scope} ${achievements.join(' ')}`
+  })
+  push(out, 'experiencia', 'experiencia', roles.join(' | '))
 
+  // 3. Proyectos: uno por proyecto, que es la granularidad que se cita.
   for (const project of cv.projects) {
     const header = `${project.name} (${project.start} – ${project.end ?? 'actualidad'}).`
     const link = project.link === undefined ? '' : ` ${project.link}`
@@ -330,21 +386,34 @@ export function buildChunks(cv: PublicCvDocument): Chunk[] {
     splitLong(body, `proyectos.${project.id}`, out)
   }
 
-  for (const group of cv.stack) {
-    const items = group.items.map((item) => {
-      const years = item.years === undefined ? '' : `, ${item.years} anos`
-      return `${item.name} (nivel ${item.level}${years})`
+  // 4. Stack en un bloque, y con el nombre que la gente usa. El documento agrupa por "Lenguajes",
+  //    "Infraestructura", "Observabilidad", "Interfaz" y nunca dice la palabra "tecnologias", que
+  //    es justo lo que pregunta cualquiera. Nombrarlo no es rellenar el CV: no afirma
+  //    experiencia que no este en los items, solo nombra lo que la lista ya es.
+  const stack = cv.stack
+    .map((group) => {
+      const items = group.items.map((item) => {
+        const years = item.years === undefined ? '' : `, ${item.years} anos`
+        return `${item.name} (nivel ${item.level}${years})`
+      })
+      return `${group.label}: ${items.join('; ')}`
     })
-    push(out, 'stack', `stack.${group.id}`, `${group.label}: ${items.join('; ')}.`)
-  }
+    .join(' | ')
+  push(out, 'stack', 'stack', `Stack de tecnologias, herramientas y lenguajes: ${stack}.`)
 
   for (const entry of cv.education) {
     const detail = entry.detail === undefined ? '' : ` ${entry.detail}`
+    // Mismo criterio que el stack: se nombran las palabras con las que se pregunta. "¿Donde
+    // estudio?" no comparte ningun termino con "Grado en Ingenieria Informatica — Universidad de
+    // Ejemplo", y la respuesta estaba a un metro. No se inventa nada: solo se dice que esto es
+    // formacion, que es lo que es.
+    const aka =
+      entry === cv.education[0] ? 'Formacion academica (estudios, universidad, titulo): ' : ''
     push(
       out,
       'formacion',
       `formacion.${entry.id}`,
-      `${entry.title} — ${entry.institution} (${entry.start} – ${entry.end ?? 'actualidad'}).${detail}`,
+      `${aka}${entry.title} — ${entry.institution} (${entry.start} – ${entry.end ?? 'actualidad'}).${detail}`,
     )
   }
 
@@ -355,15 +424,6 @@ export function buildChunks(cv: PublicCvDocument): Chunk[] {
       'formacion',
       `certificacion.${cert.id}`,
       `Certificacion ${cert.name} de ${cert.issuer} (${cert.date}${expires}).`,
-    )
-  }
-
-  for (const pub of cv.publications) {
-    push(
-      out,
-      'persona',
-      `publicacion.${pub.id}`,
-      `${pub.title} (${pub.kind}, ${pub.date}): ${pub.url}`,
     )
   }
 
@@ -398,15 +458,42 @@ export function isAllowed(id: string, allowlist: ReadonlySet<string>): boolean {
  * pregunta devuelve siempre los mismos chunks: sin eso, `CHA-34` (consistencia de citas) no se
  * puede comprobar porque cambiaria entre llamadas.
  */
+/**
+ * Indice de tallos de un chunk, memorizado por objeto.
+ *
+ * Los `Chunk` son inmutables y se construyen una vez por peticion, asi que un `WeakMap` los
+ * indexa sin coste para las llamadas siguientes y sin anadir un campo al tipo `Chunk` — que
+ * viaja al prompt y del que depende la allowlist, y ahi no se toca nada sin motivo.
+ */
+const indices = new WeakMap<Chunk, ReadonlySet<string>>()
+
+function chunkStems(chunk: Chunk): ReadonlySet<string> {
+  const cached = indices.get(chunk)
+  if (cached !== undefined) return cached
+  const stems = new Set<string>()
+  for (const token of normalize(chunk.text).split(' ')) {
+    if (token.length === 0) continue
+    stems.add(token)
+    stems.add(stem(token))
+  }
+  indices.set(chunk, stems)
+  return stems
+}
+
 export function scoreChunk(chunk: Chunk, terms: readonly string[]): number {
   if (terms.length === 0) return 0
   const haystack = normalize(chunk.text)
+  const stems = chunkStems(chunk)
   let hits = 0
   for (const term of terms) {
-    // Se busca por palabra completa cuando el termino es alfanumerico, para que "go" no
-    // case con "google" ni "ia" con "diagrama". Un termino con simbolos ("c++", "c#", ".net")
-    // se escapa y se busca literal: como `RegExp` lo interpretaria, `c++` no compila y `.net`
-    // casaria con cualquier caracter.
+    // Camino normal: coincidencia por tallo, que es la que empareja plural con singular.
+    if (stems.has(term) || stems.has(stem(term))) {
+      hits += 1
+      continue
+    }
+    // Camino de simbolos ("c++", "c#", ".net"): se escapa y se busca literal, porque como
+    // `RegExp` lo interpretaria `c++` no compila y `.net` casaria con cualquier caracter. Y se
+    // busca con limites de palabra para que "go" no case con "google" ni "ia" con "diagrama".
     const re = /^[a-z0-9]+$/.test(term)
       ? new RegExp(`\\b${term}\\b`)
       : new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'u')

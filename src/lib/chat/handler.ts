@@ -22,13 +22,12 @@
  * de el: un guardrail que corre "dentro" del prompt es una recomendacion, no un control.
  */
 
-import type { APIRoute } from 'astro'
 import { MIN_RELEVANCE, retrieve, type Chunk } from './chunks.ts'
 import { intake, rejectionText, validateOutput } from './guardrails.ts'
 import { buildPrompt, hashPrompt } from './prompt.ts'
-import { getProvider, type Provider } from './provider.ts'
+import { getProvider, offlineProvider, type Provider } from './provider.ts'
 import { chatRequest, type ChatResponse } from './schema.ts'
-import { chatEnabled, modelProvider, siteUrl } from '../env.ts'
+import { chatEnabled, groqApiKey, modelProvider, ratePerMinute, siteUrl } from '../env.ts'
 
 export interface Corpus {
   readonly chunks: readonly Chunk[]
@@ -79,13 +78,60 @@ const FIXED = {
  *
  * Es una mitigacion de cortesias, **no** una cuota: en serverless cada instancia tiene la suya,
  * el identificador lo pone el cliente y por tanto no es una identidad, y un atacante puede
- * distribuir peticiones. Se pondra algo serio cuando haya dinero que perder de verdad, que es
- * cuando `CHA-30` deje de medir sobre el proveedor de reserva. Lo que si hace bien desde el
- * primer dia es que un bucle torpe desde una pestana no queme peticiones.
+ * distribuir peticiones. Ver `rateLimitedByIp` para lo que si es una identidad.
  */
 const RATE_WINDOW_MS = 60_000
 const RATE_MAX = 12
 const hits = new Map<string, number[]>()
+
+/**
+ * Peticiones por minuto y **IP** (`RNF-68`, decision del PO).
+ *
+ * Esta es la unica cuota del endpoint que no la elige el cliente: la IP sale de las cabeceras que
+ * pone el proxy delante de la funcion, no del cuerpo ni de una cabecera que pueda falsear el
+ * navegador. Sigue sin ser una identidad de persona (una IP es una NAT, y un atacante con
+ * cuentas de proxy la rotates), asi que acota el abuso de Hobby, no lo detiene.
+ *
+ * El limite vive aqui y no en un store compartido porque en serverless cada instancia tiene la
+ * suya. Con varias instancias el tope real por IP es `CHAT_RATE_PER_MIN` multiplicado por
+ * cuantas mas haya. Es laLimitacion que se acepto knowingly al decidir no meter Redis (`TD-12`).
+ */
+const hitsByIp = new Map<string, number[]>()
+
+/** Identidad de red de la peticion, en orden de fiabilidad decreciente. */
+function clientIp(request: Request): string {
+  for (const header of ['x-vercel-forwarded-for', 'cf-connecting-ip', 'x-forwarded-for']) {
+    const value = request.headers.get(header)
+    if (value === null || value.trim() === '') continue
+    // `x-forwarded-for` es una cadena de saltos: `cliente, proxy1, proxy2`. El primero es el
+    // cliente, y es el unico que nos interesa; los proxies son de fiar, el cliente no.
+    const first = value.split(',')[0]
+    if (first !== undefined && first.trim() !== '') return first.trim()
+  }
+  return 'desconocida'
+}
+
+function rateLimitedByIp(ip: string, max: number): boolean {
+  const now = Date.now()
+  const recent = (hitsByIp.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS)
+  if (recent.length >= max) {
+    hitsByIp.set(ip, recent)
+    return true
+  }
+  recent.push(now)
+  hitsByIp.set(ip, recent)
+  if (hitsByIp.size > 5000) {
+    for (const [key, times] of hitsByIp) {
+      if (times.every((t) => now - t >= RATE_WINDOW_MS)) hitsByIp.delete(key)
+    }
+  }
+  return false
+}
+
+/** Reinicia la cuota por IP. Lo usa el gate, que si no arrastraria el limite entre casos. */
+export function resetIpQuota(): void {
+  hitsByIp.clear()
+}
 
 function rateLimited(session: string): boolean {
   const now = Date.now()
@@ -157,10 +203,18 @@ function foreignOrigin(request: Request): boolean {
  * El corpus se carga por peticion y no al arrancar el modulo a proposito: `getCv()` ya cachea,
  * y asi el handler es correcto aunque el documento cambie entre invocaciones.
  */
+/**
+ * El handler solo desestructura `request`. Declarar aqui el contrato minimo, en vez de devolver
+ * directamente la `APIRoute` de Astro, tiene dos efectos: la ruta sigue compilando sin cast
+ * (`APIContext` es asignable a `{ request }`, al reves no), y el gate puede invocar el handler en
+ * Node sin fabricar cookies, `props` ni `redirect` de Astro.
+ */
+export type ChatHandler = (context: { request: Request }) => Promise<Response>
+
 export function createChatHandler(
   loadCorpus: () => Corpus,
-  loadProvider: () => Provider = () => getProvider(modelProvider()),
-): APIRoute {
+  loadProvider: () => Provider = () => getProvider(modelProvider(), groqApiKey()),
+): ChatHandler {
   return async ({ request }): Promise<Response> => {
     // El metodo se comprueba aqui y no solo con `export const ALL` de la ruta. Depender de que el
     // framework enrute bien es confiar en que lo hara; y con un `GET` sin cuerpo, un `text()` y un
@@ -169,6 +223,12 @@ export function createChatHandler(
 
     if (foreignOrigin(request)) return deny(FIXED.origen, 'origen-externo', 403)
     if (!chatEnabled()) return deny(FIXED.deshabilitado, 'deshabilitado', 404)
+
+    // La cuota por IP va **antes** de la de sesion y antes de leer el cuerpo: es la que no la
+    // elige el cliente, y leer el cuerpo de un petitorio ya es trabajo que nadie quiere hacer.
+    // La de sesion se queda como segunda capa, porque una pestana puede reventar su cuota propia
+    // sin querer sin que eso deba tumbar a su IP entera.
+    if (rateLimitedByIp(clientIp(request), ratePerMinute())) return deny(FIXED.tasa, 'tasa', 429)
 
     const session = request.headers.get('x-session') ?? 'anon'
     if (rateLimited(session)) return deny(FIXED.tasa, 'tasa', 429)
@@ -247,14 +307,42 @@ export function createChatHandler(
 
     let modelRaw: string
     let degraded = false
+
+    // Resolver el proveedor va FUERA del try que degrada, a proposito. Un `MODEL_PROVIDER` que no
+    // existe es un error de configuracion: si se degradara en silencio, un despliegue mal
+    // configurado responderia con citas y pareceria un chat que funciona, que es la forma mas
+    // cara de no enterarse. Un 502 con texto fijo dice "el modelo no esta" sin filtrar la traza.
+    let provider: Provider
     try {
-      const provider = loadProvider()
-      degraded = provider.degraded
+      provider = loadProvider()
+    } catch (error) {
+      console.error('[chat] proveedor no configurado', { error: String(error) })
+      return deny(FIXED.proveedor, 'proveedor', 502, false)
+    }
+    degraded = provider.degraded
+
+    try {
       modelRaw = await provider.complete(prompt)
     } catch (error) {
       // Se registra el fallo del proveedor, nunca el prompt: el prompt lleva el CV entero.
-      console.error('[chat] fallo del proveedor', { error: String(error) })
-      return deny(FIXED.proveedor, 'proveedor', 502, degraded)
+      //
+      // Un fallo de API **no** es un 502 cuando hay alternativa. Con `ADR-0009` cerrado, casi
+      // todos los fallos que llegan aqui son de red o de cuota del proveedor: Groq caido, 429, la
+      // clave caducada, el timeout de 8 s. Devolver 502 en esos casos deja el chat muerto por un
+      // problema de un tercero, y el visitante no tiene ni idea de que ha habido un modelo
+      // detras. Se degrada al proveedor de reserva y se dice con `degraded: true`, que es lo que
+      // la UI usa para no fingir que esto lo escribio un modelo.
+      //
+      // No es un reintento de la llamada fallida: es un camino distinto, sin coste, que ya
+      // devuelve texto valido y pasa por el mismo G4. Lo que no se reintenta es Groq.
+      console.error('[chat] proveedor caido, se degrada a "off"', { error: String(error) })
+      try {
+        modelRaw = await offlineProvider().complete(prompt)
+        degraded = true
+      } catch {
+        // Si hasta el de reserva falla (no deberia: no toca la red), un 502 es honesto.
+        return deny(FIXED.proveedor, 'proveedor', 502, false)
+      }
     }
 
     // --- G4. Sin coste: de aqui no sale nada sin pasar ---

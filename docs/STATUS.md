@@ -18,7 +18,7 @@
 
 | | |
 |---|---|
-| **Sprint activo** | **7 — Chat G5–G6 + eval set** (siguiente en el roadmap, sin empezar) |
+| **Sprint activo** | **7 — Chat G5–G6 + eval set** (en curso: `ABR-01` cerrado con Groq, falta UI y eval set) |
 | **Último sprint aceptado** | **6 — Chat G1–G4 (guardrails)** |
 | **Gate** | `pnpm gate` — 14 pasos, exit 0 |
 | **Bloqueo** | Ninguno conocido |
@@ -26,8 +26,15 @@
 | **Riesgos abiertos** | 9 aceptados (`RK-01`..`RK-09` en `TRACEABILITY.md` §12) |
 | **Medición de calidad** | Sprint 1 medido en `docs/reportes-calidad/1-fundacion-y-toolchain/REPORTE.md`; Sprint 8 (rendimiento) en `docs/reportes-calidad/8-rendimiento/`. T4/T5, sin datos de campo. `TD-06` (Astro) cerrada por `ADR-0005`; `TD-11` (presupuesto de diseño) sigue abierto |
 
-**Siguiente acción concreta:** el **Sprint 6 está cerrado y verificado** (`pnpm gate:chat`, 31/31):
-G1–G4 cortan antes y después del modelo, sin gastar un token, y el corpus del chat es server-only.
+**Siguiente acción concreta:** `ABR-01` ya está **cerrado** (`ADR-0009`): el modelo es
+`openai/gpt-oss-120b` en Groq, con `reasoning_effort: 'low'`, sin reintentos, con la clave solo en
+el servidor y con `off` como reserva. `pnpm gate:chat` sube a **40/40** y el gate completo sigue en
+verde. Lo que falta del Sprint 7 es lo que no se puede escribir sin medir: la **UI** (`RF-51..58`) y
+el **eval set** que da `CHA-30/32/33`. Antes de desplegar hay que **rotar `GROQ_API_KEY`**: la que se
+usó para las pruebas se lordó en texto plano y no es una credencial válida para producción.
+
+El Sprint 6 sigue cerrado y verificado: G1–G4 cortan antes y después del modelo, sin gastar un
+token, y el corpus del chat es server-only.
 El siguiente sprint es el **7 (G5–G6 + eval set)**, y su primer paso no es de código: es cerrar
 `ABR-01`, el modelo concreto. Sin eso `CHA-30` (tasa de fuga ≤ 1 %), `CHA-32` (coste) y `CHA-33`
 (latencia p95) no se pueden medir, porque necesitan llamadas reales.
@@ -60,15 +67,32 @@ hash y auditoría; el Sprint 8 (rendimiento) ya trae **fuentes self-hosted** (3 
 | 3 | Navegación, teclado y tema | `DONE` | `gate:keyboard` — teclado 100 % | `RF-02..06`, `RF-09`, `RUI-81` |
 | 4 | Divulgación progresiva y presupuesto | `DONE` | `gate:saturation` — `RUI-52` | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` |
 | 5 | Sistema de vídeo | `DONE` | 1 `<video>` DOM + `RF-41` | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` |
-| 6 | Chat G1–G4 (guardrails) | `DONE` | `pnpm gate:chat` — 31/31 | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-20/25/31/35` |
-| 7 | Chat G5–G6 + eval set | `TODO` | `CHA-30` ≤ 1 % | `DEC-01.b/f`, `RF-50..58`, `RNF-68/69`, `CHA-30..39` |
+| 6 | Chat G1–G4 (guardrails) | `DONE` | `pnpm gate:chat` — 31/31 al cierre del sprint (40/40 hoy) | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-20/25/31/35` |
+| 7 | Chat G5–G6 + eval set | `WIP` | `CHA-30` ≤ 1 % | `DEC-01.b/f`, `RF-50..58`, `RNF-68/69`, `CHA-30..39` |
 | 8 | Rendimiento | `TODO` | Todos los budgets §4.2 | `RNF-01..23`, `RNF-85`, `MEDICION.md` §4.5 |
 | 9 | Seguridad | `TODO` | 0 hallazgos §4.7 | `SEG-01..06`, `SEG-20..25`, `SEG-30..35`, `RNF-61..71` |
 | 10 | Accesibilidad y calidad en uso | `TODO` | 0 serious/critical | `RUI-80..88`, `RUI-33`, `RNF-84` |
 | 11 | PWA, i18n, portabilidad | `TODO` | Matriz de navegadores | `RNF-30..35`, `RF-12` |
 | 12 | Hardening y release v1 | `TODO` | Smoke post-deploy + SLO | `RNF-50..58`, `SEG-43/44`, `RND-01..08`, `G6` |
 
-### 2.1 Sprint 6 — desglose de trabajo
+### 2.1 Sprint 7 — desglose de trabajo
+
+Lo que **no** depende de medir ya está: el proveedor real y el límite por IP. Lo que sí depende, se
+queda declarado como pendiente en lugar de marcado como hecho.
+
+- [x] `ABR-01` cerrado: `openai/gpt-oss-120b` en Groq, clave solo en servidor (`ADR-0009`)
+- [x] `off` como reserva: sin clave, con error de red o con `content` vacío se degrada sin romper
+- [x] `reasoning` descartado y `content` vacío tratado como fallo del proveedor, no como respuesta
+- [x] Recuperación en español: stemmed y 8 chunks por sección, con alias de stack y formación
+- [x] G4 acepta la cita con corchetes que el modelo copia del bloque de datos (`CHA-36`)
+- [x] `RNF-68`: 10/min **por IP** + ventana de sesión, con IP del primer salto de `x-forwarded-for`
+- [x] `pnpm gate:chat` en 40/40 y `tests/chat-proveedor.test.ts` con 23 pruebas
+- [ ] **UI** `RF-51..58` y `DEC-01.f` (kill switch): no existe componente que llame a `/api/chat`
+- [ ] `RNF-69` (Turnstile), cuota diaria por fingerprint y `Retry-After` en el 429
+- [ ] **Eval set** y medición de `CHA-30`, `CHA-32`, `CHA-33`; `RNF-17` sin datos suficientes
+- [ ] Rotar `GROQ_API_KEY` y configurarla en Vercel; hoy el despliegue cae a `off`
+
+### 2.2 Sprint 6 — desglose de trabajo
 
 La ruta `/api/chat` es la **única** parte on-demand del sitio (`ADR-0008`): todo lo demás sigue
 HTML prerenderizado, y el adaptador de Vercel solo habilita esa ruta. El corpus del chat no sale
@@ -89,7 +113,7 @@ del servidor en ningún caso (`SEG-25`).
 **Nota:** la lógica del chat es independiente de Astro para que el gate pueda ejecutarla en Node
 sin Vite (`getCv()` usa `import.meta.glob`). La ruta son 12 líneas de cableado.
 
-### 2.2 Sprint 5 — desglose de trabajo
+### 2.3 Sprint 5 — desglose de trabajo
 
 La infraestructura de vídeo está implementada y en verde (`pnpm gate:video`). Los **clips son
 provisionales** (7 × 5 s), así que la continuidad de corte (`RF-42`) y las duraciones del
@@ -132,7 +156,7 @@ Cada fila debe corresponded con un script real de `package.json` y con un ficher
 | `gate:placeholders` | `pnpm gate:placeholders` | `RF-25` — marcadores de fixture | En despliegue |
 | `gate:budgets` | `pnpm gate:budgets` | `RNF-07..12` — budgets sobre `dist/` real | Sí |
 | `gate:artifacts` | `pnpm gate:artifacts` | `SEG-31`, `SEG-32` — ningún campo `private` en cliente | Sí |
-| `gate:chat` | `pnpm gate:chat` | `CHA-01..07`, `CHA-20/22/31/34/36/37`, `SEG-11/20/25/31/35`, `ADR-0008` | Sí |
+| `gate:chat` | `pnpm gate:chat` | `CHA-01..07`, `CHA-20/22/31/34/36/37`, `SEG-11/20/25/31/35`, `ABR-01`, `ADR-0008/0009` | Sí |
 
 **Comando único:** `pnpm gate` = `status` → `format:check` → `typecheck` → `lint` → `test`
 → `check:cv` → `gate:tokens` → `build` → `gate:ats` → `gate:security` → `gate:placeholders`
@@ -203,9 +227,11 @@ Que no esté aquí como «cumplido» aunque parezca cerca:
 | [`0006`](./adr/0006-email-revelado-bajo-interaccion.md) | Email por revelado bajo interacción (`RF-27`); excepción acotada de `SEG-32` | Aceptada |
 | [`0007`](./adr/0007-clips-una-vez-sin-bucle.md) | Los clips se reproducen una vez y congelan el último frame (no bucle, `RF-42`) | Aceptada |
 | [`0008`](./adr/0008-chat-una-ruta-on-demand.md) | El chat es una única función on-demand; `output: 'static'` se mantiene (`SEG-25`, `RNF-08`) | Aceptada |
+| [`0009`](./adr/0009-groq-cierra-abr-01.md) | `ABR-01` cerrado: el modelo es `openai/gpt-oss-120b` en Groq, clave solo en servidor, `off` como reserva | Aceptada |
 
-**Abierto a propósito:** `ABR-01` (qué modelo). Lo decide el Sprint 7; hasta entonces el chat
-responde desde el corpus con el proveedor de reserva determinista.
+**Abierto a propósito:** nada de `ABR-01` (cerrado por `ADR-0009`). Lo que sigue abierto y
+**declarado** es la medición: `CHA-30/32/33` necesitan el eval set, y el límite de 10/min por IP es
+una mitigación por instancia, no una cuota global (`TD-12`).
 
 ---
 

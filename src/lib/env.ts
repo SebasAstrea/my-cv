@@ -102,3 +102,28 @@ export function chatEnabled(): boolean {
 export function modelProvider(): string {
   return read('MODEL_PROVIDER') ?? 'off'
 }
+
+/**
+ * Peticiones por minuto y IP (`RNF-68`). 10 por defecto, lo que pidio el PO.
+ *
+ * Un numero pequeño a proposito: el free tier de Groq da 1.000/dia, y unas 10 peticiones por
+ * minuto por IP es de sobra para una persona leyendo su CV y corta en seco el bucle de un
+ * visitante que dejo el chat golpeando. Un valor invalido cae a 10 en vez de tirar el endpoint:
+ * una variable mal escrita no puede ser motivo de que el chat devuelva 500.
+ */
+export function ratePerMinute(): number {
+  const value = Number(read('CHAT_RATE_PER_MIN'))
+  return Number.isInteger(value) && value > 0 ? value : 10
+}
+
+/**
+ * Credencial del proveedor (`ADR-0009`).
+ *
+ * Se lee de `GROQ_API_KEY` y se devuelve sin trim en el camino de error: si viene vacia, quien
+ * llama degrada a `off` y no hay nada que registrar. Esta variable **nunca** se expone al
+ * cliente: no lleva el prefijo `PUBLIC_`, y `gate:artifacts` falla si aparece en `dist/`.
+ */
+export function groqApiKey(): string | undefined {
+  const value = read('GROQ_API_KEY')
+  return value !== undefined && value.trim() !== '' ? value.trim() : undefined
+}

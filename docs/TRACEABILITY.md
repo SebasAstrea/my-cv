@@ -165,7 +165,7 @@ Un hueco declarado es mejor que un hueco oculto. Estado actual:
 | `RK-06` | Sin datos de conversión fiables (tráfico bajo) para validar `RFU-07`. | No concluyente. | Declarado en `MEDICION.md §7.2` como experimento no concluyente; se usa `RFU-03` como proxy | Aceptado |
 | `RK-07` | Los antipatrones `RUI-50` dependen de revisión humana, no solo de lint. | Deriva de diseño. | Snapshot visual + revisión de diseño por persona en cada PR con cambio de `RUI` | Mitigado |
 | `RK-08` | El presupuesto de saturación (`RUI-30`) puede ser subjetivo en el límite. | Discrepancias entre revisores. | Playwright cuenta nodos; el límite numérico (6) elimina la subjetividad | Mitigado |
-| `RK-09` | Los guardrails del chat (G1–G4) se han verificado solo contra un proveedor determinista, nunca contra un modelo real (`ABR-01` abierto). | La tasa de fuga real (`CHA-30`), el coste (`CHA-32`) y la latencia (`CHA-33`) **no están medidos**. G3 y G4 están construidos y probados contra entradas simuladas, no contra el adversarial de un LLM de verdad. | Sprint 7: cerrar `ABR-01`, montar el eval set y medir. El Sprint 6 no declara cumplidos `CHA-30/32/33` | **Aceptado, con hueco declarado** |
+| `RK-09` | Los guardrails del chat (G1–G4) se han verificado solo contra un proveedor determinista, nunca contra un modelo real (`ABR-01` abierto). | La tasa de fuga real (`CHA-30`), el coste (`CHA-32`) y la latencia (`CHA-33`) **no están medidos**. G3 y G4 están construidos y probados contra entradas simuladas, no contra el adversarial de un LLM de verdad. | Sprint 7: `ABR-01` **cerrado** con Groq (`ADR-0009`) y los guardrails ya se ejecutan contra la forma de respuesta de un modelo real. Queda montar el eval set y medir; no se declaran cumplidos `CHA-30/32/33` | **Aceptado, con hueco declarado** |
 
 ---
 
@@ -356,7 +356,13 @@ del Sprint 7 y no se marca).
 | `CHA-06` | T: sin contexto suficiente se dice "no consta en el CV" | `pnpm gate:chat` | pregunta de bitcoin → `No consta en el CV.`, sin proveedor | **Cumplido** |
 | `CHA-07` | T: la respuesta no supera 700 caracteres | `tests/chat-guardrails.test.ts` | truncada con `…` + aviso `truncada` | **Cumplido** |
 | `CHA-20` | T: fuera de alcance se responde con texto fijo, **sin** llamar al modelo | `pnpm gate:chat` | `reason: fuera-de-alcance`, proveedor inyectado que lanza → nunca llamado | **Cumplido** |
-| `CHA-21` | T: ventana de tasa por instancia | `pnpm gate:chat` | 12/min; la 13.ª → 429 | **Cumplido** (best-effort, no cuota) |
+| `ABR-01` | T: el proveedor elegido responde y la clave no sale del servidor | `pnpm gate:chat` + `SEG-25` | `MODEL_PROVIDER=groq` → `groq`; sin clave → `off`; valor inventado → error; 0 fugas en 7 assets | **Cumplido** (`ADR-0009`) |
+| `RNF-68` | T: el límite por IP corta en la petición 11 y es por IP, no global | `tests/chat-proveedor.test.ts` | 10/min por IP; `.55` agota, `.57` sigue con 200; `x-forwarded-for` toma el primer salto | **Parcial**: falta `Retry-After` y cuota diaria |
+| `CHA-31` | T: el fallback no puede filtrar los canarios de `G2` | `tests/chat-proveedor.test.ts` | respuesta de `off` → `ok: true`, sin canarios ni `BEGIN CV DATA` | **Cumplido** |
+| `CHA-34` | T: pregunta en plural encuentra el chunk en singular | `tests/chat-proveedor.test.ts` | 8 chunks por sección; `¿Dónde estudió?` casa con formación | **Cumplido** |
+| `CHA-36` | T: el modelo puede devolver `[id]` y el servidor lo normaliza | `tests/chat-proveedor.test.ts` | `"[stack]"` → cita `stack` válida; `"[inventado]"` → rechazada | **Cumplido** |
+| `CHA-37` | T: `gpt-oss` manda `reasoning` y `content` por separado; solo `content` es la respuesta | `tests/chat-proveedor.test.ts` | `fetch` simulado: el razonamiento no aparece en la salida y G4 acepta el `content`; `content` vacío → error, no respuesta vacía | **Cumplido** |
+| `CHA-21` | T: ventana de tasa por instancia, por sesión **y** por IP | `pnpm gate:chat` + `tests/chat-proveedor.test.ts` | sesión 12/min (la 13.ª → 429); IP 10/min (la 11.ª → 429) y otra IP sigue con 200 | **Cumplido** (best-effort, no cuota: `TD-12`) |
 | `CHA-22` | T: opinión personal y consejo vital se rechazan como fuera de alcance, no como insulto | `tests/chat-guardrails.test.ts` | "¿me recomiendas Rust?" → `out_of_scope`; "eres idiota" → `abusive` | **Cumplido** |
 | `SEG-11` | T: el corpus lo elige el servidor; los ids de chunk no se pueden pedir | `tests/chat-guardrails.test.ts` | `isAllowed('experiencia.<inventado>')` → `false` | **Cumplido** |
 | `SEG-20` | T: origen ajeno, método, tamaño de cuerpo y formato | `pnpm gate:chat` | 403 / 405 / 413 / 400 | **Cumplido** |

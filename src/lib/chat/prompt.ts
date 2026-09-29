@@ -64,8 +64,13 @@ const QUESTION_FOOTER = `=== END USER QUESTION ===`
 
 /** Fragmento de salida con la forma que `G4` valida. */
 export const OUTPUT_CONTRACT = `=== ANSWER FORMAT ===
-Answer exactly one JSON object, no code fences, no text before or after:
-{"answer": "<spanish, plain text, under 600 chars>", "citations": ["<section id copied from the data block>"], "confidence": "high" | "medium" | "low"}
+Answer exactly one JSON object, no code fences, no text before or after.
+Each chunk in the data block is written as an id between square brackets, then its text.
+In "citations" put that id ALONE, without the square brackets: if the data block shows the
+chunk as "experiencia" between brackets, answer "citations": ["experiencia"], and never
+include the brackets in the value. An id that does not appear in the data block is not a
+citation, and citing nothing is better than citing something invented.
+{"answer": "<spanish, plain text, under 600 chars>", "citations": ["<chunk id, no brackets>"], "confidence": "high" | "medium" | "low"}
 === END ANSWER FORMAT ===`
 
 export interface PromptSection {
@@ -89,10 +94,14 @@ export interface BuiltPrompt {
  *   llegar aqui; esta funcion lo marca como dato, no lo sanea.
  */
 export function buildPrompt(chunks: readonly PromptSection[], question: string): BuiltPrompt {
+  // `CHA-01` fija el techo en 3.000 **tokens** por turno, no en 3.000 caracteres. El codigo
+  // recortaba a 3.000 caracteres, unas cuatro veces mas estricto, y con el troceado por seccion
+  // ese recorte hacia pedazos el CV a mitad y se comia el final del contexto. 12.000 caracteres
+  // son ~3.000 tokens (1 token ~ 4 chars), que es lo que el requisito permite de verdad.
   const data = chunks
     .map((c) => `[${c.id}] ${c.text}`)
     .join('\n')
-    .slice(0, 3000)
+    .slice(0, 12_000)
 
   const userTurn = [
     CANONICAL,

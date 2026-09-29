@@ -702,7 +702,7 @@ El chat responde **preguntas sobre el CV del propietario**. No es un asistente g
 
 | ID | Pregunta | Decisión | Justificación |
 |---|---|---|---|
-| `ABR-01` | ¿Dónde se ejecuta el modelo de lenguaje? | **(b) Solo API gestionada.** `ModelProvider` (`DEC-01.b`) se mantiene como frontera, pero en v1 solo tiene una implementación real (Groq / OpenRouter / Gemini Flash). | (2) es el argumento decisivo: (b) es la única opción que cumple `RNF-17` (TTFT p75 ≤ 900 ms) sin cachear ~1.8 GB. WebGPU se aplaza, no se descarta: (c) puede activarse más tarde detrás de `ModelProvider` sin tocar la UI. El argumento de privacidad de (c) era más débil de lo que parecía — el dato del CV ya es público por diseño (`SEG-30`). Ver `docs/adr/0004-abr-01-api-gestionada.md`. |
+| `ABR-01` | ¿Dónde se ejecuta el modelo de lenguaje? | **(b) Solo API gestionada.** `ModelProvider` (`DEC-01.b`) se mantiene como frontera, pero en v1 solo tiene una implementación real (Groq / OpenRouter / Gemini Flash). | (2) es el argumento decisivo: (b) es la única opción que cumple `RNF-17` (TTFT p75 ≤ 900 ms) sin cachear ~1.8 GB. WebGPU se aplaza, no se descarta: (c) puede activarse más tarde detrás de `ModelProvider` sin tocar la UI. El argumento de privacidad de (c) era más débil de lo que parecía — el dato del CV ya es público por diseño (`SEG-30`). Ver `docs/adr/0004-abr-01-api-gestionada.md`. **CERRADO en el Sprint 7:** el proveedor es Groq con `openai/gpt-oss-120b`, con la clave solo en el servidor y con `off` como reserva (`docs/adr/0009-groq-cierra-abr-01.md`). |
 
 ---
 

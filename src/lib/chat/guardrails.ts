@@ -340,11 +340,19 @@ export function validateOutput(raw: string, allowlist: ReadonlySet<string>): Out
   const warnings: string[] = []
 
   // 1. Citas: cada id debe existir en la allowlist (`CHA-05`, `CHA-34`).
-  const invalidCitations = answer.citations.filter((id) => !isAllowed(id, allowlist))
+  //
+  // Se quita el corchete que el modelo copia del bloque de datos antes de comparar. Medido con un
+  // modelo real: respondia `"citations": ["[stack]"]` porque el prompt presenta cada chunk como
+  // `[stack] texto`, y sin esta normalizacion se rechazaba como `cita-no-permitida` la respuesta
+  // **correcta**. No se relaja nada: el id tiene que seguir estando en la allowlist, y `[stack]` y
+  // `stack` son el mismo identificador escrito de dos maneras. Lo que no se hace es permitir
+  // prefijos, subcadenas ni ids inventados.
+  const cited = answer.citations.map((id) => id.trim().replace(/^\[(.+)\]$/, '$1'))
+  const invalidCitations = cited.filter((id) => !isAllowed(id, allowlist))
   if (invalidCitations.length > 0) {
     return { ok: false, reason: 'cita-no-permitida', detail: invalidCitations.join(', ') }
   }
-  if (answer.citations.length === 0) warnings.push('sin-citas')
+  if (cited.length === 0) warnings.push('sin-citas')
 
   // 2. Canario: binario y sin margen. Un solo evento es un incidente, no un porcentaje.
   for (const token of CANARY_TOKENS) {

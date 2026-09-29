@@ -27,9 +27,10 @@ import { fileURLToPath } from 'node:url'
 import { parseCv, toPublicCv } from '../src/lib/cv/validate.ts'
 import { cvFixture } from '../src/data/cv.fixture.ts'
 import { buildAllowlist, buildChunks } from '../src/lib/chat/chunks.ts'
-import { CANARY_TOKENS } from '../src/lib/chat/guardrails.ts'
 import { promptLeakSignatures } from '../src/lib/chat/prompt.ts'
-import { createChatHandler } from '../src/lib/chat/handler.ts'
+import { createChatHandler, resetIpQuota } from '../src/lib/chat/handler.ts'
+import { getProvider } from '../src/lib/chat/provider.ts'
+import { CANARY_TOKENS, validateOutput } from '../src/lib/chat/guardrails.ts'
 import { staticDir } from './lib/static.mjs'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
@@ -199,9 +200,15 @@ if (!parsed.ok) {
     degraded,
     complete: async (prompt) => {
       llamadasAlProveedor += 1
-      // El prompt marca cada fragmento como `[chunk-id] texto` (`prompt.ts`). Se copia el primer
-      // id, que es el del chunk de mayor score: el endpoint ya los ordeno por relevancia.
-      const id = /\[([a-z0-9.-]+)\]/.exec(prompt.system)?.[1] ?? ''
+      // El id se saca del **bloque de datos**, no del primer corchete del prompt entero. El
+      // prompt incluye el contrato de salida y las instrucciones canonicas antes del bloque, y
+      // antes se colaba ahi un ejemplo con corchetes que el modelo devolvia como cita; G4 lo
+      // rechazaba como `cita-no-permitida` y el gate veia un fallo que no era del chunk. Un gate
+      // que parsea el prompt por lo ancho se rompe con cada frase nueva del prompt.
+      const bloque = /=== BEGIN CV DATA[^=]*===\n([\s\S]*?)\n=== END CV DATA ===/m.exec(
+        prompt.system,
+      )?.[1]
+      const id = /\[([a-z0-9.-]+)\]/.exec(bloque ?? '')?.[1] ?? ''
       return JSON.stringify({
         answer: 'Trabaja con Kubernetes en produccion desde 2021.',
         citations: id === '' ? [] : [id],
@@ -210,9 +217,11 @@ if (!parsed.ok) {
     },
   })
 
-  // Cada escenario usa su propia sesion. La ventana de tasa es por sesion ycompartida entre el
-  // handler: sin esto, los primeros comprobaciones consumiran el cupo de las ultimas y el gate
-  // mediria el limitador en vez de lo que quiere medir.
+  // Cada escenario usa su propia sesion **y su propia IP**. La ventana de tasa vive en el handler
+  // y se comparte entre peticiones, asi que sin esto los primeros comprobaciones se comen el cupo
+  // de los ultimos y el gate acaba midiendo el limitador en vez de lo que quiere medir. Se da una
+  // IP sintetica distinta a cada peticion, con el rango de documentacion TEST-NET-3 (`RFC 5737`),
+  // que es justo para esto. El escenario C9 fija una IP a proposito, porque su objeto es la cuota.
   let sesion = 0
   const post = (question, headers = {}) => {
     sesion += 1
@@ -221,6 +230,7 @@ if (!parsed.ok) {
       headers: {
         'content-type': 'application/json',
         'x-session': `gate-${sesion}`,
+        'x-forwarded-for': `203.0.113.${sesion % 250}`,
         ...headers,
       },
       body: JSON.stringify({ question }),
@@ -398,16 +408,108 @@ if (!parsed.ok) {
     check('SEG-20', noJson.status === 400, `cuerpo no JSON: ${noJson.status}`)
   }
 
-  // C9. Tasa: 12 preguntas/minuto por instancia.
+  // C10. El proveedor de `ADR-0009`: seleccion, degradacion y lo que **no** puede pasar.
+  {
+    // Sin clave, `groq` degrada a `off` en vez de lanzar: un despliegue con la variable mal puesta
+    // debe seguir contestando con citas, porque un chat caido es peor que un chat tonto.
+    const sinClave = getProvider('groq', undefined)
+    check(
+      'ABR-01',
+      sinClave.id === 'off' && sinClave.degraded,
+      `groq sin clave debe degradar a off, dio id=${sinClave.id} degraded=${sinClave.degraded}`,
+    )
+    // Una clave en blanco es el mismo caso que no tenerla, y es el error mas probable al copiar.
+    const enBlanco = getProvider('groq', '   ')
+    check('ABR-01', enBlanco.id === 'off', 'una clave en blanco tambien degrada a off')
+
+    const conClave = getProvider('groq', 'gsk-falsa-no-se-usa')
+    check('ABR-01', conClave.id === 'groq', `groq con clave debe ser groq, dio ${conClave.id}`)
+    check('ABR-01', !conClave.degraded, 'groq con clave no es un proveedor degradado')
+
+    // La clave nunca se imprime ni se mete en el prompt.
+    const conVolumen = getProvider('groq', 'gsk-secreta-123')
+    check(
+      'SEG-30',
+      !JSON.stringify(conVolumen).includes('gsk-secreta-123'),
+      'la credencial no puede aparecer en la serializacion del proveedor',
+    )
+  }
+
+  // C11. G4 con lo que un modelo real devuelve de verdad: la cita con corchetes.
+  {
+    // Medido con Groq: el modelo copia los corchetes del bloque de datos y responde
+    // `"citations": ["[stack]"]`. Sin normalizar, G4 rechazaba la respuesta correcta como
+    // `cita-no-permitida`. Con normalizar, la cita es valida **y** un id inventado sigue cortandose.
+    const conCorchetes = validateOutput(
+      JSON.stringify({
+        answer: 'Usa Go y TypeScript.',
+        citations: ['[stack]'],
+        confidence: 'high',
+      }),
+      allowlist,
+    )
+    check(
+      'CHA-34',
+      conCorchetes.ok,
+      `"[stack]" debe aceptarse como cita, dio ${conCorchetes.ok ? 'ok' : conCorchetes.reason}`,
+    )
+
+    const inventada = validateOutput(
+      JSON.stringify({ answer: 'Inventado.', citations: ['[no-existe]'], confidence: 'high' }),
+      allowlist,
+    )
+    check(
+      'CHA-34',
+      !inventada.ok && inventada.reason === 'cita-no-permitida',
+      'un id con corchetes pero que no existe debe seguir rechazandose',
+    )
+
+    // Y el caso de verdad: la allowlist no se relaja. Un id que existe pero con un prefijo no vale.
+    const prefijo = validateOutput(
+      JSON.stringify({ answer: 'X.', citations: ['stack.mas'], confidence: 'high' }),
+      allowlist,
+    )
+    check('CHA-34', !prefijo.ok, 'un id inventado a partir de uno real debe rechazarse')
+  }
+
+  // C12. La cuota por IP se puede resetear, que es lo que permite al gate no medirse a si mismo.
+  {
+    resetIpQuota()
+    const handler = createChatHandler(corpus, okProvider(false))
+    const uno = await call(
+      handler,
+      post('¿qué proyectos hay?', { 'x-forwarded-for': '198.51.100.99' }),
+    )
+    check(
+      'SEG-23',
+      uno.status === 200,
+      `tras el reset la primera peticion debe pasar, dio ${uno.status}`,
+    )
+    resetIpQuota()
+  }
+
+  // C9. Tasa: 10 peticiones/minuto por IP (`RNF-68`, decision del PO).
   {
     const handler = createChatHandler(corpus, okProvider(false))
     let limite = null
     for (let i = 0; i < 14; i += 1) {
-      const r = await call(handler, post('¿qué proyectos hay?', { 'x-session': 'gate-tasa' }))
-      // Todas las peticiones de este bloque comparten sesion a proposito: es la que se agota.
-      if (r.status === 429) limite = i
+      // IP fija a proposito: es la que se agota, que es justo lo que se quiere comprobar.
+      const r = await call(
+        handler,
+        post('¿qué proyectos hay?', {
+          'x-session': 'gate-tasa',
+          'x-forwarded-for': '198.51.100.7',
+        }),
+      )
+      // El **primer** 429 es el que dice cuando se agota la cuota. Guardar el ultimo daria siempre
+      // el final del bucle y la comprobacion pasaria aunque la cuota no existiera.
+      if (r.status === 429 && limite === null) limite = i
     }
-    check('SEG-23', limite !== null, 'la ventana de tasa deberia cortar despues de 12 peticiones')
+    check(
+      'SEG-23',
+      limite === 10,
+      `la cuota por IP deberia cortar en la peticion 11, y corto en la ${limite === null ? 'ninguna' : limite + 1}`,
+    )
   }
 
   // C10. `MODEL_PROVIDER` desconocido: falla ruidosamente, no cae a "off" en silencio.
