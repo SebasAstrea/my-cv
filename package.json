@@ -9,9 +9,9 @@
   },
   "packageManager": "pnpm@10.4.1",
   "scripts": {
-    "clips": "node scripts/sync-clips.mjs",
-    "dev": "node scripts/sync-clips.mjs && astro dev",
-    "build": "node scripts/sync-clips.mjs && astro build",
+    "clips": "node scripts/make-posters.mjs",
+    "dev": "node scripts/make-posters.mjs && astro dev",
+    "build": "node scripts/make-posters.mjs && astro build",
     "preview": "astro preview",
     "status": "node scripts/status.mjs",
     "typecheck": "astro check && tsc --noEmit",

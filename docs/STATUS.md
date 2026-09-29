@@ -77,10 +77,12 @@ storyboard quedan para el material definitivo.
 - [x] Controles manuales accesibles: modo, pausa, reinicio (`RF-45`)
 - [x] `RNF-55`: si un clip falla, se conserva el poster (sin layout shift)
 - [x] Gate `pnpm gate:video` + paso en CI (se omite si no hay clips)
-- [ ] Clips **definitivos**: duraciones del storyboard, continuidad (`RF-42`) y timecodes = clips (`RUI-60.b`)
+- [x] Clips definitivos: sin pista de audio (`RF-42`, `ffmpeg -an`) y ≤ 800 KB/segmento (`RNF-12`, 711,5 KB)
+- [ ] Alinear las duraciones de `storyboard.ts` con los clips de 5,17 s para `RUI-60.b` (timecodes = clips)
 
-**Nota:** los clips están en `src/data/videoN.mp4` (temporales, gitignored); `scripts/sync-clips.mjs`
-los copia a `public/clips/` y genera los posters AVIF. En despliegue no habrá clips hasta subirlos.
+**Nota:** los clips definitivos viven en `public/clips/videoN.mp4` (versionados) y sus posters
+`posterN.avif` los deriva `scripts/make-posters.mjs`. Los originales de trabajo quedan en
+`src/data/clips-original/` (gitignored).
 
 ---
 

@@ -13,10 +13,10 @@ dist/
 src/data/cv.real.ts
 cv.real.json
 
-# medios de trabajo locales — TEMPORAL: mientras se producen los clips (Sprint 5).
-# Los clips finales iran a `public/` y se versionaran; quitar esta regla entonces.
-*.mp4
-public/clips/
+# clips: los DEFINITIVOS se versionan en public/clips/ (assets del sitio).
+# Solo se ignoran los originales de trabajo y los clips provisionales de src/data.
+/src/data/*.mp4
+/src/data/clips-original/
 
 # env
 .env
