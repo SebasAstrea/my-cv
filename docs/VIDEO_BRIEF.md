@@ -16,7 +16,7 @@ por encima y es lo importante; el vídeo es **textura y atmósfera**, nunca prot
 - 7 escenas, una por sección del CV: `00 Identidad`, `01 Perfil`, `02 Experiencia`,
   `03 Proyectos`, `04 Stack`, `05 Formación`, `06 Contacto`.
 - La web es **oscura por defecto** (también hay tema claro).
-- **No hay música ni audio.** Los clips son **silenciosos y en bucle**.
+- **No hay música ni audio.** Los clips son **silenciosos**; se reproducen **una vez** y congelan el último frame (`ADR-0007`).
 - Dirección de arte: **"proyección técnica"** — material real, luz dura y direccional, sin
   rostros, sin texto en imagen, sin música.
 
@@ -33,8 +33,7 @@ El vídeo **no** es un scroll continuo tipo "scrubbing". Funciona **por escenas*
 3. El clip de la escena **arranca al entrar** (cuando la escena ocupa ~60 % de la pantalla) y se
    **pausa al salir** (cuando baja del ~20 %). Al cambiar de escena, el clip anterior se
    **destruye** (libera memoria) pasado un momento.
-4. Cada clip es **corto, silencioso y en bucle**; mientras la escena está en pantalla, el clip
-   se repite.
+4. Cada clip es **corto y silencioso**; se reproduce **una vez** y **congela el último frame**.
 5. Las transiciones entre escenas son **corte duro**, nunca un fundido a negro.
 
 Consecuencia para los prompts: cada clip debe ser **autónomo y cíclico**, y el **paso de una
@@ -83,7 +82,7 @@ ciclo completo es **continuo** (si el usuario sigue bajando, vuelve arriba conce
 | **Cero texto en imagen** | Ni rótulos, ni UI filmada, ni titulares en pantalla. El texto es del sitio. |
 | **Audio** | **Ninguno.** Silenciosos (obligatorio). |
 | **Grado** | Revelado bajo (proteger altas luces), **negros con toque frío**, acento en la zona media-alta. |
-| **Punto de bucle** | El último frame de `06` y el primero de `00` empalman. El ciclo es continuo. |
+| **Sin bucle** | Los clips se reproducen una vez y congelan el último frame (`ADR-0007`). Al volver del final al principio se reinicia el ciclo. |
 
 **Prohibido:** rostros y primeros planos de personas, planos aéreos/dron, *lens flares*, cámara
 lenta ornamental, texto blanco centrado sobre negro, "estética de stock".
@@ -97,19 +96,17 @@ la web; en el vídeo debe haber **espacio negativo** para ese texto.
 
 | # | Escena | Función | Duración | Qué se ve / movimiento | Cámara |
 |---|---|---|---|---|---|
-| `00` | Identidad | "Quién soy", presencia sin vanidad | **7 s** | Superficie de trabajo vacía; **luz rasante** que cruza lento; la sombra del marco de una ventana se desplaza sobre el material. | Fija, 35 mm |
-| `01` | Perfil | El argumento | **8 s** | Extremo primer plano de **tipografía impresa**; **rack focus** de una palabra en primer plano al párrafo del fondo. | Fija, 50 mm macro |
-| `02` | Experiencia | Progresión, el recorrido | **10 s** | Pasillo industrial o **sala de servidores**; luz **cenital dura**; solo **profundidad**. | *Dolly forward* lentísimo, 24→50 mm |
-| `03` | Proyectos | **El payoff**, la prueba | **12 s** (3 × 4 s) | **Tres sub-cortes** (ver abajo). | Fija en los tres; corte duro entre sub-cortes |
-| `04` | Stack | Las herramientas | **7 s** | **Capas de material translúcido** apiladas, retroiluminadas (metacrilato, humo). No degradados digitales. | *Drift* vertical lento |
-| `05` | Formación | Origen y trayectoria | **6 s** | Una **mano escribiendo** o una **página pasándose**: el gesto más humano del vídeo. | Fija, 50 mm |
-| `06` | Contacto | Cierre, la puerta abierta | **8 s** | La fuente de luz pasa a ser el **resplandor de una pantalla**; la cámara se asienta y **queda quieta**. | Fija, 35 mm |
+| `00` | Identidad | "Quién soy", presencia sin vanidad | **5 s** | Superficie de trabajo vacía; **luz rasante** que cruza lento; la sombra del marco de una ventana se desplaza sobre el material. | Fija, 35 mm |
+| `01` | Perfil | El argumento | **5 s** | Extremo primer plano de **tipografía impresa**; **rack focus** de una palabra en primer plano al párrafo del fondo. | Fija, 50 mm macro |
+| `02` | Experiencia | Progresión, el recorrido | **5 s** | Pasillo industrial o **sala de servidores**; luz **cenital dura**; solo **profundidad**. | *Dolly forward* lentísimo, 24→50 mm |
+| `03` | Proyectos | **El payoff**, la prueba | **5 s** | Un plano del proyecto (mecanismo, luz de tarea o pantalla lateral). | Fija, 35 mm |
+| `04` | Stack | Las herramientas | **5 s** | **Capas de material translúcido** apiladas, retroiluminadas (metacrilato, humo). No degradados digitales. | *Drift* vertical lento |
+| `05` | Formación | Origen y trayectoria | **5 s** | Una **mano escribiendo** o una **página pasándose**: el gesto más humano del vídeo. | Fija, 50 mm |
+| `06` | Contacto | Cierre, la puerta abierta | **5 s** | La fuente de luz pasa a ser el **resplandor de una pantalla**; la cámara se asienta y **queda quieta**. | Fija, 35 mm |
 
-### Escena `03` — tres sub-cortes de 4 s (uno por proyecto destacado)
+### Escena `03` — un solo plano (5 s)
 
-1. **Macro de un mecanismo en movimiento** (sensación de sistema que trabaja solo).
-2. **Plano de trabajo con luz de tarea** (una sola lámpara, foco duro).
-3. **Una pantalla vista de lado, fuera de foco** (evoca software/datos sin mostrar UI legible).
+Elegir **uno** de estos gestos (un solo plano de 5 s): un **macro de un mecanismo en movimiento** (sensación de sistema que trabaja solo), un **plano de trabajo con luz de tarea** (una sola lámpara, foco duro) o **una pantalla vista de lado, fuera de foco** (evoca software/datos sin mostrar UI legible).
 
 ---
 
@@ -120,7 +117,7 @@ la web; en el vídeo debe haber **espacio negativo** para ese texto.
 | Apertura | `00` | Luz **natural dura**, espacio limpio, presencia. |
 | Descenso | `01`–`03` | Progresivamente **más oscuro y contrastado**; la sombra pesa más. |
 | Meseta | `04`–`05` | Luz **neutra y quieta**; humo/capas; gesto humano. |
-| Cierre | `06` | **Resplandor** de pantalla; calma; punto de bucle hacia `00`. |
+| Cierre | `06` | **Resplandor** de pantalla; calma; al volver a `00` se reinicia el ciclo. |
 
 Temperatura de color **baja** hasta `06` y **sube** al volver a `00`.
 
@@ -157,11 +154,11 @@ Temperatura de color **baja** hasta `06` y **sube** al volver a `00`.
 
 ## 8. Datos para prompts (recordatorio rápido)
 
-- **Escenas y tiempos:** `00` 0–7 s · `01` 7–15 s · `02` 15–25 s · `03` 25–37 s (3×4 s) ·
-  `04` 37–44 s · `05` 44–50 s · `06` 50–58 s (total **58 s**).
+- **Escenas y tiempos:** `00` 0–5 s · `01` 5–10 s · `02` 10–15 s · `03` 15–20 s ·
+  `04` 20–25 s · `05` 25–30 s · `06` 30–35 s (total **35 s**).
 - **Aspecto:** pantalla completa; **16:9** para desktop y que funcione en móvil vertical
   (encuadre con **espacio negativo arriba/izquierda** para el texto).
 - **Clima cromático:** desaturado ~70 %, **negros fríos**, acento **ámbar** solo puntual.
 - **Movimiento:** lento, contenido, "respiración" de cámara; nada frenético.
-- **Continuidad:** clips **en bucle**, y el **viaje de luz** de `00`→`06` (y vuelta) es lo que
+- **Continuidad:** los clips se reproducen **una vez** y congelan; el **viaje de luz** de `00`→`06` (y vuelta) es lo que
   da sentido a la secuencia.

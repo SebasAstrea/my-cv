@@ -77,8 +77,8 @@ storyboard quedan para el material definitivo.
 - [x] Controles manuales accesibles: modo, pausa, reinicio (`RF-45`)
 - [x] `RNF-55`: si un clip falla, se conserva el poster (sin layout shift)
 - [x] Gate `pnpm gate:video` + paso en CI (se omite si no hay clips)
-- [x] Clips definitivos: sin pista de audio (`RF-42`, `ffmpeg -an`) y ≤ 800 KB/segmento (`RNF-12`, 711,5 KB)
-- [ ] Alinear las duraciones de `storyboard.ts` con los clips de 5,17 s para `RUI-60.b` (timecodes = clips)
+- [x] Clips definitivos: sin pista de audio (`RF-42`, `ffmpeg -an`) y ≤ 800 KB/segmento (`RNF-12`, 437,8 KB; total 2,5 MB)
+- [x] Duraciones alineadas a los clips (5 s) en `storyboard.ts` y `SPEC.md` §5.9 (`RUI-60.b`)
 
 **Nota:** los clips definitivos viven en `public/clips/videoN.mp4` (versionados) y sus posters
 `posterN.avif` los deriva `scripts/make-posters.mjs`. Los originales de trabajo quedan en
@@ -140,7 +140,7 @@ Implementado y verificado. El detalle requisito por requisito, con comando y nú
 
 - Toolchain: TypeScript estricto, ESLint con set type-aware, Stylelint con patrón BEM, Prettier.
 - Datos: schema Zod completo con `.strict()`, validación cruzada, `PublicCvDocument`.
-- Shell: tokens OKLCH, reset, grid 7/5–5/7, 7 escenas, storyboard generado (58 s).
+- Shell: tokens OKLCH, reset, grid 7/5–5/7, 7 escenas, storyboard generado (35 s).
 - Gates: los 8 de la tabla anterior, más la prueba en negativo de los de seguridad.
 - Documentación: `SCRUM.md`, `BACKLOG.md`, 4 ADRs, CI con 2 jobs.
 - Build estático: `dist/index.html` 9.3 KB, CSS 2.6 KB, **0 KB de JS** en ruta crítica.

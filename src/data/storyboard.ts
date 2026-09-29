@@ -14,8 +14,12 @@
  * exactos y por eso el gate de `RNF-24` compara el timecode renderizado con esta tabla.
  */
 
-/** Duracion de cada clip, en segundos, al frame. Tomada literalmente de `SPEC.md` 5.9. */
-export const CLIP_DURATIONS_S = [7, 8, 10, 12, 7, 6, 8] as const
+/**
+ * Duracion de cada clip, en segundos, al frame. Los clips definitivos duran **5 s** cada uno
+ * (`RUI-60.b`: los timecodes tienen que corresponder a los clips), asi que esta tabla y la de
+ * `SPEC.md` 5.9 se alinearon con el material real. Ver `ADR-0007`.
+ */
+export const CLIP_DURATIONS_S = [5, 5, 5, 5, 5, 5, 5] as const
 
 export const SCENE_IDS = [
   'identidad',
@@ -28,10 +32,6 @@ export const SCENE_IDS = [
 ] as const
 
 export type SceneId = (typeof SCENE_IDS)[number]
-
-/** Clip de la escena 03: tres sub-cortes de 4 s, uno por proyecto destacado. */
-export const PROJECT_SUBCUT_S = 4
-export const PROJECT_SUBCUTS = CLIP_DURATIONS_S[3] / PROJECT_SUBCUT_S
 
 /** Formatea segundos como `MM:SS`. `RF-44` lo muestra en el rail. */
 export function timecode(totalSeconds: number): string {

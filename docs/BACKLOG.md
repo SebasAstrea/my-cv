@@ -38,7 +38,7 @@ escrito con 11 sprints de anticipación es una Prediction, no un Backlog.
 | 1.8 | `ADR-0003` | `src/lib/env.ts` + `src/data/index.ts` con selector `fixture`/`real`/`missing` | `pnpm build` | `DONE` | Build con fixture OK; despliegue sin `real` falla |
 | 1.9 | `RNF-87` | `src/styles/tokens.css`: OKLCH, escala tipográfica, grid, motion, dark/light | `pnpm gate:tokens` | `DONE` | 7 ficheros, 71 tokens |
 | 1.10 | `RUI-01..24` | `global.css` + componentes de las 7 escenas con grid 7/5–5/7 | `pnpm build` | `DONE` | 7 `<h2>` con `id` en `dist/index.html` |
-| 1.11 | `RF-24` | `src/data/storyboard.ts`: timecodes generados, no escritos a mano | `pnpm build` | `DONE` | 7 escenas, 58 s de línea temporal |
+| 1.11 | `RF-24` | `src/data/storyboard.ts`: timecodes generados, no escritos a mano | `pnpm build` | `DONE` | 7 escenas, 35 s de línea temporal |
 | 1.12 | `RF-25` | Gate de placeholders de fixture | `pnpm gate:placeholders` | `DONE` | Bloqueante en despliegue, aviso en dev/PR |
 | 1.13 | `RNF-07..12` | Gate de budgets sobre `dist/` real | `pnpm gate:budgets` | `DONE` | CSS 2.6/24 KB, JS 0/110 KB, 1ª carga 4.8/350 KB |
 | 1.14 | `RNF-33` | `output: 'static'`: HTML generado en build, 0 KB de JS en ruta crítica | `pnpm gate:budgets` | `DONE` | `0.0 KB` de JS |

@@ -8,7 +8,7 @@
       "label": "Transfer 1ª carga sin vídeo",
       "categoria": "HTML + CSS + JS",
       "maxKb": 350,
-      "actualKb": 7.9,
+      "actualKb": 8,
       "presupuestoKb": 350,
       "medible": true,
       "pct": 2.3,
@@ -20,11 +20,11 @@
       "label": "JS ruta crítica",
       "categoria": "JavaScript",
       "maxKb": 110,
-      "actualKb": 2.3,
+      "actualKb": 2.5,
       "presupuestoKb": 110,
       "medible": true,
-      "pct": 2.1,
-      "usoPct": 2.1,
+      "pct": 2.3,
+      "usoPct": 2.3,
       "estado": "ok"
     },
     {
@@ -32,11 +32,11 @@
       "label": "CSS total",
       "categoria": "CSS",
       "maxKb": 24,
-      "actualKb": 3.3,
+      "actualKb": 3.4,
       "presupuestoKb": 24,
       "medible": true,
-      "pct": 13.7,
-      "usoPct": 13.7,
+      "pct": 14.2,
+      "usoPct": 14.2,
       "estado": "ok"
     },
     {
@@ -44,23 +44,23 @@
       "label": "Fuentes (3 ficheros)",
       "categoria": "Webfonts",
       "maxKb": 90,
-      "actualKb": null,
+      "actualKb": 71.9,
       "presupuestoKb": 90,
-      "medible": false,
-      "pct": null,
-      "usoPct": null,
-      "estado": "sin-medir"
+      "medible": true,
+      "pct": 79.9,
+      "usoPct": 79.9,
+      "estado": "ok"
     },
     {
       "id": "RNF-11",
       "label": "Poster LCP",
       "categoria": "Imagen",
       "maxKb": 70,
-      "actualKb": 28.1,
+      "actualKb": 14.3,
       "presupuestoKb": 70,
       "medible": true,
-      "pct": 40.1,
-      "usoPct": 40.1,
+      "pct": 20.4,
+      "usoPct": 20.4,
       "estado": "ok"
     },
     {
@@ -68,23 +68,23 @@
       "label": "Primer segmento de vídeo",
       "categoria": "Vídeo",
       "maxKb": 800,
-      "actualKb": 1128.4,
+      "actualKb": 437.8,
       "presupuestoKb": 800,
       "medible": true,
-      "pct": 141.1,
-      "usoPct": 141.1,
-      "estado": "excedido"
+      "pct": 54.7,
+      "usoPct": 54.7,
+      "estado": "ok"
     }
   ],
   "composicion": {
     "html": {
-      "raw": 18896,
-      "gzip": 4740
+      "raw": 19064,
+      "gzip": 4754
     },
     "css": [
       {
-        "file": "_astro/index.Cg_AsRpA.css",
-        "gzip": 3358
+        "file": "_astro/index.DGV765gQ.css",
+        "gzip": 3456
       }
     ],
     "js": [
@@ -93,17 +93,17 @@
         "gzip": 1357
       },
       {
-        "file": "_astro/Base.astro_astro_type_script_index_1_lang.Da-I-cgU.js",
-        "gzip": 989
+        "file": "_astro/Base.astro_astro_type_script_index_1_lang.gAxNC6J8.js",
+        "gzip": 1159
       }
     ],
-    "总": 5704
+    "总": 5972
   },
   "tokens": {
     "declarados": 71,
     "locales": 2,
     "total": 73,
-    "ficherosEscaneados": 9,
+    "ficherosEscaneados": 10,
     "porCategoria": {
       "surface": 10,
       "espacio": 10,
@@ -117,10 +117,10 @@
     "literalesFueraDeTokens": []
   },
   "cobertura": {
-    "requisitosConEvidencia": 31,
-    "requisitosVerificados": 29,
-    "filasEvidencia": 38,
-    "filasCumplidas": 36,
+    "requisitosConEvidencia": 32,
+    "requisitosVerificados": 30,
+    "filasEvidencia": 40,
+    "filasCumplidas": 38,
     "requisitosDeclaradosEnStatus": 0,
     "requisitos": [
       "RNF-80",
@@ -151,7 +151,8 @@
       "RUI-95",
       "RUI-96",
       "RNF-55",
-      "RNF-11"
+      "RNF-11",
+      "RNF-12"
     ],
     "sprintsRoadmap": 13,
     "sprintsHechos": 5
@@ -160,17 +161,17 @@
     "ficheros": {
       "ts": 17,
       "astro": 6,
-      "css": 3,
+      "css": 4,
       "mjs": 16,
       "md": 0
     },
     "lineas": {
-      "ts": 2292,
-      "astro": 592,
-      "css": 987,
-      "mjs": 3342,
+      "ts": 2335,
+      "astro": 595,
+      "css": 1022,
+      "mjs": 3363,
       "md": 0
     },
-    "docsLoc": 3007
+    "docsLoc": 3063
   }
 }

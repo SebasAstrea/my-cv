@@ -190,7 +190,7 @@ qué se ejecutó, con qué comando, y qué número dio. Lo que no aparece aquí 
 | `ADR-0003` | T: el mensaje de `real` sin `cv.real.ts` es accionable | `VERCEL=1 CV_DATA_SOURCE=real pnpm build` | exit 1, indica el fichero y cómo crearlo | **Cumplido** |
 | `RNF-87` | T: 0 literales de color o escala fuera de `tokens.css` | `pnpm gate:tokens` | 7 ficheros, 71 tokens | **Cumplido** |
 | `RUI-01..24` | R: grid 7/5–5/7, 7 escenas, sin 50/50 | `pnpm build` | 7 `<h2>` con `id` en `dist/index.html` | **Cumplido** |
-| `RF-24` | T: metadatos de storyboard generados | `pnpm build` | 7 escenas, 58 s | **Cumplido** |
+| `RF-24` | T: metadatos de storyboard generados | `pnpm build` | 7 escenas, 35 s | **Cumplido** |
 | `RF-25` | T: marcadores de fixture bloqueantes en despliegue, aviso en dev/PR | `pnpm gate:placeholders` | 2 marcadores, 0 bloqueantes (fixture permitido aquí) | **Cumplido** |
 | `RNF-07` | M: primera carga sin vídeo | `pnpm gate:budgets` | 4.8 KB / 350 KB | **Cumplido** |
 | `RNF-08` | M: JS en ruta crítica | `pnpm gate:budgets` | 0.0 KB / 110 KB | **Cumplido** |
@@ -331,10 +331,10 @@ de corte) y `RUI-60.b` (timecodes = clips) quedan para el material definitivo.
 | `RUI-95` | T: móvil ≤ 600 px → sin reproducción por defecto | `pnpm gate:video` + `video.ts` | `auto` no reproduce en ≤ 600 px | **Cumplido** |
 | `RUI-96` | T: 1 clip activo; destruido al salir | `src/scripts/video.ts` | `removeAttribute('src')` tras 2 s fuera | **Cumplido** |
 | `RNF-55` | T: si un clip falla, poster sin layout shift | `src/scripts/video.ts` | `error` → poster | **Cumplido** |
-| `RNF-11` | M: poster ≤ 70 KB AVIF | `pnpm gate:budgets` | 14,6 KB máx. (7 posters, clips definitivos) | **Cumplido** |
+| `RNF-11` | M: poster ≤ 70 KB AVIF | `pnpm gate:budgets` | 14,3 KB máx. (7 posters, clips definitivos) | **Cumplido** |
 | `RF-42` | T: clips sin audio; reproducen una vez y congelan el último frame (`ADR-0007`) | `ffmpeg -an` + `pnpm gate:video` | 7/7 sin audio; 1 vez + congelado; reinicio al volver al principio | **Cumplido** |
-| `RNF-12` | M: primer segmento de vídeo ≤ 800 KB | `pnpm medir:estatico` | 711,5 KB / 800 KB | **Cumplido** |
-| `RUI-60.b` | T: los timecodes corresponden a los clips | — | clips de 5,17 s vs storyboard 7/8/10/12/7/6/8 | **WIP** |
+| `RNF-12` | M: primer segmento de vídeo ≤ 800 KB | `pnpm medir:estatico` | 437,8 KB / 800 KB (total 2,5 MB) | **Cumplido** |
+| `RUI-60.b` | T: los timecodes corresponden a los clips | `pnpm build` | clips de 5,000 s; `storyboard.ts` y `SPEC.md` §5.9 alineados | **Cumplido** |
 
 ---
 

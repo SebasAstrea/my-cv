@@ -6,7 +6,7 @@
     "navegador": "chromium 153.0.8010.12",
     "node": "v24.18.0",
     "sistema": "linux x64",
-    "ejecucion": "completo",
+    "ejecucion": "rapido",
     "metodo": "mediana de 3 runs, contexto nuevo por run (cache cold de verdad)",
     "perfilesRed": {
       "slow-4g": "slow-4g (1,6 Mbps / 150 ms)",
@@ -17,22 +17,12 @@
     },
     "dispositivos": [
       {
-        "id": "moto-g-power",
-        "viewport": {
-          "width": 412,
-          "height": 823
-        },
-        "cpu": 4,
-        "dpr": 1.75,
-        "mobile": true
-      },
-      {
-        "id": "desktop-1440",
+        "id": "desktop",
         "viewport": {
           "width": 1440,
           "height": 900
         },
-        "cpu": 4,
+        "cpu": 1,
         "dpr": 1,
         "mobile": false
       }
@@ -67,404 +57,26 @@
   },
   "vitals": [
     {
-      "dispositivo": "moto-g-power",
-      "red": "slow-4g",
-      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 468,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 14,
-      "ttfbMedianaMs": 1.1,
-      "fcpMedianaMs": 468,
-      "longTasks": 3,
-      "bytesTransferidos": 44804,
-      "desviacionLcpPct": 3
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "slow-4g",
-      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 1.1,
-      "fcpMedianaMs": 484,
-      "longTasks": 0,
-      "bytesTransferidos": 32751,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "3g-fast",
-      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 772,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 16,
-      "ttfbMedianaMs": 1.1,
-      "fcpMedianaMs": 772,
-      "longTasks": 3,
-      "bytesTransferidos": 44804,
-      "desviacionLcpPct": 1
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "3g-fast",
-      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 780,
-      "longTasks": 0,
-      "bytesTransferidos": 32751,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "4g",
-      "redLabel": "4g (9 Mbps / 85 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 300,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 25,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 300,
-      "longTasks": 3,
-      "bytesTransferidos": 44804,
-      "desviacionLcpPct": 4
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "4g",
-      "redLabel": "4g (9 Mbps / 85 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 288,
-      "longTasks": 0,
-      "bytesTransferidos": 32751,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "wifi",
-      "redLabel": "wifi (100 Mbps / 10 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 148,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 1,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 148,
-      "longTasks": 2,
-      "bytesTransferidos": 44804,
-      "desviacionLcpPct": 5
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "wifi",
-      "redLabel": "wifi (100 Mbps / 10 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 1,
-      "fcpMedianaMs": 144,
-      "longTasks": 0,
-      "bytesTransferidos": 32751,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "moto-g-power",
+      "dispositivo": "desktop",
       "red": "native",
       "redLabel": "native (sin throttling)",
       "cache": "cold",
       "n": 3,
       "instrumentada": true,
       "metricasSinMedir": [],
-      "lcpMedianaMs": 112,
+      "lcpMedianaMs": 64,
       "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 13,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 112,
-      "longTasks": 3,
-      "bytesTransferidos": 44804,
-      "desviacionLcpPct": 11
-    },
-    {
-      "dispositivo": "moto-g-power",
-      "red": "native",
-      "redLabel": "native (sin throttling)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
       "hayNavegacion": true,
       "clsMediana": 0,
       "tbtMedianaMs": 0,
       "ttfbMedianaMs": 1,
-      "fcpMedianaMs": 132,
-      "longTasks": 0,
-      "bytesTransferidos": 32751,
-      "desviacionLcpPct": null
+      "fcpMedianaMs": 64,
+      "longTasks": 1,
+      "bytesTransferidos": 444039,
+      "desviacionLcpPct": 175
     },
     {
-      "dispositivo": "desktop-1440",
-      "red": "slow-4g",
-      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 476,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0.0001,
-      "tbtMedianaMs": 19,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 476,
-      "longTasks": 3,
-      "bytesTransferidos": 44804,
-      "desviacionLcpPct": 3
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "slow-4g",
-      "redLabel": "slow-4g (1,6 Mbps / 150 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 492,
-      "longTasks": 0,
-      "bytesTransferidos": 32751,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "3g-fast",
-      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 780,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0.0001,
-      "tbtMedianaMs": 20,
-      "ttfbMedianaMs": 1,
-      "fcpMedianaMs": 780,
-      "longTasks": 3,
-      "bytesTransferidos": 44804,
-      "desviacionLcpPct": 1
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "3g-fast",
-      "redLabel": "3g-fast (1,6 Mbps / 300 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 1,
-      "fcpMedianaMs": 788,
-      "longTasks": 0,
-      "bytesTransferidos": 32751,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "4g",
-      "redLabel": "4g (9 Mbps / 85 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 284,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0.0001,
-      "tbtMedianaMs": 18,
-      "ttfbMedianaMs": 1,
-      "fcpMedianaMs": 284,
-      "longTasks": 3,
-      "bytesTransferidos": 44804,
-      "desviacionLcpPct": 4
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "4g",
-      "redLabel": "4g (9 Mbps / 85 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 1,
-      "fcpMedianaMs": 280,
-      "longTasks": 0,
-      "bytesTransferidos": 32751,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "wifi",
-      "redLabel": "wifi (100 Mbps / 10 ms)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 128,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0.0001,
-      "tbtMedianaMs": 19,
-      "ttfbMedianaMs": 1,
-      "fcpMedianaMs": 128,
-      "longTasks": 3,
-      "bytesTransferidos": 759495,
-      "desviacionLcpPct": 13
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "wifi",
-      "redLabel": "wifi (100 Mbps / 10 ms)",
-      "cache": "static",
-      "n": 3,
-      "instrumentada": false,
-      "metricasSinMedir": [
-        "LCP",
-        "CLS",
-        "TBT"
-      ],
-      "lcpMedianaMs": 0,
-      "lcpObservadoEnTodos": false,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 0,
-      "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 136,
-      "longTasks": 0,
-      "bytesTransferidos": 32751,
-      "desviacionLcpPct": null
-    },
-    {
-      "dispositivo": "desktop-1440",
-      "red": "native",
-      "redLabel": "native (sin throttling)",
-      "cache": "cold",
-      "n": 3,
-      "instrumentada": true,
-      "metricasSinMedir": [],
-      "lcpMedianaMs": 152,
-      "lcpObservadoEnTodos": true,
-      "hayNavegacion": true,
-      "clsMediana": 0,
-      "tbtMedianaMs": 5,
-      "ttfbMedianaMs": 1,
-      "fcpMedianaMs": 152,
-      "longTasks": 3,
-      "bytesTransferidos": 759495,
-      "desviacionLcpPct": 3
-    },
-    {
-      "dispositivo": "desktop-1440",
+      "dispositivo": "desktop",
       "red": "native",
       "redLabel": "native (sin throttling)",
       "cache": "static",
@@ -481,9 +93,9 @@
       "clsMediana": 0,
       "tbtMedianaMs": 0,
       "ttfbMedianaMs": 0.9,
-      "fcpMedianaMs": 128,
+      "fcpMedianaMs": 60,
       "longTasks": 0,
-      "bytesTransferidos": 32751,
+      "bytesTransferidos": 107777,
       "desviacionLcpPct": null
     }
   ],
@@ -504,13 +116,13 @@
       {
         "id": "experiencia",
         "nodos": 57,
-        "caracteresApoyo": 42,
+        "caracteresApoyo": 41,
         "textos": 5
       },
       {
         "id": "proyectos",
         "nodos": 34,
-        "caracteresApoyo": 44,
+        "caracteresApoyo": 43,
         "textos": 5
       },
       {
@@ -622,23 +234,23 @@
       "motivo": "cumple AA"
     },
     {
-      "contexto": "span.rail__num",
-      "fontSizePx": 12.8,
-      "fontWeight": "600",
-      "color": "oklab(0.284962 -0.00208378 -0.0118177)",
-      "fondo": "rgb(251, 250, 247)",
-      "ratio": 13.78,
-      "minimo": 4.5,
-      "cumple": true,
-      "motivo": "cumple AA"
-    },
-    {
       "contexto": "a.skip-link",
       "fontSizePx": 17,
       "fontWeight": "400",
       "color": "oklch(0.18 0.012 260)",
       "fondo": "rgb(234, 232, 226)",
       "ratio": 15.34,
+      "minimo": 4.5,
+      "cumple": true,
+      "motivo": "cumple AA"
+    },
+    {
+      "contexto": "span.rail__num",
+      "fontSizePx": 12.8,
+      "fontWeight": "600",
+      "color": "oklch(0.18 0.012 260)",
+      "fondo": "rgb(251, 250, 247)",
+      "ratio": 18,
       "minimo": 4.5,
       "cumple": true,
       "motivo": "cumple AA"
@@ -651,17 +263,6 @@
       "fondo": "rgb(251, 250, 247)",
       "ratio": 18,
       "minimo": 3,
-      "cumple": true,
-      "motivo": "cumple AA"
-    },
-    {
-      "contexto": "h3.entry__title",
-      "fontSizePx": 22,
-      "fontWeight": "600",
-      "color": "oklch(0.18 0.012 260)",
-      "fondo": "rgb(251, 250, 247)",
-      "ratio": 18,
-      "minimo": 4.5,
       "cumple": true,
       "motivo": "cumple AA"
     }
@@ -682,68 +283,68 @@
       "targetsMenoresDe24px": [
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 269,
-          "h": 18
+          "w": 280,
+          "h": 17
         },
         {
           "sel": "a",
-          "w": 246,
-          "h": 18
+          "w": 256,
+          "h": 17
         },
         {
           "sel": "a",
-          "w": 303,
-          "h": 23
+          "w": 288,
+          "h": 19
         },
         {
           "sel": "a",
-          "w": 93,
-          "h": 23
+          "w": 89,
+          "h": 19
         }
       ]
     },
@@ -762,68 +363,68 @@
       "targetsMenoresDe24px": [
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 269,
-          "h": 18
+          "w": 280,
+          "h": 17
         },
         {
           "sel": "a",
-          "w": 246,
-          "h": 18
+          "w": 256,
+          "h": 17
         },
         {
           "sel": "a",
-          "w": 303,
-          "h": 23
+          "w": 288,
+          "h": 19
         },
         {
           "sel": "a",
-          "w": 93,
-          "h": 23
+          "w": 89,
+          "h": 19
         }
       ]
     },
@@ -842,63 +443,68 @@
       "targetsMenoresDe24px": [
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 56,
-          "h": 18
+          "w": 54,
+          "h": 14
         },
         {
           "sel": "a",
-          "w": 269,
-          "h": 18
+          "w": 280,
+          "h": 17
         },
         {
           "sel": "a",
-          "w": 246,
-          "h": 18
+          "w": 256,
+          "h": 17
         },
         {
           "sel": "a",
-          "w": 87,
-          "h": 22
+          "w": 264,
+          "h": 17
+        },
+        {
+          "sel": "a",
+          "w": 83,
+          "h": 17
         }
       ]
     },

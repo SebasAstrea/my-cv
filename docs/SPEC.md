@@ -194,7 +194,7 @@ Todas con prueba de dos lados de las medias (Mann–Whitney U) o binomial de Wil
 |---|---|---|---|
 | `RF-40` | Cada escena de la línea temporal tiene un clip asociado (o poster si no hay clip). | Unidades≤ 1 elemento `<video>` en el DOM (§`DEC-02.b`). | M |
 | `RF-41` | La reproducción se inicia al entrar en escena (IO ratio ≥ 0.6) y se pausa al salir (ratio < 0.2). | Verificable con contadores de `play`/`pause` en test Playwright. | M |
-| `RF-42` | Los clips son silenciosos, en bucle y con corte en frame clave. | Sin audio track; primer frame del clip N idéntico al último del clip N−1. | M |
+| `RF-42` | Los clips son silenciosos, se reproducen una vez y congelan el último frame (`ADR-0007`), con corte en frame clave. | Sin audio track. | M |
 | `RF-43` | El vídeo nunca es requisito para leer contenido. | Con `RF-10` en `off` o con vídeo bloqueado, la información es completa. | M |
 | `RF-44` | Progreso de escena expuesto como `timecode` monoespaciado. | `00:04 / 00:07` visible en el rail. | S |
 | `RF-45` | Controles manuales de vídeo: pausar, reiniciar, imagen estática. | Botones alcanzables por teclado, con etiquetas. | M |
@@ -375,20 +375,20 @@ Entregado como parte de la especificación (`ABR-05` cerrado: storyboard definid
 | **Cero texto en imagen** | Ni rótulos, ni UI filmada, ni titulares en pantalla. El texto es del sitio (`RUI-19`). |
 | **Prohibido** | Rostros y primeros planos de personas, planos aéreos/dron, lens flares, cámara lenta ornamental, texto blanco centrado sobre negro. |
 | **Audio** | Ninguno. Los clips son silenciosos y el atributo `muted` es obligatorio (`RF-42`). |
-| **Punto de bucle** | El último frame de la escena `06` y el primero de la `00` están compuestos para empalmar. El ciclo completo es continuo. |
+| **Sin bucle** | Los clips se reproducen **una vez** y congelan el último frame (`ADR-0007`); al volver del final al principio se reinicia el ciclo. |
 | **Grado** |Revelado bajo para preservar detalle en altas luces, negros con toque frío, acento en la zona media-alta. |
 
 #### Las 7 escenas
 
 | # | Escena | Función narrativa | Clip | Contenido y movimiento | Cámara | Título en pantalla |
 |---|---|---|---|---|---|---|
-| `00` | Identidad | "Quién soy" — presencia, sin Vanidad | 7 s | Superficie de trabajo vacía, luz rasante que cruza lentamente. La sombra del marco de una ventana se desplaza sobre el material. | Fija, 35 mm | Nombre + rol + una línea de identidad |
-| `01` | Perfil | El argumento — 3 años condensados | 8 s | Extremo primer plano de tipografía impresa. El foco pasa de una palabra en primer plano al párrafo del fondo (rack focus). | Fija, 50 mm macro, racks focus | Titular de 2 líneas + 1 párrafo ≤ 45ch |
-| `02` | Experiencia | Progresión — el recorrido | 10 s | Pasillo industrial o sala de servidores. Luz cenital dura. Nada más que profundidad. | Dolly forward lentísimo, 24→50 mm | Índice de roles (5 máx.) con duraciones en mono |
-| `03` | Proyectos | **El payoff** — la prueba | 12 s (3× 4 s) | Tres sub-cortes, uno por proyecto destacado: (a) macro de un mecanismo en movimiento, (b) un plano de trabajo con luz de tarea, (c) una pantalla vista de lado, fuera de foco. | Fija en los tres; corte duro en cada sub-cambio | Cabecera del proyecto + resultado medido |
-| `04` | Stack | Las herramientas | 7 s | Capas de material translúcido apiladas, retroiluminadas. Humo o metacrilato, no degradados digitales. | Drift vertical lento | Stack agrupado, 2 columnas, en mono |
-| `05` | Formación | Origen y trayectoria | 6 s | Una mano escribiendo, o una página pasándose. El gesto más humano del vídeo. | Fija, 50 mm | Títulos y certificaciones |
-| `06` | Contacto | Cierre — la puerta abierta | 8 s | La fuente de luz ahora es el resplandor de una pantalla. La cámara se asienta y queda quieta. | Fija, 35 mm | Acción primaria única + chat |
+| `00` | Identidad | "Quién soy" — presencia, sin Vanidad | 5 s | Superficie de trabajo vacía, luz rasante que cruza lentamente. La sombra del marco de una ventana se desplaza sobre el material. | Fija, 35 mm | Nombre + rol + una línea de identidad |
+| `01` | Perfil | El argumento — 3 años condensados | 5 s | Extremo primer plano de tipografía impresa. El foco pasa de una palabra en primer plano al párrafo del fondo (rack focus). | Fija, 50 mm macro, racks focus | Titular de 2 líneas + 1 párrafo ≤ 45ch |
+| `02` | Experiencia | Progresión — el recorrido | 5 s | Pasillo industrial o sala de servidores. Luz cenital dura. Nada más que profundidad. | Dolly forward lentísimo, 24→50 mm | Índice de roles (5 máx.) con duraciones en mono |
+| `03` | Proyectos | **El payoff** — la prueba | 5 s | Un plano del proyecto: macro de un mecanismo en movimiento, luz de tarea o una pantalla vista de lado. | Fija, 35 mm | Cabecera del proyecto + resultado medido |
+| `04` | Stack | Las herramientas | 5 s | Capas de material translúcido apiladas, retroiluminadas. Humo o metacrilato, no degradados digitales. | Drift vertical lento | Stack agrupado, 2 columnas, en mono |
+| `05` | Formación | Origen y trayectoria | 5 s | Una mano escribiendo, o una página pasándose. El gesto más humano del vídeo. | Fija, 50 mm | Títulos y certificaciones |
+| `06` | Contacto | Cierre — la puerta abierta | 5 s | La fuente de luz ahora es el resplandor de una pantalla. La cámara se asienta y queda quieta. | Fija, 35 mm | Acción primaria única + chat |
 
 **Regla de progresión de luz** (lo que hace que la línea se sienta como un viaje, no como 7 vídeos pegados): `00` luz natural dura → `01`→`03` cada vez más oscura y más contrastada → `04`→`05` luz neutra, más quieta → `06` resplandor. La temperatura de color baja progresivamente hasta `06` y vuelve a subir en el empalme con `00`.
 
