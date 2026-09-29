@@ -42,7 +42,11 @@ const okProvider = () => () => ({
 
 const call = async (handler: ChatHandler, request: Request) => {
   const response = await handler({ request })
-  return { status: response.status, body: (await response.json()) as Record<string, unknown> }
+  return {
+    status: response.status,
+    headers: response.headers,
+    body: (await response.json()) as Record<string, unknown>,
+  }
 }
 
 /**
@@ -315,6 +319,24 @@ describe('cuota por IP (RNF-68, decision del PO)', () => {
     }
     const primero = estados.indexOf(429)
     assert.equal(primero, 10, `deberia cortar en la 11; estados: ${estados.join(',')}`)
+  })
+
+  it('el 429 trae Retry-After entero y positivo (RNF-68)', async () => {
+    resetIpQuota()
+    const handler = createChatHandler(corpus, okProvider())
+    let retryAfter: string | null = null
+    for (let i = 0; i < 12; i += 1) {
+      const r = await call(handler, post('¿qué proyectos hay?', {}, '198.51.100.60'))
+      if (r.status === 429) retryAfter = r.headers.get('retry-after')
+    }
+    assert.notEqual(retryAfter, null, 'la peticion 11 deberia dar 429 con Retry-After')
+    assert.notEqual(
+      retryAfter,
+      null,
+      'un 429 sin Retry-After deja al cliente reintentando en bucle',
+    )
+    assert.match(retryAfter ?? '', /^\d+$/, 'Retry-After debe ser segundos enteros')
+    assert.ok(Number(retryAfter) > 0 && Number(retryAfter) <= 60)
   })
 
   it('la cuota es por IP, no global: otra IP no se ve afectada', async () => {

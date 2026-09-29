@@ -27,6 +27,7 @@
     "gate:keyboard": "node scripts/gate-keyboard.mjs",
     "gate:saturation": "node scripts/gate-saturation.mjs",
     "gate:video": "node scripts/gate-video.mjs",
+    "gate:chat-ui": "node scripts/gate-chat-ui.mjs",
     "gate:placeholders": "node scripts/gate-placeholders.mjs",
     "gate:budgets": "node scripts/gate-budgets.mjs",
     "gate:artifacts": "node --experimental-strip-types scripts/gate-artifacts.mjs",

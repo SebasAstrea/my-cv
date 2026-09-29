@@ -113,6 +113,7 @@ export default tseslint.config(
       'scripts/gate-keyboard.mjs',
       'scripts/gate-saturation.mjs',
       'scripts/gate-video.mjs',
+      'scripts/gate-chat-ui.mjs',
     ],
     languageOptions: {
       globals: { ...globals.node, ...globals.browser },

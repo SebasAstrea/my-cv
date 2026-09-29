@@ -1,0 +1,125 @@
+---
+/**
+ * Panel de consulta del chat — `RF-50..58`, `DEC-01.f`.
+ *
+ * Es un `<dialog>` nativo y no un panel con JS. El navegador da gratis lo que mas cuesta de
+ * acertar a mano: `Esc` cierra (`RF-50`), el foco queda atrapado dentro, `::backdrop` separa del
+ * documento y sin JS el dialogo simplemente no se abre, pero **el resto del CV se sigue leyendo
+ * entero** (`RF-07`, `RNF-101`). Misma decision que el `<details>` de las escenas y el `<video>`
+ * unico: nativo primero.
+ *
+ * El panel vive en la escena 06 y se abre bajo interaccion (`RF-51`), nunca al cargar. El teaser
+ * es un boton discreto: la primera pregunta exige un clic. Sin `CHAT_ENABLED`, en vez del teaser
+ * se ofrece el contacto (`DEC-01.f`): el kill switch no deja un boton muerto que devuelve 404.
+ *
+ * Las citas y el historial los pinta `src/scripts/chat.ts`. Aqui solo esta lo que tiene que
+ * existir en el HTML para que la pagina sea legible sin scripting.
+ */
+
+import { chatEnabled, contactEmail } from '../lib/env.ts'
+import { getCv } from '../data/index.ts'
+import { suggestedQuestions } from '../lib/chat/suggestions.ts'
+
+const { cv } = getCv()
+const habilitado = chatEnabled()
+const email = contactEmail()
+const preguntas = suggestedQuestions(cv)
+
+/**
+ * A donde se manda a la persona si el modelo no esta (`RF-54`). Es el primer canal que el
+ * propietario haya configurado, y si no hay ninguno se enlaza a la propia escena de contacto,
+ * que siempre existe. Nunca se deja sin salida.
+ */
+const contactoHref =
+  email !== undefined
+    ? `mailto:${email}`
+    : (cv.contact.linkedin ?? cv.contact.github ?? '#escena-06')
+const contactoLabel =
+  email !== undefined
+    ? 'Escríbeme'
+    : cv.contact.linkedin !== undefined
+      ? 'LinkedIn'
+      : cv.contact.github !== undefined
+        ? 'GitHub'
+        : 'Contacto'
+---
+
+{
+  habilitado ? (
+    <div class="chat" data-chat>
+      <button type="button" class="action action--ghost" data-chat-open aria-haspopup="dialog">
+        Pregúntame algo
+      </button>
+
+      <dialog class="chat__panel" data-chat-panel aria-labelledby="chat-titulo">
+        <div class="chat__head">
+          <h3 class="chat__title" id="chat-titulo">
+            Preguntas sobre el CV
+          </h3>
+          <button type="button" class="chat__close" data-chat-close aria-label="Cerrar">
+            Cerrar
+          </button>
+        </div>
+
+        {/* `RF-57`: que datos usa y que no entrena, visible antes de la primera pregunta y en un
+            `details` abierto, no escondido. */}
+        <details class="detail detail--chat" open>
+          <summary class="detail__summary">Qué pasa con lo que escribes</summary>
+          <p class="chat__privacy">
+            Las preguntas se responden con el contenido público de este CV. No se guardan en tu
+            navegador ni en el servidor, y no se usan para entrenar ningún modelo. Si el modelo no
+            está disponible, se responde desde el propio CV y se avisa.
+          </p>
+        </details>
+
+        <ul class="chat__suggestions" data-chat-suggestions>
+          {preguntas.map((q) => (
+            <li>
+              <button type="button" class="chip chip--action" data-chat-suggestion>
+                {q}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {/* Historial de la sesion (`RF-56`): vacio al recargar, nunca se persiste. */}
+        <ol class="chat__log" data-chat-log aria-live="polite" />
+
+        <p class="chat__status mono" data-chat-status hidden />
+
+        <form class="chat__form" data-chat-form>
+          <label class="chat__label" for="chat-pregunta">
+            Tu pregunta
+          </label>
+          <div class="chat__row">
+            <input
+              class="chat__input"
+              id="chat-pregunta"
+              name="question"
+              type="text"
+              maxlength="300"
+              autocomplete="off"
+              data-chat-input
+            />
+            <button type="submit" class="action" data-chat-send>
+              Enviar
+            </button>
+          </div>
+          <div class="chat__actions">
+            <button type="button" class="link-button" data-chat-clear>
+              Borrar conversación
+            </button>
+            <a class="link-button" href={contactoHref} data-chat-contact>
+              {contactoLabel}
+            </a>
+          </div>
+        </form>
+      </dialog>
+    </div>
+  ) : (
+    <p class="chat__off">
+      El chat no está disponible ahora mismo.{' '}
+      <a href={contactoHref}>{contactoLabel}</a>.
+    </p>
+  )
+}

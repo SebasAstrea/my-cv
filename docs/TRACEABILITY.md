@@ -358,11 +358,21 @@ del Sprint 7 y no se marca).
 | `CHA-07` | T: la respuesta no supera 700 caracteres | `tests/chat-guardrails.test.ts` | truncada con `…` + aviso `truncada` | **Cumplido** |
 | `CHA-20` | T: fuera de alcance se responde con texto fijo, **sin** llamar al modelo | `pnpm gate:chat` | `reason: fuera-de-alcance`, proveedor inyectado que lanza → nunca llamado | **Cumplido** |
 | `ABR-01` | T: el proveedor elegido responde y la clave no sale del servidor | `pnpm gate:chat` + `SEG-25` | `MODEL_PROVIDER=groq` → `groq`; sin clave → `off`; valor inventado → error; 0 fugas en 7 assets | **Cumplido** (`ADR-0009`) |
-| `RNF-68` | T: el límite por IP corta en la petición 11 y es por IP, no global | `tests/chat-proveedor.test.ts` | 10/min por IP; `.55` agota, `.57` sigue con 200; `x-forwarded-for` toma el primer salto | **Parcial**: falta `Retry-After` y cuota diaria |
+| `RNF-68` | T: el límite por IP corta en la petición 11, es por IP y el 429 trae `Retry-After` | `pnpm gate:chat` + `tests/chat-proveedor.test.ts` | 10/min por IP; `.55` agota, `.57` sigue con 200; `Retry-After` entero 1–60 s. Negativo probado: sin el header, `FALLA RNF-68` | **Parcial**: falta la cuota diaria por fingerprint |
 | `CHA-31` | T: el fallback no puede filtrar los canarios de `G2` | `tests/chat-proveedor.test.ts` | respuesta de `off` → `ok: true`, sin canarios ni `BEGIN CV DATA` | **Cumplido** |
 | `CHA-34` | T: pregunta en plural encuentra el chunk en singular | `tests/chat-proveedor.test.ts` | 8 chunks por sección; `¿Dónde estudió?` casa con formación | **Cumplido** |
 | `CHA-36` | T: el modelo puede devolver `[id]` y el servidor lo normaliza | `tests/chat-proveedor.test.ts` | `"[stack]"` → cita `stack` válida; `"[inventado]"` → rechazada | **Cumplido** |
 | `CHA-37` | T: `gpt-oss` manda `reasoning` y `content` por separado; solo `content` es la respuesta | `tests/chat-proveedor.test.ts` | `fetch` simulado: el razonamiento no aparece en la salida y G4 acepta el `content`; `content` vacío → error, no respuesta vacía | **Cumplido** |
+| `RF-50` | T: panel cerrado al cargar, abre bajo clic y `Esc` cierra | `pnpm gate:chat-ui` | `<dialog>` nativo; cerrar con `Esc` verificado en Chromium | **Cumplido** |
+| `RF-51` | T: no modal al cargar; la primera pregunta exige un clic en el teaser | `pnpm gate:chat-ui` | panel `open` = false al cargar; 1 teaser; el clic abre | **Cumplido** |
+| `RF-52` | T: la cita se pinta y lleva a la escena enfocando el heading | `pnpm gate:chat-ui` | `stack` → `escena-04-titulo`; el foco cae en el heading. Negativo probado: sin `focus()`, `FALLA RF-52` | **Cumplido** |
+| `RF-53` | T: 3–4 preguntas sugeridas derivadas del CV | `pnpm gate:chat-ui` | 4 sugerencias (2 de proyectos + stack + formación) | **Cumplido** |
+| `RF-54` | T: la degradación se avisa y ofrece contacto, sin error técnico | `pnpm gate:chat-ui` | `degraded` → aviso "sin modelo" + enlace de contacto; ruta 404 → texto sin 404 ni "fetch" | **Cumplido** |
+| `RF-55` | Streaming de tokens con botón de parar | — | **Aplazado** por `ADR-0011`: streamear envía tokens antes de que `G4` valide. Hay indicador de progreso | **No cumplido (declarado)** |
+| `RF-56` | T: historial en memoria; recargar vacía; botón de borrar | `pnpm gate:chat-ui` | 2 turnos tras preguntar; borrar → 0; recargar → 0 (sin persistencia) | **Cumplido** |
+| `RF-57` | T: declaración de datos visible antes de la primera pregunta, en `details` abierto | `pnpm gate:chat-ui` | `details[open]` dentro del panel | **Cumplido** |
+| `RF-58` | T: nunca inventa cifras; sin contexto responde que no consta | `pnpm gate:chat` | `CHA-06`: sin contexto → "No consta en el CV."; G4 rechaza salidas no sustentadas | **Cumplido** (`CHA-04`) |
+| `DEC-01.f` | T: con `CHAT_ENABLED=0` la ruta da 404 y la UI ofrece contacto sin tecnicismos | `pnpm gate:chat` + `pnpm gate:chat-ui` | 404 en el endpoint; en la UI, "El chat no está disponible. Usa el contacto de abajo." | **Cumplido** |
 | `CHA-21` | T: ventana de tasa por instancia, por sesión **y** por IP | `pnpm gate:chat` + `tests/chat-proveedor.test.ts` | sesión 12/min (la 13.ª → 429); IP 10/min (la 11.ª → 429) y otra IP sigue con 200 | **Cumplido** (best-effort, no cuota: `TD-12`) |
 | `CHA-22` | T: opinión personal y consejo vital se rechazan como fuera de alcance, no como insulto | `tests/chat-guardrails.test.ts` | "¿me recomiendas Rust?" → `out_of_scope`; "eres idiota" → `abusive` | **Cumplido** |
 | `SEG-11` | T: el corpus lo elige el servidor; los ids de chunk no se pueden pedir | `tests/chat-guardrails.test.ts` | `isAllowed('experiencia.<inventado>')` → `false` | **Cumplido** |
@@ -386,8 +396,8 @@ del Sprint 7 y no se marca).
   declara cumplidos.
 - La ventana de tasa es por instancia y el identificador lo pone el cliente: mitiga un bucle
   torpe, no a un atacante distribuido. Está escrito en el código y aquí.
-- No hay interfaz: el Sprint 6 construye y verifica el endpoint, no la escena de chat. `RF-50`
-  cubre la ruta; la UI del chat entra en `RF-51..58` (Sprint 7).
+- La interfaz ya existe (Sprint 7): `<dialog>` en la escena 06, verificada en `pnpm gate:chat-ui`.
+  Lo unico declarado sin cumplir es `RF-55` (streaming), aplazado por `ADR-0011`.
 
 ---
 

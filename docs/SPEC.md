@@ -208,7 +208,7 @@ Todas con prueba de dos lados de las medias (Mann–Whitney U) o binomial de Wil
 | `RF-52` | Cada respuesta muestra 1–3 citas clicables que llevan a la sección exacta. | La cita es un `chunk-id` validado; el clic navega y enfoca el heading. | M |
 | `RF-53` | Preguntas sugeridas (3–4) derivadas del CV real. | Se generan de los proyectos; cambian por idioma. | S |
 | `RF-54` | Estado de degradación explícito: si el modelo no está disponible, se ofrece contacto. | Mensaje accionable, nunca un error técnico crudo al usuario. | M |
-| `RF-55` | Streaming de tokens con indicador de progreso y botón de parar. | Stop aborta el stream y la petición de red. | S |
+| `RF-55` | Streaming de tokens con indicador de progreso y botón de parar. | Stop aborta el stream y la petición de red. **APLAZADO** (`ADR-0011`): streamear tokens exige enviarlos antes de que `G4` valide la respuesta entera, y `G4` es `M` mientras que esto es `S`. Se implementa el indicador de progreso, no el streaming | S |
 | `RF-56` | Historial de la conversación en la sesión, **no persistido** por defecto. | Al recargar, sesión vacía; botón de borrar. | M |
 | `RF-57` | La interfaz declara qué datos usa el chat y que no entrena modelos. | Texto visible antes de la primera pregunta, en `details` no oculto. | M |
 | `RF-58` | El chat nunca inventa cifras. Si la respuesta no está en el contexto, responde que no consta. | Medido por groundedness (§`CHA-04`). | M |

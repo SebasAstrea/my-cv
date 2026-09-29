@@ -162,5 +162,8 @@ jobs:
       - name: Gate de saturacion
         run: pnpm gate:saturation
 
+      - name: Gate de la UI del chat
+        run: pnpm gate:chat-ui
+
       - name: Gate de video (se omite si no hay clips)
         run: pnpm gate:video

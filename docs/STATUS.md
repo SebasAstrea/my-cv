@@ -88,7 +88,9 @@ queda declarado como pendiente en lugar de marcado como hecho.
 - [x] `RNF-68`: 10/min **por IP** + ventana de sesión, con IP del primer salto de `x-forwarded-for`
 - [x] `pnpm gate:chat` en 40/40 y `tests/chat-proveedor.test.ts` con 23 pruebas
 - [x] `ADR-0010`: los 8 `<details>` abiertos por defecto, con el techo de saturación subido al máximo medido
-- [ ] **UI** `RF-51..58` y `DEC-01.f` (kill switch): no existe componente que llame a `/api/chat`
+- [x] **UI** `RF-50..58` y `DEC-01.f`: `<dialog>` nativo, citas navegables, sugerencias, historial en memoria y degradación con contacto (`gate:chat-ui`, 13/13)
+- [x] `RF-54`/`DEC-01.f`: sin modelo o con la ruta apagada se ofrece contacto, sin error técnico
+- [ ] `RF-55` (streaming) **aplazado** por `ADR-0011`: choca con `G4`, que es `M` y esto `S`. Hay indicador de progreso, no botón de parar
 - [ ] `RNF-69` (Turnstile), cuota diaria por fingerprint y `Retry-After` en el 429
 - [ ] **Eval set** y medición de `CHA-30`, `CHA-32`, `CHA-33`; `RNF-17` sin datos suficientes
 - [ ] Rotar `GROQ_API_KEY` y configurarla en Vercel; hoy el despliegue cae a `off`
@@ -168,7 +170,7 @@ Equivale a `pnpm verify`.
 `pnpm gate:saturation` (`RUI-30..37`, `RUI-52`) y `pnpm gate:video` (`DEC-02`, `RF-40..45`,
 `RUI-95/96`). Corren en el job `keyboard` de CI porque necesitan Chromium; no entran en el gate
 rápido de PR. `gate:video` se omite si no hay clips (son provisionales y gitignored).
-`gate:chat` sí entra en `pnpm gate` y no necesita Chromium: ejercita el handler en Node.
+`gate:chat` sí entra en `pnpm gate` y no necesita Chromium: ejercita el handler en Node. `pnpm gate:chat-ui` (`RF-50..58`, `DEC-01.f`) corre en el mismo job de CI porque necesita Chromium.
 
 ### 3.1 Gates probados en negativo
 
@@ -185,9 +187,10 @@ Un gate que solo se ha visto pasar no está verificado. Estos tienen su prueba d
 | `gate:chat` | Se borra `scripts/lib/static.mjs` | exit 1 antes de medir nada |
 | `gate:keyboard` | `node.open = true` → `false` en `openDetailFromHash` | exit 1, `RF-13 — #proyecto-… no abre el detalle`. Sin este negativo la comprobación era **verde por vacuidad**: con `ADR-0010` el detalle ya nace abierto, así que daba igual que el deep-link no hiciera nada |
 | `gate:keyboard` | Se quita el clic condicional de `RF-27` | exit 1: el clic en el resumen **cierra** el desplegable ya abierto y el botón de email queda invisible |
+| `gate:chat-ui` | Se quita `destino.focus()` al pulsar una cita | exit 1, `RF-52 — la cita debe enfocar el heading` |
 | `deploy-contract` (CI) | Automático en cada push | Verifica los dos anteriores |
 
-**Los nueve se ejecutan también en CI** (`.github/workflows/ci.yml`, job `deploy-contract`).
+**Los diez se ejecutan también en CI** (`.github/workflows/ci.yml`, job `deploy-contract`).
 
 ---
 
@@ -232,6 +235,7 @@ Que no esté aquí como «cumplido» aunque parezca cerca:
 | [`0008`](./adr/0008-chat-una-ruta-on-demand.md) | El chat es una única función on-demand; `output: 'static'` se mantiene (`SEG-25`, `RNF-08`) | Aceptada |
 | [`0009`](./adr/0009-groq-cierra-abr-01.md) | `ABR-01` cerrado: el modelo es `openai/gpt-oss-120b` en Groq, clave solo en servidor, `off` como reserva | Aceptada |
 | [`0010`](./adr/0010-desplegables-abiertos.md) | Los 8 `<details>` van **abiertos** por defecto; `RUI-31`/`RUI-52` suben a 29 nodos / 1.064 car. Entró a mitad de sprint por decisión del PO | Aceptada |
+| [`0011`](./adr/0011-sin-streaming-g4.md) | Sin streaming de tokens (`RF-55` aplazado): enviar tokens antes de que `G4` valide rompería el guardrail | Aceptada |
 
 **Abierto a propósito:** nada de `ABR-01` (cerrado por `ADR-0009`). Lo que sigue abierto y
 **declarado** es la medición: `CHA-30/32/33` necesitan el eval set, y el límite de 10/min por IP es

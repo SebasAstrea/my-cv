@@ -122,5 +122,10 @@ const canonical = new URL(Astro.url.pathname, siteUrl()).toString()
     <script>
       import '../scripts/video.ts'
     </script>
+
+    {/* `RF-51..58`: panel de consulta. Diferido como el resto; sin el, el CV se lee entero. */}
+    <script>
+      import '../scripts/chat.ts'
+    </script>
   </body>
 </html>

@@ -510,6 +510,22 @@ if (!parsed.ok) {
       limite === 10,
       `la cuota por IP deberia cortar en la peticion 11, y corto en la ${limite === null ? 'ninguna' : limite + 1}`,
     )
+
+    // `RNF-68` no pide solo el 429, pide `Retry-After`. Sin el, el cliente que recibe el 429 no
+    // sabe cuando volver y la salida razonable es reintentar en bucle, justo lo que el 429 evita.
+    const limitada = await call(
+      handler,
+      post('¿qué proyectos hay?', { 'x-session': 'gate-tasa', 'x-forwarded-for': '198.51.100.7' }),
+    )
+    const retryAfter = limitada.headers.get('retry-after')
+    check(
+      'RNF-68',
+      limitada.status === 429 &&
+        retryAfter !== null &&
+        Number.isInteger(Number(retryAfter)) &&
+        Number(retryAfter) > 0,
+      `un 429 debe traer Retry-After entero y positivo, dio ${limitada.status} / ${JSON.stringify(retryAfter)}`,
+    )
   }
 
   // C10. `MODEL_PROVIDER` desconocido: falla ruidosamente, no cae a "off" en silencio.

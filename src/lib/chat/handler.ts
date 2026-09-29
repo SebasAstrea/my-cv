@@ -111,12 +111,31 @@ function clientIp(request: Request): string {
   return 'desconocida'
 }
 
-function rateLimitedByIp(ip: string, max: number): boolean {
+/**
+ * Veredicto de una ventana de tasa.
+ *
+ * `retryAfter` son segundos, no milisegundos, porque es lo que `Retry-After` espera (`RNF-68`).
+ * Sin el, un cliente que recibe un 429 no sabe cuando volver a preguntar y la unica salida
+ * razonable que le queda es reintentar en bucle, que es exactamente lo que el 429 intenta evitar.
+ */
+interface RateDecision {
+  readonly limited: boolean
+  /** Segundos hasta que se libera un hueco. `0` cuando no esta limitada. */
+  readonly retryAfter: number
+}
+
+/** Segundos hasta que caduca el hit mas antiguo. `Retry-After` admite enteros, no fechas aqui. */
+function secondsUntilFree(oldest: number | undefined, now: number): number {
+  if (oldest === undefined) return Math.ceil(RATE_WINDOW_MS / 1000)
+  return Math.max(1, Math.ceil((RATE_WINDOW_MS - (now - oldest)) / 1000))
+}
+
+function rateLimitedByIp(ip: string, max: number): RateDecision {
   const now = Date.now()
   const recent = (hitsByIp.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS)
   if (recent.length >= max) {
     hitsByIp.set(ip, recent)
-    return true
+    return { limited: true, retryAfter: secondsUntilFree(recent[0], now) }
   }
   recent.push(now)
   hitsByIp.set(ip, recent)
@@ -125,7 +144,7 @@ function rateLimitedByIp(ip: string, max: number): boolean {
       if (times.every((t) => now - t >= RATE_WINDOW_MS)) hitsByIp.delete(key)
     }
   }
-  return false
+  return { limited: false, retryAfter: 0 }
 }
 
 /** Reinicia la cuota por IP. Lo usa el gate, que si no arrastraria el limite entre casos. */
@@ -133,12 +152,12 @@ export function resetIpQuota(): void {
   hitsByIp.clear()
 }
 
-function rateLimited(session: string): boolean {
+function rateLimited(session: string): RateDecision {
   const now = Date.now()
   const recent = (hits.get(session) ?? []).filter((t) => now - t < RATE_WINDOW_MS)
   if (recent.length >= RATE_MAX) {
     hits.set(session, recent)
-    return true
+    return { limited: true, retryAfter: secondsUntilFree(recent[0], now) }
   }
   recent.push(now)
   hits.set(session, recent)
@@ -148,23 +167,30 @@ function rateLimited(session: string): boolean {
       if (times.every((t) => now - t >= RATE_WINDOW_MS)) hits.delete(key)
     }
   }
-  return false
+  return { limited: false, retryAfter: 0 }
 }
 
-function json(body: ChatResponse, status: number): Response {
+function json(body: ChatResponse, status: number, extra: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       'content-type': 'application/json; charset=utf-8',
       // Una respuesta de chat en cache es la respuesta de otra persona.
       'cache-control': 'no-store',
+      ...extra,
     },
   })
 }
 
 /** Rechazo con texto fijo. `reason` va al log; el texto que ve la persona no lo elige el modelo. */
-function deny(answer: string, reason: string, status: number, degraded = false): Response {
-  return json({ ok: false, answer, citations: [], degraded, reason, warnings: [] }, status)
+function deny(
+  answer: string,
+  reason: string,
+  status: number,
+  degraded = false,
+  extra: Record<string, string> = {},
+): Response {
+  return json({ ok: false, answer, citations: [], degraded, reason, warnings: [] }, status, extra)
 }
 
 /**
@@ -228,10 +254,18 @@ export function createChatHandler(
     // elige el cliente, y leer el cuerpo de un petitorio ya es trabajo que nadie quiere hacer.
     // La de sesion se queda como segunda capa, porque una pestana puede reventar su cuota propia
     // sin querer sin que eso deba tumbar a su IP entera.
-    if (rateLimitedByIp(clientIp(request), ratePerMinute())) return deny(FIXED.tasa, 'tasa', 429)
+    const ipRate = rateLimitedByIp(clientIp(request), ratePerMinute())
+    if (ipRate.limited) {
+      return deny(FIXED.tasa, 'tasa', 429, false, { 'retry-after': String(ipRate.retryAfter) })
+    }
 
     const session = request.headers.get('x-session') ?? 'anon'
-    if (rateLimited(session)) return deny(FIXED.tasa, 'tasa', 429)
+    const sessionRate = rateLimited(session)
+    if (sessionRate.limited) {
+      return deny(FIXED.tasa, 'tasa', 429, false, {
+        'retry-after': String(sessionRate.retryAfter),
+      })
+    }
 
     const raw = await request.text()
     if (new TextEncoder().encode(raw).byteLength > MAX_BODY_BYTES) {

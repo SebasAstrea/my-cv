@@ -15,6 +15,7 @@ import Base from '../layouts/Base.astro'
 import Scene from '../components/Scene.astro'
 import IndexRail from '../components/IndexRail.astro'
 import FixtureBanner from '../components/FixtureBanner.astro'
+import ChatPanel from '../components/ChatPanel.astro'
 import { getCv } from '../data/index.ts'
 import { STACK_LEVELS } from '../data/schema.ts'
 import { SCENES } from '../data/storyboard.ts'
@@ -280,6 +281,7 @@ const scene = (id: string) => {
       <button type="button" class="action" data-print>
         Descargar PDF
       </button>
+      <ChatPanel />
       <details class="detail" open>
         <summary class="detail__summary">Más contacto</summary>
         <ul class="links">
