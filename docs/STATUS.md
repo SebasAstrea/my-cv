@@ -18,23 +18,23 @@
 
 | | |
 |---|---|
-| **Sprint activo** | **5 — Sistema de vídeo** (bloqueado: faltan los clips, `ABR-05`) |
-| **Último sprint aceptado** | **4 — Divulgación progresiva y presupuesto** (`ACCEPTED`) |
+| **Sprint activo** | **6 — Chat G1–G4 (guardrails)** (siguiente en el roadmap, sin empezar) |
+| **Último sprint aceptado** | **5 — Sistema de vídeo** (`ACCEPTED`, commit `fa9e3e4`) |
 | **Gate** | `pnpm gate` — 13 pasos, exit 0 |
 | **Bloqueo** | Ninguno conocido |
 | **Deuda registrada** | 11 ítems (`TD-01`..`TD-11` en `BACKLOG.md`) |
 | **Riesgos abiertos** | 8 aceptados (`RK-01`..`RK-08` en `TRACEABILITY.md` §12) |
-| **Medición de calidad** | Sprint 1 medido y publicado en `docs/reportes-calidad/1-fundacion-y-toolchain/REPORTE.md`. T4/T5, sin datos de campo. 4 de 7 escenas incumplen el presupuesto §4.3 (`TD-11`) y hay 1 crítica de seguridad abierta (`TD-06`) |
+| **Medición de calidad** | Sprint 1 medido en `docs/reportes-calidad/1-fundacion-y-toolchain/REPORTE.md`; Sprint 8 (rendimiento) en `docs/reportes-calidad/8-rendimiento/`. T4/T5, sin datos de campo. `TD-06` (Astro) cerrada por `ADR-0005`; `TD-11` (presupuesto de diseño) sigue abierto |
 
-**Siguiente acción concreta:** la **infraestructura de vídeo** (Sprint 5) está implementada y
-en verde (`pnpm gate:video`). Los clips actuales son **provisionales** (7 × 5 s), así que la
-continuidad de corte (`RF-42`) y las duraciones del storyboard quedan para el material final.
-En paralelo se adelanta el **Sprint 9 (seguridad)** y el **Sprint 8 (rendimiento)**.
+**Siguiente acción concreta:** los **sprints que dependen del vídeo** están hechos: Sprint 5
+completo (clips definitivos sin audio, ≤ 800 KB, alineados a 5 s; `ADR-0007`) y el vídeo medido en
+el laboratorio (TBT ~20 ms con vídeo, muy por debajo de `RNF-15`). Lo que falta del vídeo es la
+medición **emparejada** de `MEDICION.md` §4.5 (`RNF-13/14/15`, protocolo con n ≥ 30), que no es un
+`pnpm` suelto. El siguiente sprint del roadmap es el **6 (chat con guardrails)**.
 
 ```bash
-pnpm gate:video        # DEC-02 + RF-40..45 + RUI-95/96 (se omite sin clips)
-pnpm gate:saturation   # RUI-30..37
-pnpm gate:keyboard     # navegación, teclado, RF-13 y email RF-27
+pnpm gate:video        # DEC-02 + RF-40..45 + RUI-95/96 + ADR-0007
+pnpm medir:lab         # T4: LCP/TBT/CLS/TTFB con vídeo
 ```
 
 **Trabajo adelantado (decisión del PO):** el Sprint 9 (seguridad) tiene cabeceras + CSP con
@@ -54,7 +54,7 @@ hash y auditoría; el Sprint 8 (rendimiento) ya trae **fuentes self-hosted** (3 
 | 2 | Fuente de verdad y render SSR | `DONE` | Parseo ATS + `RF-25` | `DEC-03`, `RF-01`, `RF-23`, `RF-25`, `RNF-33`, `RNF-100` |
 | 3 | Navegación, teclado y tema | `DONE` | `gate:keyboard` — teclado 100 % | `RF-02..06`, `RF-09`, `RUI-81` |
 | 4 | Divulgación progresiva y presupuesto | `DONE` | `gate:saturation` — `RUI-52` | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` |
-| 5 | Sistema de vídeo | `WIP` | 1 `<video>` DOM + `RF-41` | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` |
+| 5 | Sistema de vídeo | `DONE` | 1 `<video>` DOM + `RF-41` | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` |
 | 6 | Chat G1–G4 (guardrails) | `TODO` | 100 % cobertura guardrails | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-25` |
 | 7 | Chat G5–G6 + eval set | `TODO` | `CHA-30` ≤ 1 % | `DEC-01.b/f`, `RF-50..58`, `RNF-68/69`, `CHA-30..39` |
 | 8 | Rendimiento | `TODO` | Todos los budgets §4.2 | `RNF-01..23`, `RNF-85`, `MEDICION.md` §4.5 |
