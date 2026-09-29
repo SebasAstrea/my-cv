@@ -47,8 +47,22 @@ const contactoLabel =
 {
   habilitado ? (
     <div class="chat" data-chat>
-      <button type="button" class="action action--ghost" data-chat-open aria-haspopup="dialog">
-        Pregúntame algo
+      <button
+        type="button"
+        class="chat__fab"
+        data-chat-open
+        aria-haspopup="dialog"
+        aria-label="Pregúntame algo sobre el CV"
+      >
+        <svg class="chat__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            d="M4 4h16v12H8l-4 4z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+        </svg>
       </button>
 
       <dialog class="chat__panel" data-chat-panel aria-labelledby="chat-titulo">

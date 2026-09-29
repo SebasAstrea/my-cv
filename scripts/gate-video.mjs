@@ -110,6 +110,19 @@ try {
   if (playing) console.log('  · RF-41: reproduce el clip de la escena activa (video1)')
   else problems.push('RF-41: el video no reproduce la escena activa')
 
+  // Se vigila el `class` del stage ANTES de cambiar de escena: la clase de desenfoque entra y
+  // sale en ~240 ms, asi que leerla despues no probaria nada. El observador deja constancia de
+  // que llego a aplicarse.
+  await page.evaluate(() => {
+    window.__switching = false
+    const stage = document.querySelector('[data-stage]')
+    if (stage !== null) {
+      new MutationObserver(() => {
+        if (stage.classList.contains('stage--switching')) window.__switching = true
+      }).observe(stage, { attributes: true, attributeFilter: ['class'] })
+    }
+  })
+
   await page.evaluate(() => document.getElementById('escena-01')?.scrollIntoView())
   const switched = await page
     .waitForFunction(
@@ -121,6 +134,11 @@ try {
     .catch(() => false)
   if (switched) console.log('  · RF-41: al cambiar de escena cambia el clip (video2)')
   else problems.push('RF-41: el clip no cambia al cambiar de escena')
+
+  // `RF-42`: la transicion de desenfoque entre clips. Sin ella, el cambio de `src` es un corte.
+  const blur = await page.evaluate(() => window.__switching === true)
+  if (blur) console.log('  · RF-42: desenfoque de transicion entre clips')
+  else problems.push('RF-42: no se aplico el desenfoque al cambiar de clip')
 
   // --- ADR-0007: reproduce una vez y congela el ultimo frame ---
   const frozen = await page

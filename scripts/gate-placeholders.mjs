@@ -72,7 +72,9 @@ if (!existsSync(DIST)) {
   process.exit(1)
 }
 
-const artefacts = walk(DIST).filter((f) => /\.(?:html|json|js|css|xml|txt|webmanifest)$/.test(f))
+const CONTENT = /\.(?:html|json|css|xml|txt|webmanifest)$/
+const CODE = /\.js$/
+const artefacts = walk(DIST).filter((f) => CONTENT.test(f) || CODE.test(f))
 const hard = []
 const soft = []
 const fixtureHits = []
@@ -81,16 +83,23 @@ for (const file of artefacts) {
   const rel = relative(ROOT, file)
   const text = readFileSync(file, 'utf8')
 
-  for (const { id, re } of ALWAYS) {
-    re.lastIndex = 0
-    const match = re.exec(text)
-    if (match !== null) hard.push({ file: rel, id, snippet: match[0].slice(0, 60) })
-  }
+  // Los marcadores de CONTENIDO no se buscan en los bundles `.js`. `NaN`, `undefined` o `TODO`
+  // dentro de una libreria minificada no son texto que el visitante lea: son codigo. Buscarlos
+  // ahi convierte cualquier dependencia en un falso positivo — anime.js trae `NaN` y tumbaba el
+  // gate sin que hubiera nada roto. Lo que si se busca en el codigo son las cadenas del fixture,
+  // que no tienen por que aparecer en un bundle.
+  if (!CODE.test(file)) {
+    for (const { id, re } of ALWAYS) {
+      re.lastIndex = 0
+      const match = re.exec(text)
+      if (match !== null) hard.push({ file: rel, id, snippet: match[0].slice(0, 60) })
+    }
 
-  for (const { id, re } of PRODUCTION_ONLY) {
-    re.lastIndex = 0
-    const match = re.exec(text)
-    if (match !== null) soft.push({ file: rel, id, snippet: match[0].slice(0, 60) })
+    for (const { id, re } of PRODUCTION_ONLY) {
+      re.lastIndex = 0
+      const match = re.exec(text)
+      if (match !== null) soft.push({ file: rel, id, snippet: match[0].slice(0, 60) })
+    }
   }
 
   for (const marker of FIXTURE_MARKERS) {

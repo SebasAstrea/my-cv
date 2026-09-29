@@ -281,7 +281,6 @@ const scene = (id: string) => {
       <button type="button" class="action" data-print>
         Descargar PDF
       </button>
-      <ChatPanel />
       <details class="detail" open>
         <summary class="detail__summary">Más contacto</summary>
         <ul class="links">
@@ -314,4 +313,7 @@ const scene = (id: string) => {
   </Fragment>
 
   <p slot="footer" class="mono">Actualizado: {cv.lastReviewed} · {siteUrl()}</p>
+
+  {/* `RF-50..58`: burbuja fija, visible en todo el scroll, no solo en la ultima escena. */}
+  <ChatPanel slot="overlay" />
 </Base>

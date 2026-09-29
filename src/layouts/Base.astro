@@ -110,6 +110,10 @@ const canonical = new URL(Astro.url.pathname, siteUrl()).toString()
       <button type="button" class="video-controls__btn" data-video-restart>Reiniciar</button>
     </div>
 
+    {/* Chromium del sitio que no pertenece a ninguna escena: la burbuja del chat, que va fija
+        (`RF-50..58`, `ADR-0012`). Va en un slot para que `Base` siga sin saber del CV. */}
+    <slot name="overlay" />
+
     {/*
       `RF-02..05`, `RF-09`: navegacion, estado del rail, deep-link y tema. Modulo diferido:
       no bloquea la ruta critica (`RNF-08`) y sin el el CV se lee entero (`RF-07`).

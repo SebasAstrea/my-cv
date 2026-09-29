@@ -334,7 +334,7 @@ de corte) y `RUI-60.b` (timecodes = clips) quedan para el material definitivo.
 | `RUI-96` | T: 1 clip activo; destruido al salir | `src/scripts/video.ts` | `removeAttribute('src')` tras 2 s fuera | **Cumplido** |
 | `RNF-55` | T: si un clip falla, poster sin layout shift | `src/scripts/video.ts` | `error` → poster | **Cumplido** |
 | `RNF-11` | M: poster ≤ 70 KB AVIF | `pnpm gate:budgets` | 14,3 KB máx. (7 posters, clips definitivos) | **Cumplido** |
-| `RF-42` | T: clips sin audio; reproducen una vez y congelan el último frame (`ADR-0007`) | `ffmpeg -an` + `pnpm gate:video` | 7/7 sin audio; 1 vez + congelado; reinicio al volver al principio | **Cumplido** |
+| `RF-42` | T: clips sin audio; reproducen una vez y congelan el último frame (`ADR-0007`); desenfoque al cambiar de clip | `ffmpeg -an` + `pnpm gate:video` | 7/7 sin audio; 1 vez + congelado; reinicio; `MutationObserver` confirma la clase de desenfoque. Negativo: sin `desenfocarStage()`, `FALLA RF-42` | **Cumplido** (`ADR-0013`) |
 | `RNF-12` | M: primer segmento de vídeo ≤ 800 KB | `pnpm medir:estatico` | 437,8 KB / 800 KB (total 2,5 MB) | **Cumplido** |
 | `RUI-60.b` | T: los timecodes corresponden a los clips | `pnpm build` | clips de 5,000 s; `storyboard.ts` y `SPEC.md` §5.9 alineados | **Cumplido** |
 
@@ -363,8 +363,8 @@ del Sprint 7 y no se marca).
 | `CHA-34` | T: pregunta en plural encuentra el chunk en singular | `tests/chat-proveedor.test.ts` | 8 chunks por sección; `¿Dónde estudió?` casa con formación | **Cumplido** |
 | `CHA-36` | T: el modelo puede devolver `[id]` y el servidor lo normaliza | `tests/chat-proveedor.test.ts` | `"[stack]"` → cita `stack` válida; `"[inventado]"` → rechazada | **Cumplido** |
 | `CHA-37` | T: `gpt-oss` manda `reasoning` y `content` por separado; solo `content` es la respuesta | `tests/chat-proveedor.test.ts` | `fetch` simulado: el razonamiento no aparece en la salida y G4 acepta el `content`; `content` vacío → error, no respuesta vacía | **Cumplido** |
-| `RF-50` | T: panel cerrado al cargar, abre bajo clic y `Esc` cierra | `pnpm gate:chat-ui` | `<dialog>` nativo; cerrar con `Esc` verificado en Chromium | **Cumplido** |
-| `RF-51` | T: no modal al cargar; la primera pregunta exige un clic en el teaser | `pnpm gate:chat-ui` | panel `open` = false al cargar; 1 teaser; el clic abre | **Cumplido** |
+| `RF-50` | T: panel cerrado al cargar, abre bajo clic y `Esc` cierra | `pnpm gate:chat-ui` | `<dialog>` nativo (cajón en ≥1200 px, hoja en móvil); cerrar con `Esc` verificado en Chromium | **Cumplido** |
+| `RF-51` | T: no modal al cargar; burbuja **fija** en todo el scroll; la primera pregunta exige un clic; con movimiento reducido, sin animación | `pnpm gate:chat-ui` | panel `open` = false al cargar; burbuja visible arriba y abajo; el clic abre; `RUI-74` con `reducedMotion`: abre y cierra sin espera. Negativo: `position: static` → `FALLA RF-51` | **Cumplido** (`ADR-0012`, `ADR-0013`) |
 | `RF-52` | T: la cita se pinta y lleva a la escena enfocando el heading | `pnpm gate:chat-ui` | `stack` → `escena-04-titulo`; el foco cae en el heading. Negativo probado: sin `focus()`, `FALLA RF-52` | **Cumplido** |
 | `RF-53` | T: 3–4 preguntas sugeridas derivadas del CV | `pnpm gate:chat-ui` | 4 sugerencias (2 de proyectos + stack + formación) | **Cumplido** |
 | `RF-54` | T: la degradación se avisa y ofrece contacto, sin error técnico | `pnpm gate:chat-ui` | `degraded` → aviso "sin modelo" + enlace de contacto; ruta 404 → texto sin 404 ni "fetch" | **Cumplido** |

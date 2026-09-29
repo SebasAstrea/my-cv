@@ -18,6 +18,7 @@
  */
 
 import { citationTarget } from '../lib/chat/anchors.ts'
+import { animar, DUR, limpiar } from '../lib/motion.ts'
 
 /** Mismo tope que `chatRequest` en el servidor (`guardrails.ts`). */
 const MAX_PREGUNTA = 300
@@ -87,9 +88,22 @@ function iniciar(): void {
   const sesion = nuevoIdSesion()
   let enviando = false
 
+  /** Estilos que escribe anime.js y hay que limpiar para no heredar una opacidad 0. */
+  const PROPS_ANIMADAS = ['opacity', 'transform'] as const
+
   function abrirPanel(): void {
+    // Se limpia antes de abrir: si el cierre anterior dejo `opacity: 0` inline y ahora toca
+    // abrir sin animar (movimiento reducido), el panel se abriria invisible.
+    limpiar(panel, PROPS_ANIMADAS)
     if (!panel.open) panel.showModal()
+    void animar(panel, { opacity: [0, 1], translateY: [16, 0] }, DUR.base)
     entrada.focus()
+  }
+
+  async function cerrarPanel(): Promise<void> {
+    await animar(panel, { opacity: [1, 0], translateY: [0, 8] }, DUR.fast)
+    panel.close()
+    limpiar(panel, PROPS_ANIMADAS)
   }
 
   function pintarTurno(turno: Turno): void {
@@ -127,7 +141,7 @@ function iniciar(): void {
         boton.className = 'chat__cita'
         boton.textContent = destino.label
         boton.addEventListener('click', () => {
-          irACita(destino.sceneAnchor, destino.detailAnchor)
+          void irACita(destino.sceneAnchor, destino.detailAnchor)
         })
         item.append(boton)
         lista.append(item)
@@ -139,16 +153,18 @@ function iniciar(): void {
     li.scrollIntoView({ block: 'nearest' })
   }
 
-  function irACita(sceneAnchor: string, detailAnchor?: string): void {
+  async function irACita(sceneAnchor: string, detailAnchor?: string): Promise<void> {
+    const destino =
+      document.getElementById(`${sceneAnchor}-titulo`) ?? document.getElementById(sceneAnchor)
+    // Primero se cierra, y solo despues se enfoca. Un `<dialog>` modal deja el resto del
+    // documento inerte: intentar enfocar el heading con el panel abierto no haria nada.
+    await cerrarPanel()
     if (detailAnchor !== undefined) {
       const detalle = document.getElementById(detailAnchor)
       if (detalle instanceof HTMLDetailsElement) detalle.open = true
     }
     // `RF-01`/`RUI-82`: el foco cae en el heading (`#escena-0N-titulo`), no en la seccion, para
     // que un lector de pantalla anuncie de que escena se trata.
-    const destino =
-      document.getElementById(`${sceneAnchor}-titulo`) ?? document.getElementById(sceneAnchor)
-    panel.close()
     if (destino instanceof HTMLElement) {
       destino.scrollIntoView({ block: 'center', behavior: 'smooth' })
       destino.focus({ preventScroll: true })
@@ -206,9 +222,23 @@ function iniciar(): void {
     }
   }
 
-  abrir.addEventListener('click', abrirPanel)
+  // Entrada de la burbuja: un unico gesto al cargar para que se descubra. Con movimiento
+  // reducido no ocurre nada, y la burbuja queda visible igual porque no depende de la animacion.
+  void animar(abrir, { scale: [0.6, 1], opacity: [0, 1] }, DUR.base)
+
+  abrir.addEventListener('click', () => {
+    // Pulso de la burbuja: confirma que el clic hizo algo antes de que el panel aparezca.
+    void animar(abrir, { scale: [1, 0.9, 1] }, DUR.fast)
+    abrirPanel()
+  })
   cerrar.addEventListener('click', () => {
-    panel.close()
+    void cerrarPanel()
+  })
+  // `RF-50`: `Esc` cierra. Se intercepta el `cancel` nativo solo para animar el cierre; el
+  // dialogo se cierra igualmente, y si el movimiento es reducido, sin espera.
+  panel.addEventListener('cancel', (event) => {
+    event.preventDefault()
+    void cerrarPanel()
   })
 
   formulario.addEventListener('submit', (event) => {

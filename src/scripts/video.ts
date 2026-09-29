@@ -14,6 +14,7 @@ const MODE_KEY = 'video-mode'
 type Mode = 'auto' | 'on' | 'off'
 
 const video = document.querySelector<HTMLVideoElement>('[data-stage-video]')
+const stage = document.querySelector<HTMLElement>('[data-stage]')
 const posterImg = document.querySelector<HTMLImageElement>('[data-stage-poster]')
 const scenes = Array.from(document.querySelectorAll<HTMLElement>('[data-scene]'))
 
@@ -62,6 +63,23 @@ function destroyVideo(): void {
   video.load()
 }
 
+/**
+ * Desenfoque de transicion entre clips.
+ *
+ * `RF-42`/`ADR-0007`: el `<video>` es unico y se recicla, asi que cambiar de escena es un corte
+ * seco de `src`. Con `stage--switching` el video se desenfoca y se apaga mientras entra el poster
+ * de la escena nueva, y `enfocarStage` lo devuelve al terminar de reproducir el clip nuevo. Es
+ * CSS a proposito: el reset global ya respeta `prefers-reduced-motion`, asi que no hace falta
+ * repetir el guard aqui.
+ */
+function desenfocarStage(): void {
+  stage?.classList.add('stage--switching')
+}
+
+function enfocarStage(): void {
+  stage?.classList.remove('stage--switching')
+}
+
 /** Fija el `src` del clip de la escena; devuelve `true` si es el mismo que ya estaba cargado. */
 function ensureClip(clip: string): boolean {
   if (video === null) return true
@@ -105,6 +123,7 @@ function activate(index: number): void {
 
   if (!shouldPlay() || clip === '') {
     video.pause()
+    enfocarStage()
     if (video.dataset.clip !== undefined) {
       destroyTimer = window.setTimeout(destroyVideo, 2000)
     }
@@ -112,6 +131,9 @@ function activate(index: number): void {
   }
 
   const sameSrc = ensureClip(clip)
+  // Solo se desenfoca si de verdad cambia el clip; un cambio de modo sobre la misma escena no
+  // tiene por que parpadear.
+  if (!sameSrc) desenfocarStage()
   const poster = scene.dataset.poster
   if (poster !== undefined && poster !== '') video.poster = poster
 
@@ -119,6 +141,7 @@ function activate(index: number): void {
     // Solo congela si no esta reproduciendose ya ese mismo clip (p. ej. un cambio de modo).
     if (video.paused) freezeAtEnd()
     if (posterImg !== null) posterImg.hidden = true
+    enfocarStage()
     return
   }
 
@@ -129,9 +152,11 @@ function activate(index: number): void {
     playing
       .then(() => {
         if (posterImg !== null) posterImg.hidden = true
+        enfocarStage()
       })
       .catch(() => {
         if (posterImg !== null) posterImg.hidden = false
+        enfocarStage()
       })
   }
 }

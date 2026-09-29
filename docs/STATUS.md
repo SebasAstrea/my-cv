@@ -88,7 +88,8 @@ queda declarado como pendiente en lugar de marcado como hecho.
 - [x] `RNF-68`: 10/min **por IP** + ventana de sesión, con IP del primer salto de `x-forwarded-for`
 - [x] `pnpm gate:chat` en 40/40 y `tests/chat-proveedor.test.ts` con 23 pruebas
 - [x] `ADR-0010`: los 8 `<details>` abiertos por defecto, con el techo de saturación subido al máximo medido
-- [x] **UI** `RF-50..58` y `DEC-01.f`: `<dialog>` nativo, citas navegables, sugerencias, historial en memoria y degradación con contacto (`gate:chat-ui`, 13/13)
+- [x] **UI** `RF-50..58` y `DEC-01.f`: burbuja fija con animación de entrada y pulso (anime.js), `<dialog>` nativo con apertura/cierre animados, citas navegables, sugerencias, historial en memoria y degradación con contacto (`gate:chat-ui`, 15/15)
+- [x] `RF-42`: transición de desenfoque entre clips de vídeo (`gate:video`), CSS y con movimiento reducido neutralizado
 - [x] `RF-54`/`DEC-01.f`: sin modelo o con la ruta apagada se ofrece contacto, sin error técnico
 - [ ] `RF-55` (streaming) **aplazado** por `ADR-0011`: choca con `G4`, que es `M` y esto `S`. Hay indicador de progreso, no botón de parar
 - [ ] `RNF-69` (Turnstile), cuota diaria por fingerprint y `Retry-After` en el 429
@@ -188,9 +189,13 @@ Un gate que solo se ha visto pasar no está verificado. Estos tienen su prueba d
 | `gate:keyboard` | `node.open = true` → `false` en `openDetailFromHash` | exit 1, `RF-13 — #proyecto-… no abre el detalle`. Sin este negativo la comprobación era **verde por vacuidad**: con `ADR-0010` el detalle ya nace abierto, así que daba igual que el deep-link no hiciera nada |
 | `gate:keyboard` | Se quita el clic condicional de `RF-27` | exit 1: el clic en el resumen **cierra** el desplegable ya abierto y el botón de email queda invisible |
 | `gate:chat-ui` | Se quita `destino.focus()` al pulsar una cita | exit 1, `RF-52 — la cita debe enfocar el heading` |
+| `gate:chat-ui` | `position: fixed` → `static` en `.chat` | exit 1, `RF-51 — la burbuja debe verse fija en todo el scroll (arriba=false)` |
+| `gate:chat-ui` | `motion.ts` sin el guard de movimiento reducido | exit 1, `RUI-74 — con movimiento reducido el panel debe abrir y cerrar sin animación` |
+| `gate:video` | Se quita `desenfocarStage()` en `video.ts` | exit 1, `RF-42 — no se aplicó el desenfoque al cambiar de clip` |
+| `gate:placeholders` | `NaN` inyectado en `dist/index.html` | exit 1, `[nan] "NaN"` (el marcador de contenido sigue mirándose; solo dejó de mirarse en los bundles `.js`) |
 | `deploy-contract` (CI) | Automático en cada push | Verifica los dos anteriores |
 
-**Los diez se ejecutan también en CI** (`.github/workflows/ci.yml`, job `deploy-contract`).
+**Los catorce se ejecutan también en CI** (`.github/workflows/ci.yml`, job `deploy-contract`).
 
 ---
 
@@ -236,6 +241,8 @@ Que no esté aquí como «cumplido» aunque parezca cerca:
 | [`0009`](./adr/0009-groq-cierra-abr-01.md) | `ABR-01` cerrado: el modelo es `openai/gpt-oss-120b` en Groq, clave solo en servidor, `off` como reserva | Aceptada |
 | [`0010`](./adr/0010-desplegables-abiertos.md) | Los 8 `<details>` van **abiertos** por defecto; `RUI-31`/`RUI-52` suben a 29 nodos / 1.064 car. Entró a mitad de sprint por decisión del PO | Aceptada |
 | [`0011`](./adr/0011-sin-streaming-g4.md) | Sin streaming de tokens (`RF-55` aplazado): enviar tokens antes de que `G4` valide rompería el guardrail | Aceptada |
+| [`0012`](./adr/0012-burbuja-fija-del-chat.md) | El chat pasa a **burbuja fija** (visible en todo el scroll); excepción acotada a `RUI-24` (radio píldora) y `RUI-36` | Aceptada |
+| [`0013`](./adr/0013-animejs-y-desenfoque-entre-clips.md) | anime.js (4) para la burbuja y el panel; el desenfoque entre clips es CSS. JS de cliente 10,6 → 40,8 KB | Aceptada |
 
 **Abierto a propósito:** nada de `ABR-01` (cerrado por `ADR-0009`). Lo que sigue abierto y
 **declarado** es la medición: `CHA-30/32/33` necesitan el eval set, y el límite de 10/min por IP es

@@ -102,6 +102,24 @@ try {
   const nSugerencias = await page.locator('[data-chat-suggestion]').count()
   check('RF-53', nSugerencias >= 3 && nSugerencias <= 4, `${nSugerencias} sugeridas (se piden 3-4)`)
 
+  // 3 bis. `RF-51`/`RUI-36`: la burbuja va FIJA. Si vuelve a una escena, se ve al final y no
+  // antes; se comprueba en la parte de arriba de la pagina y despues de bajar.
+  const enViewport = () =>
+    page.locator('[data-chat-open]').evaluate((el) => {
+      const r = el.getBoundingClientRect()
+      return r.top >= 0 && r.left >= 0 && r.bottom <= innerHeight && r.right <= innerWidth
+    })
+  const arriba = await enViewport()
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await page.waitForTimeout(120)
+  const abajo = await enViewport()
+  check(
+    'RF-51',
+    arriba && abajo,
+    `la burbuja debe verse fija en todo el scroll (arriba=${arriba}, abajo=${abajo})`,
+  )
+  await page.evaluate(() => window.scrollTo(0, 0))
+
   await page.locator('[data-chat-open]').click()
   check(
     'RF-51',
@@ -109,13 +127,16 @@ try {
     'el clic en el teaser abre el panel',
   )
 
-  // 4. `RF-50`: `Esc` cierra.
+  // 4. `RF-50`: `Esc` cierra. El cierre se anima, asi que se espera al ESTADO FINAL, no al
+  // instante siguiente al teclazo: comprobar el instante mediria la animacion, no el cierre.
   await page.keyboard.press('Escape')
-  check(
-    'RF-50',
-    await page.locator('[data-chat-panel]').evaluate((d) => !d.open),
-    '`Esc` debe cerrar el panel',
-  )
+  const cerro = await page
+    .waitForFunction(() => !document.querySelector('[data-chat-panel]')?.open, undefined, {
+      timeout: 2000,
+    })
+    .then(() => true)
+    .catch(() => false)
+  check('RF-50', cerro, '`Esc` debe cerrar el panel')
 
   // 5. `RF-56`: el historial empieza vacio; tras preguntar hay un turno; recargar lo vacia.
   await page.route('**/api/chat', (route) =>
@@ -142,11 +163,16 @@ try {
   // 6. `RF-52`: la cita se pinta y lleva a la escena, enfocando el heading.
   check('RF-52', (await cita.count()) === 1, 'la respuesta con cita debe pintar el enlace de cita')
   await cita.click()
-  const foco = await page.evaluate(() => ({
-    id: document.activeElement?.id ?? '',
-    enEscena: document.activeElement?.closest('.scene')?.id ?? '',
-  }))
-  check('RF-52', foco.id.endsWith('-titulo'), `la cita debe enfocar el heading, enfoco ${foco.id}`)
+  // El foco llega despues de cerrar el panel (mientras es modal, el resto es inerte). Se espera
+  // al estado final en vez de leer de inmediato.
+  const enfoco = await page
+    .waitForFunction(() => document.activeElement?.id.endsWith('-titulo') ?? false, undefined, {
+      timeout: 3000,
+    })
+    .then(() => true)
+    .catch(() => false)
+  const focoId = await page.evaluate(() => document.activeElement?.id ?? '')
+  check('RF-52', enfoco, `la cita debe enfocar el heading, enfoco ${focoId}`)
 
   // 7. `RF-56`: borrar deja el historial limpio.
   await page.locator('[data-chat-open]').click()
@@ -194,6 +220,25 @@ try {
     'DEC-01.f',
     /no está disponible/i.test(estado) && !/404|error|fetch/i.test(estado),
     `con la ruta apagada se dice sin tecnicismos, dijo "${estado.trim()}"`,
+  )
+  // 10. Movimiento reducido (`RUI-74`, `RUI-95`): la UI tiene que funcionar igual, y sin esperar
+  // animacion. Si el guard de `motion.ts` fallara, `Esc` tardaria ~120 ms en cerrar y el tiempo
+  // de aqui lo delataria.
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto(origin, { waitUntil: 'load' })
+  await page.locator('[data-chat-open]').click()
+  const abiertoQuieto = await page.locator('[data-chat-panel]').evaluate((d) => d.open)
+  await page.keyboard.press('Escape')
+  const cerrroQuieto = await page
+    .waitForFunction(() => !document.querySelector('[data-chat-panel]')?.open, undefined, {
+      timeout: 200,
+    })
+    .then(() => true)
+    .catch(() => false)
+  check(
+    'RUI-74',
+    abiertoQuieto && cerrroQuieto,
+    'con movimiento reducido el panel debe abrir y cerrar sin animacion',
   )
 } finally {
   await browser.close()

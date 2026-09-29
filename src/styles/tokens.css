@@ -112,6 +112,10 @@
   --radius-0: 0;
   --radius-1: 2px; /* controles */
   --radius-2: 4px; /* techo absoluto */
+  /* `RUI-24` fija el techo en 4px, pero la burbuja del chat (`ADR-0012`) tiene que ser redonda.
+     Se declara como token y no como literal para que el techo siga siendo verificable: sigue
+     habiendo exactamente una excepcion, y esta aqui, no repartida por `global.css`. */
+  --radius-pill: 9999px;
 
   /* ---------------------------------------------------------------- *
    * RETICULA — `RUI-20`, `RUI-21`, `RUI-22`

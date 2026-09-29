@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@astrojs/vercel": "^11.0.11",
+    "animejs": "^4.5.0",
     "astro": "^7.3.5",
     "zod": "^3.25.76"
   },
