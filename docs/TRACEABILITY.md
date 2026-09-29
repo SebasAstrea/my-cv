@@ -332,7 +332,7 @@ de corte) y `RUI-60.b` (timecodes = clips) quedan para el material definitivo.
 | `RUI-96` | T: 1 clip activo; destruido al salir | `src/scripts/video.ts` | `removeAttribute('src')` tras 2 s fuera | **Cumplido** |
 | `RNF-55` | T: si un clip falla, poster sin layout shift | `src/scripts/video.ts` | `error` → poster | **Cumplido** |
 | `RNF-11` | M: poster ≤ 70 KB AVIF | `pnpm gate:budgets` | 14,6 KB máx. (7 posters, clips definitivos) | **Cumplido** |
-| `RF-42` | T: clips sin audio, en bucle | `ffmpeg -an` + `pnpm gate:video` | 7/7 sin pista de audio; 5,17 s en bucle | **Cumplido** |
+| `RF-42` | T: clips sin audio; reproducen una vez y congelan el último frame (`ADR-0007`) | `ffmpeg -an` + `pnpm gate:video` | 7/7 sin audio; 1 vez + congelado; reinicio al volver al principio | **Cumplido** |
 | `RNF-12` | M: primer segmento de vídeo ≤ 800 KB | `pnpm medir:estatico` | 711,5 KB / 800 KB | **Cumplido** |
 | `RUI-60.b` | T: los timecodes corresponden a los clips | — | clips de 5,17 s vs storyboard 7/8/10/12/7/6/8 | **WIP** |
 

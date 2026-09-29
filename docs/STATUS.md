@@ -168,6 +168,9 @@ Que no esté aquí como «cumplido» aunque parezca cerca:
 | [`0002`](./adr/0002-css-nativo-sobre-tailwind.md) | CSS nativo con tokens; sin Tailwind | Aceptada |
 | [`0003`](./adr/0003-fixture-de-datos.md) | Fixture en dev, `real` obligatorio en despliegue; `cv.real.ts` gitignored | Aceptada |
 | [`0004`](./adr/0004-abr-01-api-gestionada.md) | `ABR-01` cerrado: solo API gestionada. WebGPU se aplaza tras `ModelProvider` | Aceptada |
+| [`0005`](./adr/0005-astro-7-cierra-vulnerabilidad-critica.md) | Astro 5 → 7: cierra la vulnerabilidad crítica (CVSS 9,8) de `TD-06` | Aceptada |
+| [`0006`](./adr/0006-email-revelado-bajo-interaccion.md) | Email por revelado bajo interacción (`RF-27`); excepción acotada de `SEG-32` | Aceptada |
+| [`0007`](./adr/0007-clips-una-vez-sin-bucle.md) | Los clips se reproducen una vez y congelan el último frame (no bucle, `RF-42`) | Aceptada |
 
 **Cerrada:** `ABR-01` (ver `SPEC.md` §9.2). **Sin abrir pendientes.**
 

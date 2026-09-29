@@ -1,9 +1,13 @@
 /**
- * Sistema de video — `DEC-02`, `RF-10`, `RF-40..45`, `RUI-95/96`, `RNF-55`.
+ * Sistema de video — `DEC-02`, `RF-10`, `RF-40..45`, `RUI-95/96`, `RNF-55`, `ADR-0007`.
  *
  * Un solo `<video>` (`DEC-02.b`) recicla el clip de la escena activa. Mejora progresiva: sin
- * JS no hay video y el CV se lee igual (`RF-43`). El video es decorativo (`aria-hidden`); el
- * contenido nunca depende de el.
+ * JS no hay video y el CV se lee igual (`RF-43`).
+ *
+ * `ADR-0007`: cada clip se reproduce **una vez** y **congela el ultimo frame** (no `loop`). Al
+ * bajar a la siguiente escena pasa al siguiente clip y lo reproduce una vez. Si el usuario
+ * vuelve del final al principio (o refresca), el ciclo se **reinicia**: cada clip se reproduce
+ * una vez mas.
  */
 
 const MODE_KEY = 'video-mode'
@@ -33,6 +37,8 @@ function readMode(): Mode {
 let mode: Mode = readMode()
 let activeIndex = -1
 let destroyTimer: number | undefined
+/** Escenas cuyo clip ya se reprodujo en el ciclo actual (`ADR-0007`). */
+const played = new Set<number>()
 
 /** `RF-10`: `off` = solo poster; `on` = reproduce; `auto` = respeta sistema (`RUI-74`) y movil (`RUI-95`). */
 function shouldPlay(): boolean {
@@ -56,45 +62,81 @@ function destroyVideo(): void {
   video.load()
 }
 
-/** Activa la escena `index`: cambia poster y clip, reproduce o degrada a poster. */
+/** Fija el `src` del clip de la escena; devuelve `true` si es el mismo que ya estaba cargado. */
+function ensureClip(clip: string): boolean {
+  if (video === null) return true
+  if (video.dataset.clip === clip) return true
+  video.src = clip
+  video.dataset.clip = clip
+  video.load()
+  return false
+}
+
+/** Congela el ultimo frame de un clip ya reproducido (`ADR-0007`). */
+function freezeAtEnd(): void {
+  if (video === null) return
+  video.pause()
+  const seek = (): void => {
+    const duration = video.duration
+    if (Number.isFinite(duration) && duration > 0) {
+      video.currentTime = Math.max(0, duration - 0.05)
+    }
+  }
+  if (video.readyState >= 1) seek()
+  else video.addEventListener('loadedmetadata', seek, { once: true })
+}
+
+/** Activa la escena `index`. */
 function activate(index: number): void {
   const scene = scenes[index]
   if (scene === undefined) return
+
+  const previous = activeIndex
   activeIndex = index
   window.clearTimeout(destroyTimer)
+
+  // `ADR-0007`: volver al principio desde una escena posterior reinicia el ciclo.
+  if (index === 0 && previous > 0) played.clear()
+
   setPoster(scene)
 
   if (video === null) return
   const clip = scene.dataset.clip ?? ''
 
-  if (shouldPlay() && clip !== '') {
-    if (video.dataset.clip !== clip) {
-      video.src = clip
-      video.dataset.clip = clip
-      video.load()
-    }
-    const poster = scene.dataset.poster
-    if (poster !== undefined && poster !== '') video.poster = poster
-    const played = video.play()
-    if (played !== undefined) {
-      played
-        .then(() => {
-          if (posterImg !== null) posterImg.hidden = true
-        })
-        .catch(() => {
-          if (posterImg !== null) posterImg.hidden = false
-        })
-    }
-  } else {
+  if (!shouldPlay() || clip === '') {
     video.pause()
-    // `RUI-96`: destruye el clip poco despues de dejar de ser la escena activa.
     if (video.dataset.clip !== undefined) {
       destroyTimer = window.setTimeout(destroyVideo, 2000)
     }
+    return
+  }
+
+  const sameSrc = ensureClip(clip)
+  const poster = scene.dataset.poster
+  if (poster !== undefined && poster !== '') video.poster = poster
+
+  if (played.has(index)) {
+    // Solo congela si no esta reproduciendose ya ese mismo clip (p. ej. un cambio de modo).
+    if (video.paused) freezeAtEnd()
+    if (posterImg !== null) posterImg.hidden = true
+    return
+  }
+
+  played.add(index)
+  if (sameSrc) video.currentTime = 0
+  const playing = video.play()
+  if (playing !== undefined) {
+    playing
+      .then(() => {
+        if (posterImg !== null) posterImg.hidden = true
+      })
+      .catch(() => {
+        if (posterImg !== null) posterImg.hidden = false
+      })
   }
 }
 
-/* `RF-41`: reproduce la escena mas visible; pausa al salir. */
+/* `RF-41`: reproduce la escena mas visible; al entrar la siguiente, pasa a su clip. */
 const ratios = new Map<number, number>()
 const observer = new IntersectionObserver(
   (entries) => {
@@ -158,6 +200,7 @@ if (pauseButton !== null) {
 if (restartButton !== null) {
   restartButton.addEventListener('click', () => {
     if (video === null) return
+    played.delete(activeIndex)
     video.currentTime = 0
     void video.play()
   })

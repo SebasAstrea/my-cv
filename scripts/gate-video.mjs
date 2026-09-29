@@ -123,6 +123,39 @@ try {
   if (switched) console.log('  · RF-41: al cambiar de escena cambia el clip (video2)')
   else problems.push('RF-41: el clip no cambia al cambiar de escena')
 
+  // --- ADR-0007: reproduce una vez y congela el ultimo frame ---
+  const frozen = await page
+    .waitForFunction(
+      () => {
+        const v = document.querySelector('video')
+        return v instanceof HTMLVideoElement && v.paused && v.ended
+      },
+      null,
+      { timeout: 9000 },
+    )
+    .then(() => true)
+    .catch(() => false)
+  if (frozen) console.log('  · ADR-0007: reproduce una vez y congela el ultimo frame')
+  else problems.push('ADR-0007: el clip no se detiene al terminar (¿sigue en bucle?)')
+
+  // --- ADR-0007: volver del final al principio reinicia el ciclo ---
+  await page.evaluate(() => document.getElementById('escena-00')?.scrollIntoView())
+  const restarted = await page
+    .waitForFunction(
+      () => {
+        const v = document.querySelector('video')
+        return (
+          v instanceof HTMLVideoElement && !v.paused && (v.currentSrc ?? v.src).includes('video1')
+        )
+      },
+      null,
+      { timeout: 9000 },
+    )
+    .then(() => true)
+    .catch(() => false)
+  if (restarted) console.log('  · ADR-0007: al volver al principio se reinicia el clip')
+  else problems.push('ADR-0007: no se reinicia al volver al principio')
+
   // --- 4: RF-10, modo off deja el video en pausa ---
   await page.locator('[data-video-toggle]').click() // auto -> on
   await page.locator('[data-video-toggle]').click() // on -> off
