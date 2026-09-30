@@ -246,6 +246,12 @@ const scene = (id: string) => {
               {cv.certifications.map((cert) => (
                 <li class="highlight">
                   {cert.name} — {cert.issuer}
+                  {cert.evidence !== undefined && (
+                    <>
+                      {' '}
+                      <a href={cert.evidence}>Verificar</a>
+                    </>
+                  )}
                   <br />
                   <span class="mono">
                     {cert.date}

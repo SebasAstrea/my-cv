@@ -268,8 +268,8 @@ function collectIntegrityIssues(cv: CvDocument, now: Date): CvIssue[] {
   })
 
   // --- `RF-20` / `RND-06`: el resumen no puede desbordar el presupuesto de la escena ---
-  if (cv.summary.length > 280) {
-    issues.push(issue('summary', `supera los 280 caracteres`, 'RND-06'))
+  if (cv.summary.length > 320) {
+    issues.push(issue('summary', `supera los 320 caracteres`, 'RND-06'))
   }
 
   return issues

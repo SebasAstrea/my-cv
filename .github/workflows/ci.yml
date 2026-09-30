@@ -165,5 +165,8 @@ jobs:
       - name: Gate de la UI del chat
         run: pnpm gate:chat-ui
 
+      - name: Gate de accesibilidad (axe-core)
+        run: pnpm gate:a11y
+
       - name: Gate de video (se omite si no hay clips)
         run: pnpm gate:video

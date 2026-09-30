@@ -270,8 +270,11 @@ export const cvDocument = z
   .object({
     schemaVersion: z.literal(1),
     person: person,
-    /** `RF-20`: resumen. `RND-06`: <= 45ch de apoyo visible, el resto va al detalle. */
-    summary: z.string().min(10).max(280),
+    /**
+     * `RF-20`: resumen. `RND-06`: <= 45ch de apoyo visible, el resto va al detalle.
+     * El techo son caracteres, no palabras. Subido 280 -> 320 en `ADR-0014`.
+     */
+    summary: z.string().min(10).max(320),
     roles: z.array(role).min(1).max(12),
     projects: z.array(project).min(1).max(20),
     stack: z.array(stackGroup).min(1).max(12),

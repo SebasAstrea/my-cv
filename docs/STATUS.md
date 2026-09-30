@@ -52,6 +52,10 @@ pnpm medir:lab         # T4: LCP/TBT/CLS/TTFB con vídeo
 **Trabajo adelantado (decisión del PO):** el Sprint 9 (seguridad) tiene cabeceras + CSP con
 hash y auditoría; el Sprint 8 (rendimiento) ya trae **fuentes self-hosted** (3 woff2, 71,9 KB,
 `RNF-10`/`RUI-17`) y la medición de lab dentro de presupuesto. Detalle en `TRACEABILITY.md` §12 sexies.
+El Sprint 10 (accesibilidad) tiene ya su **gate de axe-core** en los 5 estados (`pnpm gate:a11y`,
+`RUI-80`/`RUI-85`) con su prueba en negativo; falta la revisión manual de 20 criterios, que necesita
+una persona. Se declara como adelantado y no como WIP porque `SCRUM.md` §6 permite un solo sprint
+abierto a la vez, y el 7 sigue bloqueado por `RNF-69`. Detalle en `TRACEABILITY.md` §12 septies.
 
 ---
 
@@ -71,7 +75,7 @@ hash y auditoría; el Sprint 8 (rendimiento) ya trae **fuentes self-hosted** (3 
 | 7 | Chat G5–G6 + eval set | `WIP` | `CHA-30` ≤ 1 % | `DEC-01.b/f`, `RF-50..58`, `RNF-68/69`, `CHA-30..39` |
 | 8 | Rendimiento | `TODO` | Todos los budgets §4.2 | `RNF-01..23`, `RNF-85`, `MEDICION.md` §4.5 |
 | 9 | Seguridad | `TODO` | 0 hallazgos §4.7 | `SEG-01..06`, `SEG-20..25`, `SEG-30..35`, `RNF-61..71` |
-| 10 | Accesibilidad y calidad en uso | `TODO` | 0 serious/critical | `RUI-80..88`, `RUI-33`, `RNF-84` |
+| 10 | Accesibilidad y calidad en uso | `TODO` | `gate:a11y` — 0 serious/critical en 5 estados | `RUI-80..88`, `RUI-33`, `RNF-84` |
 | 11 | PWA, i18n, portabilidad | `TODO` | Matriz de navegadores | `RNF-30..35`, `RF-12` |
 | 12 | Hardening y release v1 | `TODO` | Smoke post-deploy + SLO | `RNF-50..58`, `SEG-43/44`, `RND-01..08`, `G6` |
 
@@ -171,7 +175,7 @@ Equivale a `pnpm verify`.
 `pnpm gate:saturation` (`RUI-30..37`, `RUI-52`) y `pnpm gate:video` (`DEC-02`, `RF-40..45`,
 `RUI-95/96`). Corren en el job `keyboard` de CI porque necesitan Chromium; no entran en el gate
 rápido de PR. `gate:video` se omite si no hay clips (son provisionales y gitignored).
-`gate:chat` sí entra en `pnpm gate` y no necesita Chromium: ejercita el handler en Node. `pnpm gate:chat-ui` (`RF-50..58`, `DEC-01.f`) corre en el mismo job de CI porque necesita Chromium.
+`gate:chat` sí entra en `pnpm gate` y no necesita Chromium: ejercita el handler en Node. `pnpm gate:chat-ui` (`RF-50..58`, `DEC-01.f`) y `pnpm gate:a11y` (`RUI-80`, `RUI-85`) corren en el mismo job de CI porque necesitan Chromium.
 
 ### 3.1 Gates probados en negativo
 
@@ -193,9 +197,10 @@ Un gate que solo se ha visto pasar no está verificado. Estos tienen su prueba d
 | `gate:chat-ui` | `motion.ts` sin el guard de movimiento reducido | exit 1, `RUI-74 — con movimiento reducido el panel debe abrir y cerrar sin animación` |
 | `gate:video` | Se quita `desenfocarStage()` en `video.ts` | exit 1, `RF-42 — no se aplicó el desenfoque al cambiar de clip` |
 | `gate:placeholders` | `NaN` inyectado en `dist/index.html` | exit 1, `[nan] "NaN"` (el marcador de contenido sigue mirándose; solo dejó de mirarse en los bundles `.js`) |
+| `gate:a11y` | Se quita el `aria-label` de la burbuja (botón solo-icono) | exit 1, `[critical] button-name` en los 5 estados |
 | `deploy-contract` (CI) | Automático en cada push | Verifica los dos anteriores |
 
-**Los catorce se ejecutan también en CI** (`.github/workflows/ci.yml`, job `deploy-contract`).
+**Los quince se ejecutan también en CI** (`.github/workflows/ci.yml`, job `deploy-contract`).
 
 ---
 
@@ -243,6 +248,7 @@ Que no esté aquí como «cumplido» aunque parezca cerca:
 | [`0011`](./adr/0011-sin-streaming-g4.md) | Sin streaming de tokens (`RF-55` aplazado): enviar tokens antes de que `G4` valide rompería el guardrail | Aceptada |
 | [`0012`](./adr/0012-burbuja-fija-del-chat.md) | El chat pasa a **burbuja fija** (visible en todo el scroll); excepción acotada a `RUI-24` (radio píldora) y `RUI-36` | Aceptada |
 | [`0013`](./adr/0013-animejs-y-desenfoque-entre-clips.md) | anime.js (4) para la burbuja y el panel; el desenfoque entre clips es CSS. JS de cliente 10,6 → 40,8 KB | Aceptada |
+| [`0014`](./adr/0014-techo-del-resumen.md) | El techo del resumen sube de 280 a 320 **caracteres** (no palabras) | Aceptada |
 
 **Abierto a propósito:** nada de `ABR-01` (cerrado por `ADR-0009`). Lo que sigue abierto y
 **declarado** es la medición: `CHA-30/32/33` necesitan el eval set, y el límite de 10/min por IP es

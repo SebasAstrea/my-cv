@@ -401,6 +401,26 @@ del Sprint 7 y no se marca).
 
 ---
 
+## 12 septies. Accesibilidad (Sprint 10)
+
+`RUI-80` pide axe-core en CI con 0 violaciones serious/critical **y** revisión manual de 20
+criterios. Aquí se registra la parte automatizable; la manual queda declarada como pendiente.
+
+| Requisito | Método | Comando | Resultado | Estado |
+|---|---|---|---|---|
+| `RUI-80` | T: axe-core WCAG 2.2 AA en los 5 estados de `MEDICION.md` §4.8 | `pnpm gate:a11y` | 0 serious/critical en inicio, medio de escena, chat abierto, movimiento reducido y error de vídeo. Negativo: sin `aria-label` en la burbuja → `[critical] button-name` | **Automático cumplido**; revisión manual de 20 criterios pendiente |
+| `RUI-81` | T: landmarks, un solo `h1`, jerarquía sin saltos | `pnpm gate:a11y` + `gate:ats` | 1 `h1`, 7 escenas, `header`/`main`/`footer` | **Cumplido** |
+| `RUI-82` | T: cada escena es `<section aria-labelledby>` con heading enfocable | `pnpm gate:ats` + `gate:keyboard` | 7 escenas; el foco cae en el heading | **Cumplido** |
+| `RUI-83` | T: objetivo táctil ≥ 24×24 px | `pnpm gate:a11y` | `--target-min` en controles; sin violaciones de `target-size` | **Cumplido** |
+| `RUI-84` | T: foco visible ≥ 3:1, ≥ 2 px | `pnpm gate:a11y` | `--focus-ring`; sin violaciones | **Cumplido** |
+| `RUI-85` | T: reflow a 320 px sin scroll horizontal | `pnpm gate:a11y` | 0 px de scroll | **Cumplido** |
+| `RUI-86` | T: el panel atrapa el foco, lo devuelve y es `role=dialog` + `aria-modal` + `Esc` | `pnpm gate:chat-ui` | `<dialog>` nativo con `showModal()`: rol, `aria-modal`, trampa de foco y `Esc` los da el navegador | **Cumplido** |
+| `RUI-87` | T: respuestas en `aria-live="polite"` con `aria-relevant` | `pnpm gate:chat-ui` | `data-chat-log` con `aria-live="polite"` y `aria-relevant="additions text"` | **Cumplido** |
+| `RUI-88` | T: movimiento reducido, contraste forzado y zoom forman parte de la matriz | `pnpm gate:a11y` | estado `reduced-motion` medido; `forced-colors` pendiente de revisión manual | **Parcial** |
+
+**Lo que NO cierra este bloque:** la revisión manual de los 20 criterios no automatizables
+(`RUI-80`) y `forced-colors` (`RUI-88`) necesitan una persona. No se marcan cumplidos.
+
 ## 13. Definición de Hecho (DoD) por requisito
 
 Para que un requisito pase a "cumplido" en la matriz:

@@ -28,6 +28,8 @@
     "gate:saturation": "node scripts/gate-saturation.mjs",
     "gate:video": "node scripts/gate-video.mjs",
     "gate:chat-ui": "node scripts/gate-chat-ui.mjs",
+    "gate:a11y": "node scripts/gate-a11y.mjs",
+    "cv:json": "node --experimental-strip-types scripts/export-real-cv.mjs",
     "gate:placeholders": "node scripts/gate-placeholders.mjs",
     "gate:budgets": "node scripts/gate-budgets.mjs",
     "gate:artifacts": "node --experimental-strip-types scripts/gate-artifacts.mjs",
