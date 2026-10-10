@@ -142,18 +142,18 @@ storyboard quedan para el material definitivo.
 
 - [x] Un solo `<video>` en el DOM con reciclado de `src` (`DEC-02.b`, `RUI-96`)
 - [x] `IntersectionObserver`: reproduce la escena activa y cambia de clip al cambiar de escena (`RF-41`)
-- [x] Cada escena declara su clip y poster (`RF-40`); posters AVIF ≤ 29 KB
+- [x] Cada escena declara su clip y poster (`RF-40`); posters WebP ≤ 23 KB
 - [x] `RF-10`: modo `on/off/auto` persistente; `off` = solo poster
 - [x] `RUI-74`/`RUI-95`: `prefers-reduced-motion` y móvil ≤ 600 px → sin reproducción (poster)
 - [x] Controles manuales accesibles: modo, pausa, reinicio (`RF-45`)
 - [x] `RNF-55`: si un clip falla, se conserva el poster (sin layout shift)
 - [x] Gate `pnpm gate:video` + paso en CI (se omite si no hay clips)
-- [x] Clips definitivos: sin pista de audio (`RF-42`, `ffmpeg -an`) y ≤ 800 KB/segmento (`RNF-12`, 437,8 KB; total 2,5 MB)
+- [x] Clips definitivos: sin pista de audio (`RF-42`, `ffmpeg -an`) y ≤ 800 KB/segmento (`RNF-12`, 201,9 KB; total 960 KB en WebM)
 - [x] Duraciones alineadas a los clips (5 s) en `storyboard.ts` y `SPEC.md` §5.9 (`RUI-60.b`)
 
-**Nota:** los clips definitivos viven en `public/clips/videoN.mp4` (versionados) y sus posters
-`posterN.avif` los deriva `scripts/make-posters.mjs`. Los originales de trabajo quedan en
-`src/data/clips-original/` (gitignored).
+**Nota:** los clips definitivos viven en `public/clips/videoN.webm` (versionados, VP9 CRF 50 sin
+audio) y sus posters `posterN.webp` los deriva `scripts/make-posters.mjs` (libwebp, calidad 60).
+Los mp4 maestros quedan en `src/data/clips-original/` (gitignored).
 
 ---
 

@@ -138,7 +138,7 @@ Umbrales de Google al p75 sobre 75% de las visitas (campo):
 | JS ruta crítica | ≤ 110 KB gzip | Análisis de bundle | |
 | CSS total | ≤ 24 KB gzip | | |
 | Fuentes | ≤ 90 KB / 3 ficheros | | |
-| Poster LCP | ≤ 70 KB AVIF | | |
+| Poster LCP | ≤ 70 KB WebP | | |
 | Primer segmento de vídeo | ≤ 800 KB | Inspección de manifest | |
 | Total por escena (con vídeo) | ≤ 1.5 MB | Waterfill de 7 escenas | La línea temporal entera debe caber en ~1.5 MB |
 | Frame drops con vídeo | ≤ 5% p95 | Traza de 60 s | |

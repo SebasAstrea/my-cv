@@ -1,12 +1,10 @@
 /**
  * Clips de la línea temporal — `DEC-02`, `RF-40`.
  *
- * Los clips son **temporales** (Sprint 5) y viven, en el build, en `/clips/` servidos desde
- * `public/` (los sincroniza `scripts/sync-clips.mjs` desde `src/data/`). El mapeo es por orden
- * de escena: `video1.mp4` -> escena 00, ..., `video7.mp4` -> escena 06.
- *
- * Cuando lleguen los clips definitivos, este modulo seguira apuntando a `/clips/` y solo cambia
- * el material, no la UI.
+ * Los clips definitivos viven, en el build, en `/clips/` servidos desde `public/` (versionados).
+ * El mapeo es por orden de escena: `video1.webm` -> escena 00, ..., `video7.webm` -> escena 06.
+ * Formato: WebM/VP9 sin audio, CRF 50; posters WebP (primer frame) derivados por
+ * `scripts/make-posters.mjs`.
  */
 
 export const CLIPS_DIR = '/clips'
@@ -21,10 +19,10 @@ function file(index: number, kind: 'video' | 'poster', ext: string): string {
 
 /** URL del clip de una escena por su indice (0-based). */
 export function clipUrl(index: number): string {
-  return file(index, 'video', 'mp4')
+  return file(index, 'video', 'webm')
 }
 
-/** URL del poster (primer frame, AVIF) de una escena por su indice. */
+/** URL del poster (primer frame, WebP) de una escena por su indice. */
 export function posterUrl(index: number): string {
-  return file(index, 'poster', 'avif')
+  return file(index, 'poster', 'webp')
 }

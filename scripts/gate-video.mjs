@@ -33,7 +33,7 @@ const TYPES = {
   '.md': 'text/markdown; charset=utf-8',
   '.mp4': 'video/mp4',
   '.webm': 'video/webm',
-  '.avif': 'image/avif',
+  '.webp': 'image/webp',
 }
 
 const problems = []
@@ -43,8 +43,8 @@ if (!existsSync(join(DIST, 'index.html'))) {
   process.exit(1)
 }
 
-if (!existsSync(join(DIST, 'clips/video1.mp4'))) {
-  console.log('  · sin clips en dist/ (temporales, gitignored); gate de video omitido\n')
+if (!existsSync(join(DIST, 'clips/video1.webm'))) {
+  console.log('  · sin clips en dist/ (gitignored); gate de video omitido\n')
   process.exit(0)
 }
 

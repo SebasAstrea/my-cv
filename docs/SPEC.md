@@ -401,9 +401,9 @@ Entregado como parte de la especificación (`ABR-05` cerrado: storyboard definid
 | Bitrate objetivo | 1080p ≤ 3.5 Mbps · 720p ≤ 2.2 Mbps · 480p ≤ 900 kbps |
 | GOP | Keyframe cada 1 s (necesario para `DEC-02.a` y para el montaje rápido de `DEC-02.c`) |
 | Duración | La tabla de arriba, al frame. Los clips se recortan, no se ralentizan. |
-| Primer frame | Exportado como poster AVIF ≤ 70 KB (`RNF-11`) |
+| Primer frame | Exportado como poster WebP ≤ 70 KB (`RNF-11`) |
 | Audio | Stripped. Sin pista de audio. |
-| Metadatos | Nombre `sc0N-1080p.mp4`; los parámetros del encoder se registran en el repo junto al manifest |
+| Metadatos | Nombre de entrega `videoN.webm` (maestro `sc0N-1080p.mp4`); los parámetros del encoder se registran en el repo junto al manifest |
 
 ---
 
@@ -427,7 +427,7 @@ Métricas y umbrales completos en `MEDICION.md`. Resumen ejecutivo:
 | `RNF-08` | JS en ruta crítica | ≤ 110 KB gzip; ≤ 45 KB por encima del fold | M |
 | `RNF-09` | CSS total | ≤ 24 KB gzip | M |
 | `RNF-10` | Fuentes | ≤ 90 KB, ≤ 3 ficheros | M |
-| `RNF-11` | LCP image/poster | ≤ 70 KB AVIF, `fetchpriority="high"`, sin lazy | M |
+| `RNF-11` | LCP image/poster | ≤ 70 KB WebP, `fetchpriority="high"`, sin lazy | M |
 | `RNF-12` | Video: primer segmento | ≤ 800 KB | M |
 | `RNF-13` | Frame drops con vídeo activo | ≤ 5% p95 | M |
 | `RNF-14` | Long tasks > 50ms por scroll con vídeo | 0 | M |

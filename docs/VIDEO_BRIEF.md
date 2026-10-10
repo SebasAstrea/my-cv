@@ -132,7 +132,7 @@ Temperatura de color **baja** hasta `06` y **sube** al volver a `00`.
 | **Bitrate objetivo** | 1080p ≤ **3.5 Mbps** · 720p ≤ **2.2 Mbps** · 480p ≤ **900 kbps**. |
 | **GOP** | **Keyframe cada 1 s** (necesario para el montaje por escenas). |
 | **Duración** | La de la tabla, **al frame**. |
-| **Poster** | Primer frame exportado como **AVIF ≤ 70 KB**. |
+| **Poster** | Primer frame exportado como **WebP ≤ 70 KB**. |
 | **Audio** | **Stripped** (sin pista). |
 | **Nombres** | `sc00-1080p.mp4`, `sc01-1080p.mp4`, … `sc06-1080p.mp4` (y sus versiones 720p/480p y `.webm`). |
 

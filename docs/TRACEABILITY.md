@@ -333,9 +333,9 @@ de corte) y `RUI-60.b` (timecodes = clips) quedan para el material definitivo.
 | `RUI-95` | T: móvil ≤ 600 px → sin reproducción por defecto | `pnpm gate:video` + `video.ts` | `auto` no reproduce en ≤ 600 px | **Cumplido** |
 | `RUI-96` | T: 1 clip activo; destruido al salir | `src/scripts/video.ts` | `removeAttribute('src')` tras 2 s fuera | **Cumplido** |
 | `RNF-55` | T: si un clip falla, poster sin layout shift | `src/scripts/video.ts` | `error` → poster | **Cumplido** |
-| `RNF-11` | M: poster ≤ 70 KB AVIF | `pnpm gate:budgets` | 14,3 KB máx. (7 posters, clips definitivos) | **Cumplido** |
+| `RNF-11` | M: poster ≤ 70 KB WebP | `pnpm gate:budgets` | 22,0 KB máx. (7 posters WebP, clips definitivos) | **Cumplido** |
 | `RF-42` | T: clips sin audio; reproducen una vez y congelan el último frame (`ADR-0007`); desenfoque al cambiar de clip | `ffmpeg -an` + `pnpm gate:video` | 7/7 sin audio; 1 vez + congelado; reinicio; `MutationObserver` confirma la clase de desenfoque. Negativo: sin `desenfocarStage()`, `FALLA RF-42` | **Cumplido** (`ADR-0013`) |
-| `RNF-12` | M: primer segmento de vídeo ≤ 800 KB | `pnpm medir:estatico` | 437,8 KB / 800 KB (total 2,5 MB) | **Cumplido** |
+| `RNF-12` | M: primer segmento de vídeo ≤ 800 KB | `pnpm medir:estatico` | 201,9 KB / 800 KB (total 960 KB WebM; −61 % frente al mp4) | **Cumplido** |
 | `RUI-60.b` | T: los timecodes corresponden a los clips | `pnpm build` | clips de 5,000 s; `storyboard.ts` y `SPEC.md` §5.9 alineados | **Cumplido** |
 
 ---
