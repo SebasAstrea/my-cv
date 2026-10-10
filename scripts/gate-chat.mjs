@@ -28,7 +28,7 @@ import { parseCv, toPublicCv } from '../src/lib/cv/validate.ts'
 import { cvFixture } from '../src/data/cv.fixture.ts'
 import { buildAllowlist, buildChunks } from '../src/lib/chat/chunks.ts'
 import { promptLeakSignatures } from '../src/lib/chat/prompt.ts'
-import { createChatHandler, resetIpQuota } from '../src/lib/chat/handler.ts'
+import { createChatHandler, resetQuotas } from '../src/lib/chat/handler.ts'
 import { getProvider } from '../src/lib/chat/provider.ts'
 import { CANARY_TOKENS, validateOutput } from '../src/lib/chat/guardrails.ts'
 import { staticDir } from './lib/static.mjs'
@@ -474,7 +474,7 @@ if (!parsed.ok) {
 
   // C12. La cuota por IP se puede resetear, que es lo que permite al gate no medirse a si mismo.
   {
-    resetIpQuota()
+    resetQuotas()
     const handler = createChatHandler(corpus, okProvider(false))
     const uno = await call(
       handler,
@@ -485,10 +485,12 @@ if (!parsed.ok) {
       uno.status === 200,
       `tras el reset la primera peticion debe pasar, dio ${uno.status}`,
     )
-    resetIpQuota()
+    resetQuotas()
   }
 
-  // C9. Tasa: 10 peticiones/minuto por IP (`RNF-68`, decision del PO).
+  // C9. Tasa por IP: 10 peticiones/minuto por IP (`RNF-68`, decision del PO).
+  // Las sesiones rotan a proposito: con una fija, el corte en la 6 seria el de sesion (5/min)
+  // y el gate mediria la ventana equivocada — el error clasico de esta prueba.
   {
     const handler = createChatHandler(corpus, okProvider(false))
     let limite = null
@@ -497,7 +499,7 @@ if (!parsed.ok) {
       const r = await call(
         handler,
         post('¿qué proyectos hay?', {
-          'x-session': 'gate-tasa',
+          'x-session': `gate-tasa-${i}`,
           'x-forwarded-for': '198.51.100.7',
         }),
       )
@@ -525,6 +527,109 @@ if (!parsed.ok) {
         Number.isInteger(Number(retryAfter)) &&
         Number(retryAfter) > 0,
       `un 429 debe traer Retry-After entero y positivo, dio ${limitada.status} / ${JSON.stringify(retryAfter)}`,
+    )
+  }
+
+  // C13. Tasa por sesion: 5 peticiones/minuto por token (`RNF-68`).
+  // Las IPs rotan a proposito: sin eso, el corte en la 6 seria el de IP (10/min no llega)
+  // y un fallo del codigo pasaria desapercibido. Es la prueba en negativo del negativo.
+  {
+    resetQuotas()
+    const handler = createChatHandler(corpus, okProvider(false))
+    let limite = null
+    for (let i = 0; i < 8; i += 1) {
+      const r = await call(
+        handler,
+        post('¿qué proyectos hay?', {
+          'x-session': 'gate-sesion',
+          'x-forwarded-for': `203.0.113.${60 + i}`,
+        }),
+      )
+      if (r.status === 429 && limite === null) limite = i
+    }
+    check(
+      'RNF-68',
+      limite === 5,
+      `la cuota por sesion deberia cortar en la peticion 6, y corto en la ${limite === null ? 'ninguna' : limite + 1}`,
+    )
+    const limitada = await call(
+      handler,
+      post('¿qué proyectos hay?', {
+        'x-session': 'gate-sesion',
+        'x-forwarded-for': '203.0.113.99',
+      }),
+    )
+    const retryAfter = limitada.headers.get('retry-after')
+    check(
+      'RNF-68',
+      limitada.status === 429 &&
+        retryAfter !== null &&
+        Number.isInteger(Number(retryAfter)) &&
+        Number(retryAfter) > 0,
+      `el 429 de sesion debe traer Retry-After entero y positivo, dio ${limitada.status} / ${JSON.stringify(retryAfter)}`,
+    )
+  }
+
+  // C14. Cuota diaria por fingerprint: 200 peticiones/dia (`RNF-68`).
+  // Misma IP y mismo User-Agent durante 203 peticiones. El minuto rechaza a partir de la 11,
+  // pero la huella **sigue contando** las rechazadas: es el techo economico del dia, y un
+  // contador que solo contara admisiones dejaria al atacante con 10/min eternos.
+  {
+    resetQuotas()
+    const handler = createChatHandler(corpus, okProvider(false))
+    let primeraDiaria = null
+    let motivo = null
+    for (let i = 0; i < 203; i += 1) {
+      const r = await call(
+        handler,
+        post('¿qué proyectos hay?', {
+          'x-session': `gate-diaria-${i}`,
+          'x-forwarded-for': '198.51.100.77',
+          'user-agent': 'gate-ua-diaria',
+        }),
+      )
+      if (r.status === 429 && r.body.reason === 'cuota-diaria' && primeraDiaria === null) {
+        primeraDiaria = i
+        motivo = r.body.reason
+      }
+    }
+    check(
+      'RNF-68',
+      primeraDiaria === 200 && motivo === 'cuota-diaria',
+      `la cuota diaria deberia cortar en la peticion 201 con reason "cuota-diaria", y corto en la ${primeraDiaria === null ? 'ninguna' : primeraDiaria + 1} con ${JSON.stringify(motivo)}`,
+    )
+    const limitada = await call(
+      handler,
+      post('¿qué proyectos hay?', {
+        'x-session': 'gate-diaria-final',
+        'x-forwarded-for': '198.51.100.77',
+        'user-agent': 'gate-ua-diaria',
+      }),
+    )
+    const retryAfter = Number(limitada.headers.get('retry-after'))
+    check(
+      'RNF-68',
+      limitada.status === 429 &&
+        Number.isInteger(retryAfter) &&
+        retryAfter > 0 &&
+        retryAfter <= 86_400,
+      `el 429 diario debe traer Retry-After entero entre 1 y 86400, dio ${limitada.status} / ${limitada.headers.get('retry-after')}`,
+    )
+    // Otra huella (otro User-Agent, misma IP) no bebe de esa cuota. La IP puede seguir
+    // limitada por el minuto —el bucle anterior la agoto— asi que lo que se comprueba es
+    // que el rechazo no sea el diario: la huella nueva tiene su propia cuenta.
+    const otra = await call(
+      handler,
+      post('¿qué proyectos hay?', {
+        'x-session': 'gate-diaria-otra',
+        'x-forwarded-for': '198.51.100.77',
+        'user-agent': 'gate-ua-distinta',
+      }),
+    )
+    check(
+      'RNF-68',
+      otra.body.reason !== 'cuota-diaria',
+      `una huella distinta con la misma IP no debe heredar la cuota diaria, dio ${otra.status} / ${JSON.stringify(otra.body.reason)}`,
     )
   }
 

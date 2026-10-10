@@ -28,10 +28,18 @@
 
 **Siguiente acción concreta:** `ABR-01` ya está **cerrado** (`ADR-0009`): el modelo es
 `openai/gpt-oss-120b` en Groq, con `reasoning_effort: 'low'`, sin reintentos, con la clave solo en
-el servidor y con `off` como reserva. `pnpm gate:chat` sube a **40/40** y el gate completo sigue en
-verde. Lo que falta del Sprint 7 es lo que no se puede escribir sin medir: la **UI** (`RF-51..58`) y
-el **eval set** que da `CHA-30/32/33`. Aparte, y por decisión del PO a mitad de sprint, los desplegables de escena van **abiertos por defecto** (`ADR-0010`), lo que subió el presupuesto de saturación a 29 nodos / 1.064 car. y dejó 3 escenas más altas que una pantalla (`TD-13`). Antes de desplegar hay que **rotar `GROQ_API_KEY`**: la que se
+el servidor y con `off` como reserva. `pnpm gate:chat` sube a **46/46** y el gate completo sigue en
+verde. Lo que falta del Sprint 7: la **UI** ya está (`RF-51..58`, `gate:chat-ui` 15/15); siguen el
+**eval set** que da `CHA-30/32/33` y `RNF-69` (Turnstile). Aparte, y por decisión del PO a mitad de sprint, los desplegables de escena van **abiertos por defecto** (`ADR-0010`), lo que subió el presupuesto de saturación a 29 nodos / 1.064 car. y dejó 3 escenas más altas que una pantalla (`TD-13`). Antes de desplegar hay que **rotar `GROQ_API_KEY`**: la que se
 usó para las pruebas se lordó en texto plano y no es una credencial válida para producción.
+
+**Simulación EDoS (2026-10-10, informe en `docs/reportes-calidad/edos-vercel/REPORTE.md`):**
+83.000 peticiones contra el sitio real. El Security Checkpoint de Vercel bloqueó el **99,55 %**
+en el borde y la función no gastó ni una invocación; pero la sonda previa mostró que los límites
+de la **aplicación** filtraban (102/200 admitidas bajo concurrencia, por las ventanas por
+instancia de `TD-12`). Por eso `RNF-68` está ahora **completo**: sesión 5/min (antes 12),
+cuota diaria de 200 por `sha256(IP|UA)` —que cuenta también las rechazadas— y `Retry-After`
+en los tres cortes. El 7 sigue bloqueado en su última pieza por `RNF-69` (Turnstile).
 
 El Sprint 6 sigue cerrado y verificado: G1–G4 cortan antes y después del modelo, sin gastar un
 token, y el corpus del chat es server-only.
@@ -44,7 +52,7 @@ alineados a 5 s; `ADR-0007`) y solo pendiente la medición **emparejada** de `ME
 (`RNF-13/14/15`, protocolo con n ≥ 30), que no es un `pnpm` suelto.
 
 ```bash
-pnpm gate:chat         # CHA-01..07, CHA-20/22/31/34/36/37, SEG-11/20/25/31/35, ADR-0008
+pnpm gate:chat         # CHA-01..07, CHA-20/22/31/34/36/37, SEG-11/20/25/31/35, RNF-68, ADR-0008
 pnpm gate:video        # DEC-02 + RF-40..45 + RUI-95/96 + ADR-0007
 pnpm medir:lab         # T4: LCP/TBT/CLS/TTFB con vídeo
 ```
@@ -71,7 +79,7 @@ abierto a la vez, y el 7 sigue bloqueado por `RNF-69`. Detalle en `TRACEABILITY.
 | 3 | Navegación, teclado y tema | `DONE` | `gate:keyboard` — teclado 100 % | `RF-02..06`, `RF-09`, `RUI-81` |
 | 4 | Divulgación progresiva y presupuesto | `DONE` | `gate:saturation` — `RUI-52` | `RUI-30..37`, `RUI-52`, `RF-13`, `RF-26/27`, `RF-10`, `RF-11` |
 | 5 | Sistema de vídeo | `DONE` | 1 `<video>` DOM + `RF-41` | `DEC-02`, `RF-40..45`, `RNF-55`, `RUI-96` |
-| 6 | Chat G1–G4 (guardrails) | `DONE` | `pnpm gate:chat` — 31/31 al cierre del sprint (40/40 hoy) | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-20/25/31/35` |
+| 6 | Chat G1–G4 (guardrails) | `DONE` | `pnpm gate:chat` — 31/31 al cierre del sprint (46/46 hoy) | `CHA-01..07`, `CHA-20..22`, `SEG-11`, `SEG-20/25/31/35` |
 | 7 | Chat G5–G6 + eval set | `WIP` | `CHA-30` ≤ 1 % | `DEC-01.b/f`, `RF-50..58`, `RNF-68/69`, `CHA-30..39` |
 | 8 | Rendimiento | `TODO` | Todos los budgets §4.2 | `RNF-01..23`, `RNF-85`, `MEDICION.md` §4.5 |
 | 9 | Seguridad | `TODO` | 0 hallazgos §4.7 | `SEG-01..06`, `SEG-20..25`, `SEG-30..35`, `RNF-61..71` |
@@ -89,14 +97,19 @@ queda declarado como pendiente en lugar de marcado como hecho.
 - [x] `reasoning` descartado y `content` vacío tratado como fallo del proveedor, no como respuesta
 - [x] Recuperación en español: stemmed y 8 chunks por sección, con alias de stack y formación
 - [x] G4 acepta la cita con corchetes que el modelo copia del bloque de datos (`CHA-36`)
-- [x] `RNF-68`: 10/min **por IP** + ventana de sesión, con IP del primer salto de `x-forwarded-for`
-- [x] `pnpm gate:chat` en 40/40 y `tests/chat-proveedor.test.ts` con 23 pruebas
+- [x] `RNF-68` **completo**: 10/min **por IP** (decisión del PO), 5/min por sesión, 200/día por
+  fingerprint `sha256(IP|User-Agent)` —contando también las peticiones que el minuto rechaza—,
+  `Retry-After` entero en los tres 429, IP del primer salto de `x-forwarded-for`
+- [x] `pnpm gate:chat` en 46/46 y `tests/chat-proveedor.test.ts` con 27 pruebas; negativo del
+  corte diario probado (sin él → `FALLA RNF-68` en la petición 201)
+- [x] Simulación EDoS ≤ 100k peticiones contra producción: borde de Vercel bloquea el 99,55 %,
+  la aplicación filtraba bajo concurrencia (`docs/reportes-calidad/edos-vercel/REPORTE.md`)
 - [x] `ADR-0010`: los 8 `<details>` abiertos por defecto, con el techo de saturación subido al máximo medido
 - [x] **UI** `RF-50..58` y `DEC-01.f`: burbuja fija con animación de entrada y pulso (anime.js), `<dialog>` nativo con apertura/cierre animados, citas navegables, sugerencias, historial en memoria y degradación con contacto (`gate:chat-ui`, 15/15)
 - [x] `RF-42`: transición de desenfoque entre clips de vídeo (`gate:video`), CSS y con movimiento reducido neutralizado
 - [x] `RF-54`/`DEC-01.f`: sin modelo o con la ruta apagada se ofrece contacto, sin error técnico
 - [ ] `RF-55` (streaming) **aplazado** por `ADR-0011`: choca con `G4`, que es `M` y esto `S`. Hay indicador de progreso, no botón de parar
-- [ ] `RNF-69` (Turnstile), cuota diaria por fingerprint y `Retry-After` en el 429
+- [ ] `RNF-69` (Turnstile); la cuota diaria por fingerprint y el `Retry-After` ya están (ver `RNF-68`)
 - [ ] **Eval set** y medición de `CHA-30`, `CHA-32`, `CHA-33`; `RNF-17` sin datos suficientes
 - [ ] Rotar `GROQ_API_KEY` y configurarla en Vercel; hoy el despliegue cae a `off`
 
@@ -164,7 +177,7 @@ Cada fila debe corresponded con un script real de `package.json` y con un ficher
 | `gate:placeholders` | `pnpm gate:placeholders` | `RF-25` — marcadores de fixture | En despliegue |
 | `gate:budgets` | `pnpm gate:budgets` | `RNF-07..12` — budgets sobre `dist/` real | Sí |
 | `gate:artifacts` | `pnpm gate:artifacts` | `SEG-31`, `SEG-32` — ningún campo `private` en cliente | Sí |
-| `gate:chat` | `pnpm gate:chat` | `CHA-01..07`, `CHA-20/22/31/34/36/37`, `SEG-11/20/25/31/35`, `ABR-01`, `ADR-0008/0009` | Sí |
+| `gate:chat` | `pnpm gate:chat` | `CHA-01..07`, `CHA-20/22/31/34/36/37`, `SEG-11/20/25/31/35`, `RNF-68`, `ABR-01`, `ADR-0008/0009` | Sí |
 
 **Comando único:** `pnpm gate` = `status` → `format:check` → `typecheck` → `lint` → `test`
 → `check:cv` → `gate:tokens` → `build` → `gate:ats` → `gate:security` → `gate:placeholders`
@@ -189,6 +202,7 @@ Un gate que solo se ha visto pasar no está verificado. Estos tienen su prueba d
 | `astro build` | `VERCEL=1 CV_DATA_SOURCE=real` sin `cv.real.ts` | exit 1, indica el fichero y cómo crearlo |
 | `gate:chat` | `if (false)` en el bloqueo de G1 | exit 1, nombra `CHA-25` y el ataque concreto que dejó pasar |
 | `gate:chat` | Se desactiva la detección de canario en G4 | exit 1, `CHA-31` |
+| `gate:chat` | El corte diario por fingerprint devuelve siempre `limited: false` | exit 1, `RNF-68 — la cuota diaria deberia cortar en la peticion 201` |
 | `gate:chat` | Se borra `scripts/lib/static.mjs` | exit 1 antes de medir nada |
 | `gate:keyboard` | `node.open = true` → `false` en `openDetailFromHash` | exit 1, `RF-13 — #proyecto-… no abre el detalle`. Sin este negativo la comprobación era **verde por vacuidad**: con `ADR-0010` el detalle ya nace abierto, así que daba igual que el deep-link no hiciera nada |
 | `gate:keyboard` | Se quita el clic condicional de `RF-27` | exit 1: el clic en el resumen **cierra** el desplegable ya abierto y el botón de email queda invisible |

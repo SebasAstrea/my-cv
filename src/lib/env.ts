@@ -117,6 +117,22 @@ export function ratePerMinute(): number {
 }
 
 /**
+ * Peticiones por dia y fingerprint (`RNF-68`). 200 por defecto, el techo del SPEC.
+ *
+ * El fingerprint es `sha256(IP | User-Agent)` y se calcula en el handler: no es una identidad de
+ * persona (un mismo ordenador tras un NAT comparte IP, y un atacante con proxies la rota), pero
+ * si es el techo economico que pide el SPEC. Se cuenta **toda** peticion que llega a la seccion
+ * de tasas, tambien las rechazadas por el minuto: el objetivo es acotar el gasto diario, y un
+ * contador que solo cuenta admisiones deja al atacante con `10/min` ilimitados en el dia.
+ *
+ * Igual que `ratePerMinute`, un valor invalido cae al default en vez de romper el endpoint.
+ */
+export function rateDaily(): number {
+  const value = Number(read('CHAT_RATE_PER_DAY'))
+  return Number.isInteger(value) && value > 0 ? value : 200
+}
+
+/**
  * Credencial del proveedor (`ADR-0009`).
  *
  * Se lee de `GROQ_API_KEY` y se devuelve sin trim en el camino de error: si viene vacia, quien

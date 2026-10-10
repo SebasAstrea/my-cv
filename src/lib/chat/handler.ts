@@ -10,7 +10,7 @@
  *
  * El pipeline es fijo y en este orden, porque cada etapa cuesta mas que la anterior:
  *
- *   1. origen, metodo y tasa — gratis; corta el uso desde otro sitio antes de leer el cuerpo
+ *   1. origen, metodo y cuotas — gratis; corta el uso desde otro sitio antes de leer el cuerpo
  *   2. `chatRequest`        — Zod `.strict()`; lo que no esta declarado no se procesa
  *   3. `intake` (G1)        — sin coste de token; de aqui sale el "no llamo al modelo"
  *   4. `retrieve`           — sin coste; de aqui sale el "no consta en el CV" (`CHA-06`)
@@ -22,12 +22,21 @@
  * de el: un guardrail que corre "dentro" del prompt es una recomendacion, no un control.
  */
 
+import { createHash } from 'node:crypto'
+
 import { MIN_RELEVANCE, retrieve, type Chunk } from './chunks.ts'
 import { intake, rejectionText, validateOutput } from './guardrails.ts'
 import { buildPrompt, hashPrompt } from './prompt.ts'
 import { getProvider, offlineProvider, type Provider } from './provider.ts'
 import { chatRequest, type ChatResponse } from './schema.ts'
-import { chatEnabled, groqApiKey, modelProvider, ratePerMinute, siteUrl } from '../env.ts'
+import {
+  chatEnabled,
+  groqApiKey,
+  modelProvider,
+  rateDaily,
+  ratePerMinute,
+  siteUrl,
+} from '../env.ts'
 
 export interface Corpus {
   readonly chunks: readonly Chunk[]
@@ -67,6 +76,7 @@ const FIXED = {
     'Sobre la decision de contratar, no soy la persona indicada.',
   deshabilitado: 'El chat no esta disponible.',
   tasa: 'Demasiadas preguntas seguidas. Espera un momento.',
+  cuota: 'Demasiadas preguntas hoy. Usa el contacto directamente.',
   cuerpo: 'La peticion es demasiado grande.',
   formato: 'La peticion no tiene el formato esperado.',
   proveedor: 'El servicio no responde. Intentalo de nuevo.',
@@ -81,7 +91,7 @@ const FIXED = {
  * distribuir peticiones. Ver `rateLimitedByIp` para lo que si es una identidad.
  */
 const RATE_WINDOW_MS = 60_000
-const RATE_MAX = 12
+const RATE_MAX = 5
 const hits = new Map<string, number[]>()
 
 /**
@@ -98,6 +108,22 @@ const hits = new Map<string, number[]>()
  */
 const hitsByIp = new Map<string, number[]>()
 
+/**
+ * Cuota diaria por fingerprint (`RNF-68`).
+ *
+ * `sha256(IP | User-Agent)`, truncado. La IP la pone el proxy y el User-Agent el navegador, así
+ * que ninguno de los dos lo elige el cliente con una cabecera suya. No es una identidad de
+ * persona —una oficina tras un NAT con el mismo Chrome comparte huella— pero si es el techo
+ * economico que pide el SPEC: 200 peticiones al dia por huella, contando **todas** las que
+ * llegan aqui, tambien las que el minuto rechaza. Un contador que solo contara admisiones
+ * dejaria al atacante con `10/min` durante las 24 horas.
+ *
+ * Mismo reparto de responsabilidades que `hitsByIp`: en serverless cada instancia lleva la suya
+ * (`TD-12`), así que el techo real por huella es este multiplicado por las instancias vivas.
+ */
+const DAILY_WINDOW_MS = 86_400_000
+const hitsByFingerprint = new Map<string, number[]>()
+
 /** Identidad de red de la peticion, en orden de fiabilidad decreciente. */
 function clientIp(request: Request): string {
   for (const header of ['x-vercel-forwarded-for', 'cf-connecting-ip', 'x-forwarded-for']) {
@@ -109,6 +135,15 @@ function clientIp(request: Request): string {
     if (first !== undefined && first.trim() !== '') return first.trim()
   }
   return 'desconocida'
+}
+
+/** Huella diaria: IP (del proxy) + User-Agent. Ninguna de las dos la inventa el cliente. */
+function fingerprint(request: Request): string {
+  const ua = request.headers.get('user-agent') ?? 'sin-ua'
+  return createHash('sha256')
+    .update(`${clientIp(request)}|${ua}`)
+    .digest('hex')
+    .slice(0, 16)
 }
 
 /**
@@ -147,9 +182,15 @@ function rateLimitedByIp(ip: string, max: number): RateDecision {
   return { limited: false, retryAfter: 0 }
 }
 
-/** Reinicia la cuota por IP. Lo usa el gate, que si no arrastraria el limite entre casos. */
-export function resetIpQuota(): void {
+/**
+ * Reinicia todas las cuotas. Lo usa el gate, que si no arrastraria el limite entre casos.
+ * Borra las tres ventanas —sesion, IP y huella diaria— porque miden lo mismo desde angulos
+ * distintos y un test que resetea solo una se mide a si misma.
+ */
+export function resetQuotas(): void {
+  hits.clear()
   hitsByIp.clear()
+  hitsByFingerprint.clear()
 }
 
 function rateLimited(session: string): RateDecision {
@@ -165,6 +206,39 @@ function rateLimited(session: string): RateDecision {
   if (hits.size > 5000) {
     for (const [key, times] of hits) {
       if (times.every((t) => now - t >= RATE_WINDOW_MS)) hits.delete(key)
+    }
+  }
+  return { limited: false, retryAfter: 0 }
+}
+
+/**
+ * Cuota diaria por huella.
+ *
+ * Se invoca para **toda** peticion que llega a la seccion de tasas, antes de las ventanas de
+ * minuto: aunque el minuto rechace, el registro cuenta. Es deliberado — el objetivo de esta
+ * cuota es acotar el gasto economico del dia, y un atacante que reciba `429: tasa` cien veces
+ * sigue habiendo costado cien invocaciones de funcion.
+ *
+ * `retryAfter` son segundos hasta que caduca el hit mas antiguo: al salir uno de la ventana de
+ * 24 h queda hueco para una admision, que es exactamente lo que el cliente necesita saber.
+ */
+function rateLimitedByFingerprint(fp: string, max: number): RateDecision {
+  const now = Date.now()
+  const recent = (hitsByFingerprint.get(fp) ?? []).filter((t) => now - t < DAILY_WINDOW_MS)
+  if (recent.length >= max) {
+    hitsByFingerprint.set(fp, recent)
+    const oldest = recent[0]
+    const retryAfter =
+      oldest === undefined
+        ? Math.ceil(DAILY_WINDOW_MS / 1000)
+        : Math.max(1, Math.ceil((oldest + DAILY_WINDOW_MS - now) / 1000))
+    return { limited: true, retryAfter }
+  }
+  recent.push(now)
+  hitsByFingerprint.set(fp, recent)
+  if (hitsByFingerprint.size > 5000) {
+    for (const [key, times] of hitsByFingerprint) {
+      if (times.every((t) => now - t >= DAILY_WINDOW_MS)) hitsByFingerprint.delete(key)
     }
   }
   return { limited: false, retryAfter: 0 }
@@ -250,10 +324,19 @@ export function createChatHandler(
     if (foreignOrigin(request)) return deny(FIXED.origen, 'origen-externo', 403)
     if (!chatEnabled()) return deny(FIXED.deshabilitado, 'deshabilitado', 404)
 
-    // La cuota por IP va **antes** de la de sesion y antes de leer el cuerpo: es la que no la
-    // elige el cliente, y leer el cuerpo de un petitorio ya es trabajo que nadie quiere hacer.
-    // La de sesion se queda como segunda capa, porque una pestana puede reventar su cuota propia
-    // sin querer sin que eso deba tumbar a su IP entera.
+    // La cuota diaria por huella va **primero**: es el techo economico (`RNF-68`), y se registra
+    // toda peticion que llega, tambien la que el minuto rechaza. Detras, la cuota por IP —la
+    // que no la elige el cliente— antes de la de sesion y antes de leer el cuerpo: leer el
+    // cuerpo de un petitorio ya es trabajo que nadie quiere hacer. La de sesion se queda como
+    // ultima capa, porque una pestana puede reventar su cuota propia sin querer sin que eso
+    // deba tumbar a su IP entera.
+    const diaria = rateLimitedByFingerprint(fingerprint(request), rateDaily())
+    if (diaria.limited) {
+      return deny(FIXED.cuota, 'cuota-diaria', 429, false, {
+        'retry-after': String(diaria.retryAfter),
+      })
+    }
+
     const ipRate = rateLimitedByIp(clientIp(request), ratePerMinute())
     if (ipRate.limited) {
       return deny(FIXED.tasa, 'tasa', 429, false, { 'retry-after': String(ipRate.retryAfter) })

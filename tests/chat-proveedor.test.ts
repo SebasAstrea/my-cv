@@ -22,7 +22,7 @@ import {
 import { getProvider, offlineProvider } from '../src/lib/chat/provider.ts'
 import { buildPrompt } from '../src/lib/chat/prompt.ts'
 import { CANARY_TOKENS, validateOutput } from '../src/lib/chat/guardrails.ts'
-import { createChatHandler, resetIpQuota, type ChatHandler } from '../src/lib/chat/handler.ts'
+import { createChatHandler, resetQuotas, type ChatHandler } from '../src/lib/chat/handler.ts'
 import { cvFixture } from '../src/data/cv.fixture.ts'
 import { parseCv, toPublicCv } from '../src/lib/cv/validate.ts'
 
@@ -50,10 +50,10 @@ const call = async (handler: ChatHandler, request: Request) => {
 }
 
 /**
- * Cada peticion lleva sesion propia a proposito. La ventana de sesion (12/min) vive en el modulo
- * y se comparte entre tests: con una sesion fija, el segundo test de cuota mediria la cuota de
- * sesion en vez de la de IP, y el fallo seria culpa del test y no del codigo. Es exactamente lo
- * que paso la primera vez que se escribio este fichero.
+ * Cada peticion lleva sesion propia a proposito. La ventana de sesion (5/min, `RNF-68`) vive en
+ * el modulo y se comparte entre tests: con una sesion fija, el segundo test de cuota mediria la
+ * cuota de sesion en vez de la de IP, y el fallo seria culpa del test y no del codigo. Es
+ * exactamente lo que paso la primera vez que se escribio este fichero.
  */
 let sesion = 0
 const post = (question: string, headers: Record<string, string> = {}, ip = '198.51.100.1') => {
@@ -310,7 +310,7 @@ describe('G4 con lo que devuelve un modelo real', () => {
 
 describe('cuota por IP (RNF-68, decision del PO)', () => {
   it('corta en la peticion 11 con el limite de 10 por minuto', async () => {
-    resetIpQuota()
+    resetQuotas()
     const handler = createChatHandler(corpus, okProvider())
     const estados: number[] = []
     for (let i = 0; i < 14; i += 1) {
@@ -322,7 +322,7 @@ describe('cuota por IP (RNF-68, decision del PO)', () => {
   })
 
   it('el 429 trae Retry-After entero y positivo (RNF-68)', async () => {
-    resetIpQuota()
+    resetQuotas()
     const handler = createChatHandler(corpus, okProvider())
     let retryAfter: string | null = null
     for (let i = 0; i < 12; i += 1) {
@@ -340,7 +340,7 @@ describe('cuota por IP (RNF-68, decision del PO)', () => {
   })
 
   it('la cuota es por IP, no global: otra IP no se ve afectada', async () => {
-    resetIpQuota()
+    resetQuotas()
     const handler = createChatHandler(corpus, okProvider())
     const estados: number[] = []
     for (let i = 0; i < 12; i += 1) {
@@ -353,7 +353,7 @@ describe('cuota por IP (RNF-68, decision del PO)', () => {
   it('la IP se toma del primer salto de x-forwarded-for', async () => {
     // La cabecera es una cadena de proxies. El primero es el cliente; fiarse del ultimo daria
     // como IP la del proxy, que es la misma para todo el mundo y no limita a nadie.
-    resetIpQuota()
+    resetQuotas()
     const handler = createChatHandler(corpus, okProvider())
     const conCadena = await call(
       handler,
@@ -370,5 +370,71 @@ describe('cuota por IP (RNF-68, decision del PO)', () => {
       if (r.status === 429) cortes += 1
     }
     assert.ok(cortes > 0, 'el proxy distinto no debe crear una cuota nueva')
+  })
+})
+
+describe('cuota por sesion (RNF-68)', () => {
+  it('corta en la peticion 6 con el limite de 5 por minuto', async () => {
+    // Las IPs rotan a proposito: con IP fija, el corte en la 6 lo daria el minuto de IP
+    // y el test pasaria aunque la sesion no limitara nada.
+    resetQuotas()
+    const handler = createChatHandler(corpus, okProvider())
+    const estados: number[] = []
+    let retryAfter: string | null = null
+    for (let i = 0; i < 8; i += 1) {
+      const r = await call(
+        handler,
+        post('¿qué proyectos hay?', { 'x-session': 'sesion-cuota' }, `203.0.113.${20 + i}`),
+      )
+      estados.push(r.status)
+      if (r.status === 429) retryAfter = r.headers.get('retry-after')
+    }
+    const primero = estados.indexOf(429)
+    assert.equal(primero, 5, `deberia cortar en la 6; estados: ${estados.join(',')}`)
+    assert.match(retryAfter ?? '', /^\d+$/, 'el 429 de sesion debe traer Retry-After entero')
+    assert.ok(Number(retryAfter) > 0 && Number(retryAfter) <= 60)
+  })
+})
+
+describe('cuota diaria por fingerprint (RNF-68)', () => {
+  it('corta en la peticion 201 y cuenta tambien las rechazadas por el minuto', async () => {
+    resetQuotas()
+    const handler = createChatHandler(corpus, okProvider())
+    // Misma IP y mismo User-Agent durante todo el bucle: una sola huella. A partir de la 11
+    // el minuto rechaza con "tasa", pero la huella sigue contando — es el techo economico.
+    let vista = false
+    for (let i = 0; i < 202; i += 1) {
+      const r = await call(
+        handler,
+        post(
+          '¿qué proyectos hay?',
+          { 'x-session': `diaria-${i}`, 'user-agent': 'ua-diaria-test' },
+          '198.51.100.80',
+        ),
+      )
+      if (r.status === 429 && r.body.reason === 'cuota-diaria') {
+        assert.equal(i, 200, `deberia cortar en la peticion 201, corto en la ${i + 1}`)
+        const retryAfter = r.headers.get('retry-after')
+        assert.match(retryAfter ?? '', /^\d+$/, 'Retry-After debe ser segundos enteros')
+        assert.ok(
+          Number(retryAfter) > 0 && Number(retryAfter) <= 86_400,
+          `Retry-After diario fuera de rango: ${retryAfter}`,
+        )
+        vista = true
+        break
+      }
+    }
+    assert.ok(vista, 'la cuota diaria deberia dispararse antes de acabar el bucle')
+  })
+
+  it('otro User-Agent con la misma IP no hereda la cuota diaria', async () => {
+    // Misma IP que el test anterior, User-Agent distinto: huella distinta. No tiene por que
+    // pasar (el minuto de IP puede seguir caliente), pero el rechazo no puede ser el diario.
+    const handler = createChatHandler(corpus, okProvider())
+    const r = await call(
+      handler,
+      post('¿qué proyectos hay?', { 'x-session': 'diaria-otra-ua' }, '198.51.100.80'),
+    )
+    assert.notEqual(r.body.reason, 'cuota-diaria', 'una huella distinta tiene su propia cuenta')
   })
 })
