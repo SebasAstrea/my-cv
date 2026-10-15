@@ -255,7 +255,7 @@ los flujos**, 10 comprobaciones en verde.
 
 | Requisito | Método | Comando | Resultado | Estado |
 |---|---|---|---|---|
-| `RF-02` | T: el rail marca la escena activa sin depender solo del color | `pnpm gate:keyboard` | `aria-current="true"` + peso + regla (`RUI-34`) | **Cumplido** |
+| `RF-02` | T: el rail marca la escena activa sin depender solo del color | `pnpm gate:keyboard` | `aria-current="true"` + peso + regla (`RUI-34`). Rail `position: fixed` a ≥1200 px (antes `sticky` inútil: su contenedor `<header>` solo medía lo alto del rail, así que se iba con el scroll); las escenas reservan `--rail-width` + gutter para no tapar contenido | **Cumplido** |
 | `RF-03` | T: clic en el rail navega y enfoca el heading | `pnpm gate:keyboard` | foco en `escena-04-titulo` tras el clic | **Cumplido** |
 | `RF-04` | T: la URL refleja la escena; sin entradas de historial por scroll | `pnpm gate:keyboard` | `replaceState` + hash por escena | **Cumplido** |
 | `RF-05` | T: `↑/↓`, `PageUp/PageDown`, `Home/End` mueven el foco entre escenas | `pnpm gate:keyboard` | 6 flujos de teclado verificados | **Cumplido** |

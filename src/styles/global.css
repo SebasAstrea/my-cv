@@ -110,8 +110,6 @@ body {
  * Rail de indice
  * ------------------------------------------------------------------ */
 .rail {
-  position: sticky;
-  inset-block-start: var(--space-5);
   display: grid;
   gap: var(--space-1);
   align-content: start;
@@ -174,6 +172,27 @@ body {
  * CSS puro no puede usar custom properties en condiciones de media, asi que viven aqui.
  * CAMBIAR AQUI si alguna vez se mueven. No duplicarlos en componentes.
  * ------------------------------------------------------------------ */
+
+/* En pantallas anchas el indice pasa a rail fijo a la izquierda, centrado verticalmente:
+ * permanece visible con cualquier scroll y no depende del alto del `<header>` (antes el
+ * `sticky` no servia de nada porque su contenedor solo media lo alto del propio rail). */
+@media (width >= 1200px) {
+  .rail {
+    position: fixed;
+    inset-block-start: 50%;
+    inset-inline-start: var(--margin-inline);
+    inline-size: var(--rail-width);
+    transform: translateY(-50%);
+    z-index: var(--z-rail);
+  }
+
+  /* Reserva el ancho del rail + gutter para que el indice fijo no tape el contenido de la
+     escena (col-primary: numeral, heading y apoyo). Asi se cumple "no tapar informacion". */
+  .scene {
+    padding-inline-start: calc(var(--margin-inline) + var(--rail-width) + var(--gutter));
+  }
+}
+
 @media (width < 1200px) {
   .layout {
     grid-template-columns: minmax(0, 1fr);

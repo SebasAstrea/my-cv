@@ -65,6 +65,13 @@ El Sprint 10 (accesibilidad) tiene ya su **gate de axe-core** en los 5 estados (
 una persona. Se declara como adelantado y no como WIP porque `SCRUM.md` §6 permite un solo sprint
 abierto a la vez, y el 7 sigue bloqueado por `RNF-69`. Detalle en `TRACEABILITY.md` §12 septies.
 
+**Corrección del rail de índice (`RF-02`, 2026-10-15):** el rail decía «persistente» pero usaba
+`position: sticky` dentro del `<header>`, que solo medía lo alto del propio rail, así que el
+índice se iba con el scroll. Ahora es `position: fixed` a ≥1200 px, centrado verticalmente en el
+lateral izquierdo, y las escenas reservan `--rail-width` + gutter para no tapar ningún contenido.
+En <1200 px sigue colapsando a barra superior (`RUI-91`). `pnpm gate` y `pnpm gate:keyboard` en
+verde; sin ADR porque no toca `SPEC.md` §2.
+
 ---
 
 ## 2. Progreso por sprint
