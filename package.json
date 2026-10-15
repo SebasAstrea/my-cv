@@ -12,6 +12,11 @@
     "overrides": {
       "http-cache-semantics": "^4.3.0",
       "source-map-js": "^1.2.2"
+    },
+    "auditConfig": {
+      "ignoreCves": [
+        "CVE-2026-93687"
+      ]
     }
   },
   "scripts": {

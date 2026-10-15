@@ -22,7 +22,7 @@
 | **Último sprint aceptado** | **6 — Chat G1–G4 (guardrails)** |
 | **Gate** | `pnpm gate` — 14 pasos, exit 0 |
 | **Bloqueo** | Ninguno conocido |
-| **Deuda registrada** | 13 ítems (`TD-01`..`TD-13` en `BACKLOG.md`) |
+| **Deuda registrada** | 14 ítems (`TD-01`..`TD-14` en `BACKLOG.md`) |
 | **Riesgos abiertos** | 9 aceptados (`RK-01`..`RK-09` en `TRACEABILITY.md` §12) |
 | **Medición de calidad** | Sprint 1 medido en `docs/reportes-calidad/1-fundacion-y-toolchain/REPORTE.md`; Sprint 8 (rendimiento) en `docs/reportes-calidad/8-rendimiento/`. T4/T5, sin datos de campo. `TD-06` (Astro) cerrada por `ADR-0005`; `TD-11` (presupuesto de diseño) sigue abierto |
 
@@ -71,6 +71,14 @@ abierto a la vez, y el 7 sigue bloqueado por `RNF-69`. Detalle en `TRACEABILITY.
 lateral izquierdo, y las escenas reservan `--rail-width` + gutter para no tapar ningún contenido.
 En <1200 px sigue colapsando a barra superior (`RUI-91`). `pnpm gate` y `pnpm gate:keyboard` en
 verde; sin ADR porque no toca `SPEC.md` §2.
+
+**Auditoría de CI (`SEG-21`, 2026-10-15, `ADR-0015`):** el paso de auditoría estaba en rojo
+desde el 10 de octubre (preexistente, 3 altas). Dos se arreglaron con `pnpm.overrides`
+(`http-cache-semantics` 4.3.0, `source-map-js` 1.2.2); la tercera — `braces` (`CVE-2026-93687`)
+— es dev-only y **no tiene parche upstream** (`Patched: <0.0.0`; ni `stylelint@17` la esquiva).
+Por decisión del PO, `pnpm.auditConfig.ignoreCves` la excluye **por CVE concreto** (`TD-14`):
+el gate sigue auditando prod + dev, y el CVE sigue saliendo en el log como `1 ignored`. Con eso
+`pnpm audit --audit-level=high` pasa a exit 0 y CI vuelve a verde antes de `pnpm gate`.
 
 ---
 
@@ -270,6 +278,7 @@ Que no esté aquí como «cumplido» aunque parezca cerca:
 | [`0012`](./adr/0012-burbuja-fija-del-chat.md) | El chat pasa a **burbuja fija** (visible en todo el scroll); excepción acotada a `RUI-24` (radio píldora) y `RUI-36` | Aceptada |
 | [`0013`](./adr/0013-animejs-y-desenfoque-entre-clips.md) | anime.js (4) para la burbuja y el panel; el desenfoque entre clips es CSS. JS de cliente 10,6 → 40,8 KB | Aceptada |
 | [`0014`](./adr/0014-techo-del-resumen.md) | El techo del resumen sube de 280 a 320 **caracteres** (no palabras) | Aceptada |
+| [`0015`](./adr/0015-auditoria-ignora-cve-2026-93687.md) | La auditoría de CI ignora `CVE-2026-93687` (`braces`, dev-only) mientras no haya parche upstream; sigue auditando prod + dev | Aceptada |
 
 **Abierto a propósito:** nada de `ABR-01` (cerrado por `ADR-0009`). Lo que sigue abierto y
 **declarado** es la medición: `CHA-30/32/33` necesitan el eval set, y el límite de 10/min por IP es
